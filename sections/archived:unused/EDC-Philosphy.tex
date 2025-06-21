@@ -1,0 +1,62 @@
+%\documentclass[../HFT-main.tex]{subfiles}
+
+%\usepackage{currfile}  % <— key line
+
+\title{Error Detection/Correction philosophy}
+
+
+% ----------------------------------------------------
+% 1.  Mini‑TOC setup.  MUST PUT THIS IN THE MAIN FILE FOR Mini-TOC
+% ----------------------------------------------------
+%\usepackage{minitoc}          % creates per‑chapter (sub)section lists
+%\dominitoc                     % enable mini‑TOC generation
+%\setlength{\mtcindent}{0pt}    % no hanging indent
+%\setlength{\mtcskip}{2pt}      % tight vertical spacing
+%\renewcommand{\mtc@font}{\footnotesize}   % shrink to fit the margin
+%
+%% ----------------------------------------------------
+%% 2.  Helper macro: print mini‑TOC in the margin
+%% ----------------------------------------------------
+%\newcommand{\chaptermargincontents}{%
+%  % Typeset the mini‑TOC into a box, then place it in the margin
+%  \begingroup
+%    % Ensure the list is compiled before boxing it
+%    \minitoc                      
+%    \setbox0=\vbox{\minitoc}      % grab what \minitoc printed
+%  \endgroup
+%  % Place the boxed list at the very top of the margin
+%  \marginnote{\usebox0}[0pt]      % 0pt vertical shift = top‑aligned
+%}
+
+%\begin{document}
+
+
+\section{Error Detection/Correction philosophy}
+
+%\marginnote{[\texttt{\currfilename}] \vspace{20pt}}
+
+\section{No EDC or FEC}
+
+Each side of the link maintains two EPI (epistricted) registers\marginnote{See \href{https://community.wolfram.com/groups/-/m/t/2575423}{Quantum Ethernet}} : the last slice sent out, and the last slice received. The sender “owns” the lower 32 bits, and preserves the upper 32 bits. When slice 1 is received, the upper 32 bits are swapped with the lower 32 bits.  This preserves the symmetry of the protocol, and clearly delineates the causal initiator register field ownership in addition to causal ownership.
+
+This provides the first level of error detection: the Initiator has Perfect Information Feedback (PIF) and  sees. exactly what the receiver sees, and compare it to what was sent, And if they don’t agree, declare an error and proceed with mitigations to get the link back in sync again.
+
+\section{Epistricted registers}
+
+Imagine two vectors [abcd] one for Alice and one for Bob. A 4 x 4 matrix has 16 slots, which has $2^{16} = 65,535$ possible states. However, according t o the Spekkens Toy model applied to FPGA Registers, there are only 12 'disjoint' (6 for Alice and a complimentary 6 for Bob). Instead of trying to build a EDD/EDC code, we check only the disjoint states by combining them into one register and sending them back and forth in the context frame.
+
+\section{topology}
+%The master document being compiled is: \texttt{\detokenize{\jobname}}.
+%
+%This exact file is:\ \texttt{\currfilename}\\
+%Base name only:\ \texttt{\currfilebase}
+
+
+
+ 
+\section{A Section}
+\subsection{A Subsection}
+\section{Another Section}
+
+
+\end{document}

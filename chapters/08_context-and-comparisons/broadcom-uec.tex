@@ -1,0 +1,160 @@
+\section{Ultra Ethernet}
+\marginnote{From ./AE-Specifications-ETH/standalone/Broadcom-UEC}
+
+
+\subsection{Executive overview}
+Ultra Ethernet Consortium (UEC) is producing an \textbf{open, Ethernet-based full-stack
+specification} targeted at AI and HPC fabrics with one million endpoints,
+terabit links and sub-microsecond tail latency.
+Its clean-slate \emph{Ultra Ethernet Transport (UET)} replaces legacy RoCE,
+adds packet-spray multipath, flexible ordering, congestion-adaptive spraying
+and hardware collectives.
+
+Compared with InfiniBand, UET keeps the broad Ethernet ecosystem while
+approaching supercomputer-interconnect performance.
+
+% ---------------------------------------------------------------------------
+\subsection{Scope and objectives}
+\begin{itemize}
+  \item \textbf{Scale:} up to 1e6 endpoints and 800;1600 Gbps links.
+  \item \textbf{Latency target:} keep 99.9\,\% of collectives within one-digit
+        \si{\micro\second}
+  \item \textbf{Profiles:} \emph{AI Base}, \emph{AI Full}, and \emph{HPC}; same wire
+        protocol, differing verb sets.
+  \item \textbf{Layer coverage:} Physical, Link, Transport, Software API,
+        Security, Telemetry/Management.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsection{Architecture at a glance}
+
+\subsection*{Transport layer – UET}
+\begin{itemize}
+  \item \textbf{Ephemeral connections}: no handshake; state cached and
+        reclaimed per transaction (memory-efficient at scale).
+  \item \textbf{Packet spraying} across all equal-cost paths with per-packet
+        sequence numbers; ordering enforced on message completion only.
+  \item \textbf{Reliability} uses selective retry plus optional
+        \emph{packet trimming} (header delivered, payload discarded)
+        to signal incipient congestion without head-of-line
+        blocking.
+\end{itemize}
+
+\subsection*{Congestion control}
+Two complementary schemes:  
+\begin{enumerate}[label={(\arabic*)},leftmargin=*]
+  \item \textbf{Sender-adaptive AI/MD} window (\textasciitilde{}RTT-speed
+        reaction, ECN-driven).  
+  \item \textbf{Credit-grant} receiver pacing for extreme
+        incast.
+\end{enumerate}
+
+\subsection*{Link layer}
+\begin{itemize}
+  \item \textbf{Link-Layer Retry (LLR)} negotiated via extended LLDP; hop-by-hop
+        NACK keeps BER-induced loss from bubbling up.
+  \item \textbf{Two traffic classes} prevent deadlock and prioritise control
+        traffic even on PFC-free fabrics.
+\end{itemize}
+
+\subsection*{Software API}
+Based on \texttt{libfabric 2.0} with new verbs:
+\emph{Deferrable Send}, optimistic rendezvous, expanded atomics and tagged
+collectives.
+
+\subsection*{Security}
+Group-keyed AES-GCM; leverages IPSec/PSP primitives yet preserves
+ephemeral-connection model—important for accelerator offload.
+
+\subsection*{In-network collectives (INC)}
+Lightweight header extensions allow switches to execute
+\textit{reduce}, \textit{broadcast} and \textit{all-reduce} without CPU
+round-trips, standardising what was previously vendor-proprietary.
+
+% ---------------------------------------------------------------------------
+\subsection{Key innovations vs.\ legacy RDMA}
+\begin{table}[ht]
+\footnotesize
+\caption{Ultra Ethernet vs.\ RoCEv2 / InfiniBand RC.}
+\begin{tabular}{@{}p{0.25\textwidth}p{0.32\textwidth}p{0.32\textwidth}@{}}
+\toprule
+\textbf{Feature} & \textbf{Ultra Ethernet} & \textbf{RoCEv2 / IB RC}\\\midrule
+Multipath & Packet-level spray & Flow-hash ECMP\\
+Ordering & Flexible, message-level & Strict in-order\\
+Loss recovery & Selective, trim-aware & Go-back-N\\
+Congestion ctrl. & Auto, zero-tune & DCQCN (manual tune)\\
+Connection state & Ephemeral, pooled & Per-peer, long-lived\\
+Collectives & INC standard & Vendor proprietary / host SW\\
+Security & Built-in AES-GCM & External overlay\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ---------------------------------------------------------------------------
+\subsection{Performance and scalability}
+UEC’s internal simulations on Clos-4 fabrics show $>$95\,\% link utilisation
+and $<$5\,\si{\micro\second} 99.9-percentile all-reduce latency on 4096-GPU
+clusters at \SI{800}{Gbps}.
+Early silicon demos (Q1 2025) from Broadcom’s
+\texttt{BCM57608} NIC confirm wire-rate UET on existing
+PAM4 links.
+
+% ---------------------------------------------------------------------------
+\subsection{Ecosystem readiness}
+\begin{itemize}
+  \item \textbf{Membership}: 90+ vendors incl.\ AMD, Arista, Broadcom,
+        Cisco, Google, Meta, Microsoft, Intel.
+  \item \textbf{Reference code}: open-source UET over commodity NICs,
+        easing migration from libfabric/RDMA apps.
+  \item \textbf{Timeline}: v1.0 spec ratification Q3 2025; first commercial
+        gear shipping same quarter.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsection{Gaps and open issues}
+\begin{itemize}
+  \item \textbf{Standardisation overlap} with IEEE 802.1Q priorities,
+        IETF congestion-control drafts and emerging UALink fabric.
+  \item \textbf{Inter-op testing} required for packet trimming and INC
+        header parsing across multiple switch ASIC generations.
+  \item \textbf{Management model}: YANG/Redfish bindings still draft.
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\subsection{FITO analysis}
+Conventional Ethernet handles failure strictly forward-in-time:
+lost packets are re-sent, global ordering re-asserted \emph{after}
+the fact. UET’s \emph{selective trimming} preserves the causal
+header even under congestion; the payload can be retro-materialised
+without rolling back link-layer state—an incremental step toward
+reversible, idempotent communication you favour in
+\textsc{Open Atomic Ethernet} research.
+
+% ---------------------------------------------------------------------------
+\subsection{Conclusion}
+Ultra Ethernet modernises RDMA semantics for AI/HPC while preserving
+the economic and tooling advantages of Ethernet.  
+If the consortium delivers on its v1.0 schedule and multi-vendor
+interoperability, UET could displace proprietary HPC fabrics and close
+the performance gap with InfiniBand—especially when paired with
+Broadcom’s Scale-Out Ethernet implementation.
+
+% ---------------------------------------------------------------------------
+%\begin{thebibliography}{9}\footnotesize
+%\bibitem{UECOverview2023} Ultra Ethernet Consortium,
+%\emph{UEC 1.0 Overview and Motivation},
+%July 2023.  % :contentReference[oaicite:17]{index=17}
+%\bibitem{UECSpecUpdate2024} Ultra Ethernet Consortium,
+%``Ultra Ethernet Specification Update,'' Blog post,
+%Aug 2024.  % :contentReference[oaicite:18]{index=18}
+%\bibitem{UECPresentation2023} Ultra Ethernet Consortium,
+%\emph{Consortium Overview Presentation}, Aug 2023.  % :contentReference[oaicite:19]{index=19}
+%\bibitem{Hoefler2023} T.~Hoefler \textit{et al.},
+%``Data-Center Ethernet and RDMA: Issues at Hyperscale,''
+%\emph{IEEE Computer}, July 2023.
+%\bibitem{CloudSwitchBlog2024} CloudSwit.ch,
+%``In-depth Exploration of UEC,'' Blog post, Oct 2024.  % :contentReference[oaicite:20]{index=20}
+%\bibitem{SNIA2024} J.~Metz,
+%\emph{Ethernet Evolved: AI’s Future with UEC},
+%SNIA CMS Summit, 2024.  % :contentReference[oaicite:21]{index=21}
+%\end{thebibliography}

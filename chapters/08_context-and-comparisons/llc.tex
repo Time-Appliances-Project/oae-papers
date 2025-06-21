@@ -1,0 +1,106 @@
+\section{LLC and how it differs from \AE thernet}
+\marginnote{From ./AE-Specifications-ETH/LLC.tex}
+
+% ---------------------------------------------------------------
+\subsection{Where LLC Sits in the Stack}
+
+\begin{verbatim}
++-----------------------------+   <- Network layer (IP, CLNP, ...)
+|        Network Layer        |
++-------------+---------------+
+|     LLC     |      MAC      |   <- IEEE 802 data-link (L2)
+|   (802.2)   |    (802.3)    |
++-------------+---------------+
+              |
+          Physical Layer (L1)
+\end{verbatim}
+
+The IEEE 802 data-link layer is divided into
+
+\begin{itemize}
+  \item \textbf{MAC} (Medium-Access Control, 802.3), which is medium specific and defines framing, addressing, and access rules, and
+  \item \textbf{LLC} (Logical Link Control, 802.2), a medium independent sub-layer that offers a uniform service interface to the network layer and, when desired, adds sequencing and acknowledgments.
+\end{itemize}
+
+% ---------------------------------------------------------------
+\subsection{Core Functions of LLC}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{@{}p{3cm}p{6cm}p{5cm}@{}}
+\toprule
+\textbf{Function} & \textbf{How LLC Provides It} & \textbf{Comparable Mechanism Outside LLC} \\
+\midrule
+Service multiplexing & DSAP / SSAP (8 bit each) identify the upper layer protocol. & EtherType field in Ethernet II. \\
+Three service types & Type 1: connectionless, unacknowledged (mandatory).  Type 3: connectionless, acknowledged.  Type 2: connection oriented with sequencing and flow control. & IP is always connectionless; TCP gives connection oriented reliability above L2. \\
+Media independence & Same LLC PDU rides over 802.3, 802.11, 802.5, FDDI, etc. & Ethernet II framing is Ethernet only. \\
+Optional reliability & HDLC style control field allows SABME, RR/REJ, etc. & Modern networks push reliability to TCP or lossless fabrics such as RoCE PFC. \\
+SNAP extension & Adds 5 bytes (OUI + EtherType) so EtherType based protocols still work over any 802 medium. & Native EtherType in Ethernet II. \\
+\bottomrule
+\end{tabular}
+\caption{Key LLC features and where similar facilities reside when LLC is not used.}
+\end{table}
+
+% ---------------------------------------------------------------
+\subsection{Frame-Format Comparison}
+
+\begin{verbatim}
+Ethernet II        802.3 + LLC          802.3 + LLC + SNAP
+---------------    ---------------      ---------------------
+Dest MAC           Dest MAC             Dest MAC
+Src MAC            Src MAC              Src MAC
+EtherType          Length               Length
+                   DSAP                 DSAP = 0xAA
+                   SSAP                 SSAP = 0xAA
+                   Control              Control = 0x03
+                                         OUI (3 B) = 0x000000
+                                         EtherType
+Payload ...        Payload ...          Payload ...
+FCS                FCS                  FCS
+\end{verbatim}
+
+Ethernet II places the EtherType immediately after the source MAC and is the framing used by practically all modern IP traffic.\footnote{See IEEE Std 802.3-2022, Section 3.1.}  
+With 802.3 + LLC, the receiver must parse the LLC header (DSAP / SSAP) to learn which upper layer service is carried.  
+SNAP keeps the 802 structure while still transporting traditional EtherType values.
+
+% ---------------------------------------------------------------
+\subsection{Why LLC Faded on Ethernet}
+
+\begin{enumerate}
+  \item \textbf{Simplicity and cost.} Early NICs already spoke Ethernet II, so adding LLC parsing logic gave little benefit.
+  \item \textbf{IP dominance.} Most traffic needed only EtherType 0x0800 (IPv4) or 0x86DD (IPv6), so DSAP / SSAP were redundant.
+  \item \textbf{Redundant reliability.} LLC Type 2 and 3 capabilities overlapped with TCP end to end guarantees.
+  \item \textbf{VLAN tagging.} 802.1Q inserts its own 4 byte shim but preserves EtherType demultiplexing.
+\end{enumerate}
+
+As a result, modern NICs understand LLC/SNAP for legacy frames (for example STP, LLDP), yet more than 99 percent of everyday traffic uses Ethernet II framing.
+
+% ---------------------------------------------------------------
+\subsection{LLC Versus Other Ethernet Related Layers}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{@{}p{3cm}p{3cm}p{3cm}p{3cm}@{}}
+\toprule
+\textbf{Aspect} & \textbf{LLC (802.2)} & \textbf{Ethernet II} & \textbf{MAC Control / PFC} \\
+\midrule
+Purpose & Uniform service, optional reliability & Minimal frame wrapper & Flow control, security \\
+Media scope & Any IEEE 802 medium & Ethernet only & Ethernet only \\
+Header size & 3 B (8 B with SNAP) & none beyond MAC + EtherType & Control frames are separate 64 B PDUs \\
+Error handling & Optional ACK / REJ at L2 & None & Pause frames stop the transmitter; no ARQ \\
+Typical use today & STP, LLDP, some industrial stacks & IP, ARP, VLANs, nearly all data traffic & Datacenter congestion control, MACsec \\
+\bottomrule
+\end{tabular}
+\caption{Comparative position of LLC and other Ethernet related layers.}
+\end{table}
+
+% ---------------------------------------------------------------
+\subsection{Take Aways for New Protocol Design}
+
+\begin{itemize}
+  \item If you need to multiplex a new L3 protocol, registering an EtherType or using OUI + SNAP is simpler than reviving DSAP / SSAP values.
+  \item Link layer reliability costs latency. Modern reversible or causal ordering schemes are better placed above the MAC, much as RoCEv2 rides over UDP/IP.
+  \item For designs that must traverse Wi Fi or other IEEE 802 media, SNAP framing keeps you inside the standard while preserving familiar EtherType semantics.
+\end{itemize}

@@ -1,0 +1,105 @@
+\section{CLOS}
+\marginnote{From ./AE-Specifications-ETH/sections/Clos.tex}
+
+\subsection{Topology set‑up (same 200 servers)}
+
+\begin{description}
+  \item[Clos fabric] 20 racks, each with 10 servers. %
+        Every server now owns \textbf{four} NIC ports, all cabled to its
+        top‑of‑rack (ToR) switch, giving $200 \times 4 = 800$ host links. %
+        Each ToR uplinks once to \emph{each} of the four spine switches. %
+        A pair of core switches terminates the third level.
+
+  \item[$8$‑regular mesh] The same 200 servers, each equipped with
+        \textbf{eight} NIC ports wired into an undirected
+        $8$‑regular graph. %
+        The link count is
+        \[
+           L_{\text{mesh}} = \frac{200 \times 8}{2} = 800,
+        \]
+        exactly matching the number of host cables in the Clos system.
+\end{description}
+
+\subsection{Cable inventory}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Link class & Clos count & Mesh count \\
+\midrule
+Server--ToR                       & 800 & --  \\
+ToR--Spine                        &  80 & --  \\
+Spine--Core                       &   8 & --  \\
+Server--Server (mesh)             & --  & 800 \\[2pt]
+\textbf{Total physical links}     & 888 & 800 \\
+\bottomrule
+\end{tabular}
+\caption{Cable counts after upgrading each Clos server to four NIC
+ports.  The mesh uses the same 800 cables as data‑carrying edges,
+eliminating the 88 upward cables and the entire switch hierarchy
+above the racks.}
+\end{table}
+
+\subsection{Failure‑mode magnitude}
+
+Treat each link as an independent four‑state component
+$\Sigma = \{00,\,01,\,10,\,11\}$.  The number of distinct network
+states is $4^{L}$, so the number of failure patterns is $4^{L}-1$.
+
+\[
+\log_{10}\!\bigl(4^{L}\bigr) \;=\; 0.60206\,L.
+\]
+
+\begin{center}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Topology & $L$ & Failure modes (order of magnitude)\\
+\midrule
+Clos (4 ports) & 888 & $\sim 10^{535}$\\
+Mesh ($8$‑regular) & 800 & $\sim 10^{482}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Although the Clos now contains more cables, inter‑rack traffic is still
+forced through only 88 uplinks.  The mesh distributes both traffic and
+failure risk across \emph{all} 800 cables.
+
+\subsection{Path‑diversity impact}
+
+\subsection*{Clos}
+
+\begin{itemize}
+  \item A rack‑to‑rack flow traverses six vertical hops
+        (Server $\rightarrow$ ToR $\rightarrow$ Spine $\rightarrow$
+        Core and back down).
+  \item End‑to‑end success probability is roughly $p^{6}$, where
+        $p$ is the per‑link health probability.
+\end{itemize}
+
+\subsection*{Mesh}
+
+\begin{itemize}
+  \item Every server has eight one‑hop neighbours; many multi‑hop
+        detours remain even after several failures.
+  \item Loss of one cable only lowers a single server’s degree
+        from $8$ to $7$; global reachability is unaffected.
+\end{itemize}
+
+\subsection{Key observations}
+
+\begin{enumerate}
+  \item \textbf{Vertical choke‑points remain}.  
+        Extra NICs in the Clos enlarge rack bandwidth but do not remove
+        the dependence on 88 spine--core cables.
+  \item \textbf{Risk distribution}.  
+        The mesh spreads failure impact evenly; the Clos still
+        concentrates risk in its upper layers.
+  \item \textbf{Equipment footprint}.  
+        The mesh eliminates 30 switches (20 ToRs, 4 spines, 2 cores),
+        trading them for denser lateral cabling.
+  \item \textbf{Graceful degradation}.  
+        Clos bisection bandwidth falls in 12.5\% or 5\% steps; mesh
+        capacity decays proportionally to failed cables, with no cliff.
+\end{enumerate}

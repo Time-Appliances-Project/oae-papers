@@ -1,0 +1,34 @@
+\documentclass[justified,nobib,oneside]{tufte-book}
+
+\input{oae-settings}
+\input{oae-commands}
+
+\title{Open Atomic \\ Ethernet}
+\author{V0.6}
+\date{June 2025}
+\publisher{Open Compute Project -- OAE Workstream}
+
+\begin{document}
+  \frontmatter\pagenumbering{roman}
+
+  \maketitle
+  
+  \subfile{pages/preface.tex}
+
+  \tableofcontents
+
+  \mainmatter\setcounter{page}{1}\pagenumbering{arabic}
+
+  \subfile{chapters/01_principles-of-operation/@@full}
+  \subfile{chapters/02_bits-and-bytes/@@full}
+  \subfile{chapters/03_cells-and-links/@@full}
+  \subfile{chapters/04_addressing-and-routing/@@full}
+  \subfile{chapters/05_reversible-transactions/@@full}
+  \subfile{chapters/06_architecture/@@full}
+  \subfile{chapters/07_topology/@@full}
+  \subfile{chapters/08_context-and-comparisons/@@full}
+  \subfile{chapters/09_history/@@full}
+  \subfile{chapters/10_theory/@@full}
+  \subfile{chapters/11_requirements-and-usecases/@@full}
+  
+\end{document}

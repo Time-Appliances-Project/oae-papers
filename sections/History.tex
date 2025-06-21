@@ -1,0 +1,76 @@
+\documentclass[../HFT-main.tex]{subfiles} % NEW VERSION IS CASE.tex
+\begin{document}
+\section{History}
+
+\href{https://www.opencompute.org/w/index.php?title=Open_Atomic_Ethernet}{Open Atomic Ethernet -- Main Page}
+
+\href{}{Latex'd Version of 1976 Metcalfe + Boggs}\marginnote{From Bob Metcalfe -- Try this podcast about the 1976 Ethernet paper. Artificial intelligences sound male and female, but are not human. Amazing.
+
+\href{https://notebooklm.google.com/notebook/aeb6bacd-b3c9-4c4c-9384-2c4a64a5474d/audio}{Podcast - 1976 Metcalfe + Boggs}}
+
+\href{https://drive.google.com/uc?export=download&id=1KYQNFdG1bCWj53gF5J6nK6LYDHWIsB8g}{Ethernet-Boggs-Metcalfe.pdf}
+
+\href{https://drive.google.com/uc?export=download&id=1zWt4QiibhzpzO8RgrGv2I7RctExlXGxs}{ReliableTransmissionOverHalfDuplex\_Lynch\_CACM\_1968.pdf}
+
+%NoteOnReliableTransmissionOverHalfDuplex.pdf
+
+\subsection{ToDo: Presentation on the history and principles of the PUP Format.}
+
+\paragraph{\href{https://drive.google.com/drive/folders/1IYqgrZCpfjWHP0BoHvcC6fHloPj4qwi3}{Google Drive Collection of Documents}}
+
+\section{FAQ from Bob Metcalfe}
+
+\begin{itemize}
+%\question
+	\item Why call it Ethernet if Ethernet is now so defunct?
+%\question
+	\item Will Chiplets be upstaged by wafer-scale semiconductors?
+%\question
+	\item Ethernet is enjoying evolution and expansion in automotive and artificial intelligence and edge and ...
+%\question
+	\item How about you coordinate with the current Ethernet consortia including 802?
+\end{itemize}
+
+\section{The End-To-End (E2E) Principle is a failed architectural theory}
+
+QUESTION : You wrote in your paper that the "E2E principle assumes smart endpoints and a dumb network, which worked when endpoints could coordinate state easily in one core system.".
+
+I had long discussions about the E2E Principle with Saltzer and David Clark. We actually discussed this principle in a panel I moderated in a conference in Dubai last Feb. 
+
+This is Saltzer input:
+\begin{quotation}
+"Because there may be trade-offs among competing considerations, we called end-to-end an “argument” rather than proposing that it be a hard-and-fast design rule. If we were writing the paper today, it would undoubtedly include some discussion of recent “computing in the network” concepts, and point out the ways that at least some of those concepts are consistent with an end-to-end, application knows best, perspective."
+
+"The basis of the end-to-end principle is that the application knows best.  If the application has the ability to tell an in-network service "Do X when you see my packets” that would seem to support the end-to-end principle."
+\end{quotation}
+
+
+\noindent ANSWER: The end to end principle is designed for file transfer, not transactions. 
+
+When network designers believe they have a god-given right to Drop, Reorder, Duplicate and Delay packets, this creates  unbounded reordering buffer resource explosions on the endpoints.  
+
+Applications are forced into only one solution: Timeout and Retry (TAR) --  the root of all evil.
+
+This is fundamentally in conflict with what modern applications need for ACID guarantees.
+
+\section{Background and Pre-reading}
+
+Before evaluating these technical proposals, it helps if the reader has a solid background in the theory and practice of networking.
+
+We recommend The excellent Books by Larry Peterson and Bruce Davie: \href{https://book.systemsapproach.org}{Computer Networks: A Systems Approach}, and other books in their series, particularly \href{https://tcpcc.systemsapproach.org}{TCP Congestion Control: A Systems Approach}.   Without this as a background, it would be easy to think that the proposals you see in this document are naïve.
+
+While we will try to use concepts, definitions and literature that are familiar to the Computer and Networking Community, if that was all we did we would be trapped in the valley of incrementalism.
+
+So there are new concepts and terminology, often derived from other branches of physics and engineering. We will try to introduce them as clearly as we can, but the reader is recommended to have their own therapy session with their favorite AI when they find themselves bored, angry or overwhelmed.
+
+As far as these new concepts are concerned, we know we won't bring all of you along.  But we ask you to at least try before unceremoniously reject what you see here. 
+
+A special essay has been written for those who just want to hunker down and stay in their silo of knowledge.   : The Network Warrior.  
+
+\section{FAQ's Living Documents}
+
+Because not everyone is in every meeting, and to make room for new minds who want to learn, while using our time productively, we provide several ``Frequently Asked Questions" (FAQ).  Before asking your questions on email or in the meetings, please check whether your question has already been answered in theseF AQ's. You can point your favorite AI to these repositories if you wish and use the modern tools to interrogate them, so that you don't waste time for everyone in our meetings.
+
+
+
+\end{document}

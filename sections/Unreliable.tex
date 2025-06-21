@@ -1,0 +1,114 @@
+\documentclass[../HFT-main.tex]{subfiles}
+\title{Why Ethernet Needs to Be Reliable}
+
+
+\begin{document}
+% ---------- Metadata ----------
+\section{Why Ethernet Needs to Be Reliable}
+
+
+% ---------- Helper macro ----------
+\marginnote{An unreliable link can never solve congestion; %
+it can at best conceal it, and at worst amplify it.}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% QUESTION
+\section*{Question}
+Why Ethernet needs to be reliable.  Distinguish between \emph{imposition}
+networks and \emph{promise} networks (Promise Theory).  Distinguish between
+``useful packets that are acknowledged'' and those that ``overload (a) the
+receiver (which drops them) and the network that drops them)''.  Go deeply
+into the problem of congestion, and how unreliable networks are a major
+cause of our inability to solve the congestion problem, because they make
+the problem worse, not better.  Bring in unique perspectives on how
+\emph{unpaired} information can only be correlations, not reliable
+delivery.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ESSAY
+\section{Introduction}
+Ethernet's spectacular success for fifty years rests on three pillars:
+ubiquity, low cost, and \emph{best--effort} simplicity.  But the assumption
+that ``bit errors are rare and losses are somebody else's problem'' has
+aged badly.  Modern workloads---RDMA storage, NVMe--oF, micro--transactions
+in high--frequency trading, chiplet fabrics with sub--microsecond
+deadlines---have turned ``good enough'' into ``not nearly enough''.
+
+\section{Imposition vs.\ Promise Networks}
+
+\subsection{Imposition networks}
+An \emph{imposition} network forces state upon its peers.  Classical
+Ethernet is such a system: a transmitter imposes frames on the medium and
+presumes they will be carried.  If a switch, buffer, or receiver cannot
+cope, frames are silently discarded.  The sender remains ignorant until a
+higher layer notices the loss.
+
+\subsection{Promise networks}
+A \emph{promise} network inverts the relationship: each agent voluntarily
+advertises what it will accept and under what constraints.  Congestion
+feedback, explicit flow control, and lossless credit schemes make the
+fabric a living contract.  InfiniBand, Fibre Channel, and CAN are promise
+networks by design; PFC--enabled RoCE grafts promise semantics onto
+Ethernet with mixed success.
+
+\section{Useful vs.\ Harmful Packets}
+
+\begin{enumerate}
+  \item \textbf{Paired / Acknowledged frames}: every frame is matched by a
+  handshake or credit and carries information \emph{with commitment}.
+  \item \textbf{Unpaired / Blind frames}: sent speculatively or in excess of
+  credit, they eat capacity, fill buffers, and are eventually dropped,
+  contributing only to congestion.
+\end{enumerate}
+
+\section{Congestion: Why Unreliability Amplifies It}
+
+\subsection{Positive feedback loops}
+Classic Ethernet plus TCP uses \emph{loss} as its congestion signal, but
+the signal arrives one--three RTTs late.  A 100~Gb/s host can inject
+millions of frames during that blind window:
+\[
+  \text{loss} \;\longrightarrow\; \text{retransmit} \;\longrightarrow\;
+  \text{more traffic} \;\longrightarrow\; \text{more loss}.
+\]
+
+\subsection{Bufferbloat}
+Deeper switch buffers merely store congestion instead of preventing it; the
+queueing delay often dwarfs propagation delay, wrecking tail--latency
+guarantees.
+
+\subsection{Head--of--line blocking}
+Dropped frames arrive out of order; completion time is dominated by
+recovery, not transmission.  A link--layer ACK/NAK guarantee keeps delivery
+in order and prevents the stall.
+
+\section{Unpaired Information Is Only Correlation}
+A frame that never arrives does not increase mutual information; it leaves
+a correlation hole.  Reliable Ethernet lets the link itself guarantee that
+every delivered frame is the one that was sent, exactly once.
+
+\section{Design Implications}
+\begin{itemize}
+  \item \textbf{Credit--based losslessness}: lightweight link--local
+  ACK/NAK or credit return bounds outstanding data without InfiniBand
+  complexity.
+
+  \item \textbf{Actionable ECN}: with no drops, an ECN mark is a clear,
+  immediate promise that congestion exists here and now.
+
+  \item \textbf{Deterministic latency}: bounded jitter enables
+  hardware--timestamped transactions and reversible protocols.
+
+  \item \textbf{Energy efficiency}: eliminating retransmissions and deep
+  buffering cuts joules per useful bit.
+\end{itemize}
+
+\section{Conclusion}
+Cheap and cheerful won in 1973, but the economics have flipped: every lost
+packet spawns expensive silicon, energy, and complexity at higher layers.
+Turning Ethernet from an \emph{imposition} fabric into a \emph{promise}
+fabric breaks the congestion feedback loop, converts blind correlations
+into committed information, and opens the next chapter for the world's most
+enduring network.  Reliable Ethernet is no luxury; it is the prerequisite
+for solving the congestion pathologies that threaten Ethernet's future.
+
+\end{document}

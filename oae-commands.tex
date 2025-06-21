@@ -1,0 +1,284 @@
+\newcommand{\blankpage}{\newpage\hbox{}\thispagestyle{empty}\newpage}
+\newcommand{\emptyparagraph}{\paragraph{}\noindent}
+
+\newcommand{\course}{\ifthenelse{\boolean{manuscript}}{manuscript}{course}\xspace}
+
+\newcommand{\ak}[1]{{\bf[AK: #1]}}
+
+\NewDocumentCommand{\floor}{m}{\left\lfloor #1 \right\rfloor}
+\NewDocumentCommand{\ceil}{m}{\left\lceil #1 \right\rceil}
+\NewDocumentCommand{\ip}{m}{\left\langle #1 \right\rangle}
+
+\newcommand*{\abs}[1]{\left| #1 \right|}
+\newcommand*{\card}[1]{\left| #1 \right|}
+\NewDocumentCommand{\norm}{sm}{\IfBooleanTF{#1}{\|#2\|}{\left\| #2 \right\|}}
+
+\newcommand*{\const}{\mathrm{const}}
+
+\newcommand*{\defeq}{\overset{.}{=}}
+\newcommand*{\eqdef}{\overset{.}{=}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\iid}{\smash{\overset{\mathrm{iid}}{\sim}}}
+
+\DeclareMathOperator*{\almostsurely}{\smash{\overset{a.s.}{\rightarrow}}}
+\DeclareMathOperator*{\eqalmostsurely}{\smash{\overset{a.s.}{=}}}
+\DeclareMathOperator*{\convp}{\smash{\overset{\fnPr}{\rightarrow}}}
+\DeclareMathOperator*{\convd}{\smash{\overset{\mathcal{D}}{\rightarrow}}}
+\DeclareMathOperator*{\convms}{\smash{\overset{L_2}{\rightarrow}}}
+
+\DeclarePairedDelimiter\parentheses{(}{)}
+\DeclarePairedDelimiter\brackets{[}{]}
+\DeclarePairedDelimiter\braces{\{}{\}}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rzero}{\mathbb{R}_{\geq 0}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\NatZ}{\mathbb{N}_0}
+
+
+\newcommand{\MSE}{\mathrm{mse}}
+\newcommand{\MLE}{\mathrm{MLE}}
+\newcommand{\MAP}{\mathrm{MAP}}
+\newcommand{\ls}{\mathrm{ls}}
+\newcommand{\ridge}{\mathrm{ridge}}
+\newcommand{\lasso}{\mathrm{lasso}}
+\newcommand{\train}{\mathrm{train}}
+\newcommand{\val}{\mathrm{val}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\init}{\mathrm{init}}
+
+
+\renewcommand{\vec}[1]{\mathbold{#1}}
+\newcommand{\mat}[1]{\mathbold{#1}}
+\newcommand{\rvec}[1]{\mathbf{#1}}
+\newcommand{\set}[1]{#1}
+\newcommand{\spa}[1]{\mathcal{#1}}
+
+\newcommand{\mean}[1]{\overline{#1}}
+\newcommand{\compl}[1]{\overline{#1}}
+\newcommand{\old}[1]{#1^{\mathrm{old}}}
+\newcommand{\opt}[1]{#1^\star}
+
+\newcommand{\altpi}{\Pi} %
+
+
+\NewDocumentCommand{\Ind}{m}{\mathbb{1}\{{#1}\}}
+\NewDocumentCommand{\fnPr}{}{\mathbb{P}}
+\RenewDocumentCommand{\Pr}{om}{\fnPr\IfValueT{#1}{_{#1}}\parentheses*{#2}}
+\RenewDocumentCommand{\H}{mo}{\mathrm{H}\IfValueTF{#2}{\!\left[#1\ \middle|\ #2\right]}{\brackets*{#1}}}
+\NewDocumentCommand{\Hsm}{mo}{\mathrm{H}\IfValueTF{#2}{[#1 \mid #2]}{\brackets{#1}}}
+\NewDocumentCommand{\I}{mmo}{\mathrm{I}\IfValueTF{#3}{\!\left(#1;#2\ \middle|\ #3\right)}{\parentheses*{#1; #2}}}
+\NewDocumentCommand{\Ism}{mmo}{\mathrm{I}\IfValueTF{#3}{(#1;#2 \mid #3)}{\parentheses{#1; #2}}}
+\NewDocumentCommand{\fnS}{}{\mathrm{S}}
+\RenewDocumentCommand{\S}{m}{\fnS\brackets*{#1}}
+\NewDocumentCommand{\E}{somo}{\ensuremath{\mathbb{E}\IfValueT{#2}{_{#2}}{} \IfBooleanTF{#1}{#3}{\IfValueTF{#4}{\!\left[#3\ \middle|\ #4\right]}{\brackets*{#3}}}}}
+\NewDocumentCommand{\Var}{somo}{\mathrm{Var}\IfValueT{#2}{_{#2}}{} \IfBooleanTF{#1}{#3}{\IfValueTF{#4}{\!\left[#3\ \middle|\ #4\right]}{\brackets*{#3}}}}
+\NewDocumentCommand{\Cov}{som}{\mathrm{Cov}\IfValueT{#2}{_{#2}}{} \IfBooleanTF{#1}{#3}{\brackets*{#3}}}
+\NewDocumentCommand{\Cor}{som}{\mathrm{Cor}\IfValueT{#2}{_{#2}}{} \IfBooleanTF{#1}{#3}{\brackets*{#3}}}
+\NewDocumentCommand{\SD}{m}{\sigma\brackets*{#1}}
+\NewDocumentCommand{\KL}{mm}{\mathrm{KL}\parentheses*{#1 \| #2}}
+\NewDocumentCommand{\KLsm}{mm}{\mathrm{KL}\parentheses{#1 \| #2}}
+\NewDocumentCommand{\Fisher}{mm}{\mathrm{J}\parentheses*{#1 \| #2}}
+\NewDocumentCommand{\crH}{mm}{\mathrm{H}\brackets*{#1 \| #2}}
+\NewDocumentCommand{\crHsm}{mm}{\mathrm{H}\brackets{#1 \| #2}}
+
+\NewDocumentCommand{\fnv}{oo}{v\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\RenewDocumentCommand{\v}{somo}{\IfBooleanTF{#1}{\fnv[\star][#4]\parentheses{#3}}{\fnv[#2][#4]\parentheses{#3}}}
+\NewDocumentCommand{\fnq}{oo}{q\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\NewDocumentCommand{\q}{sommo}{\IfBooleanTF{#1}{\fnq[\star][#5]\parentheses{#3,#4}}{\fnq[#2][#5]\parentheses{#3,#4}}}
+\NewDocumentCommand{\fnV}{oo}{V\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\NewDocumentCommand{\V}{somo}{\IfBooleanTF{#1}{\fnV[\star][#4]\parentheses{#3}}{\fnV[#2][#4]\parentheses{#3}}}
+\NewDocumentCommand{\fnQ}{oo}{Q\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\NewDocumentCommand{\Q}{sommo}{\IfBooleanTF{#1}{\fnQ[\star][#5]\parentheses{#3,#4}}{\fnQ[#2][#5]\parentheses{#3,#4}}}
+\NewDocumentCommand{\fna}{oo}{a\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\RenewDocumentCommand{\a}{sommo}{\IfBooleanTF{#1}{\fna[\star][#5]\parentheses{#3,#4}}{\fna[#2][#5]\parentheses{#3,#4}}}
+\NewDocumentCommand{\fnA}{oo}{A\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\NewDocumentCommand{\fnAhat}{oo}{\hat{A}\IfValueT{#2}{_{#2}}\IfValueT{#1}{^{#1}}}
+\NewDocumentCommand{\A}{sommo}{\IfBooleanTF{#1}{\fnA[\star][#5]\parentheses{#3,#4}}{\fnA[#2][#5]\parentheses{#3,#4}}}
+\NewDocumentCommand{\fnj}{o}{J\IfValueT{#1}{_{#1}}}
+\RenewDocumentCommand{\j}{mo}{\fnj[#2]\parentheses{#1}}
+\NewDocumentCommand{\fnJ}{o}{\widehat{J}\IfValueT{#1}{_{#1}}}
+\NewDocumentCommand{\J}{mo}{\fnJ[#2]\parentheses{#1}}
+
+\NewDocumentCommand{\pset}{m}{\mathcal{P}\parentheses*{#1}}
+
+\NewDocumentCommand{\pf}{mm}{{#1}_\sharp #2}
+
+\NewDocumentCommand{\grad}{e_}{\boldsymbol{\nabla}\IfValueT{#1}{_{\!\!#1}\,}}
+\NewDocumentCommand{\jac}{}{\mD}
+\NewDocumentCommand{\hes}{}{\mH}
+\NewDocumentCommand{\dive}{}{\grad\cdot}
+\NewDocumentCommand{\lapl}{}{\Delta}
+
+\NewDocumentCommand{\BigO}{m}{O\parentheses*{#1}}
+\NewDocumentCommand{\BigOTil}{m}{\widetilde{O}\parentheses*{#1}}
+
+\NewDocumentCommand{\transpose}{m}{#1^\top}
+\NewDocumentCommand{\inv}{m}{#1^{-1}}
+\RenewDocumentCommand{\det}{m}{\mathrm{det}\parentheses*{#1}}
+\NewDocumentCommand{\tr}{m}{\mathrm{tr}\parentheses*{#1}}
+\NewDocumentCommand{\diag}{om}{\mathrm{diag}\IfValueT{#1}{_{#1}}{}\braces{#2}}
+\NewDocumentCommand{\msqrt}{m}{#1^{\nicefrac{1}{2}}}
+\NewDocumentCommand{\vecop}{m}{\mathrm{vec}\brackets{#1}}
+
+\NewDocumentCommand{\N}{somm}{\mathcal{N}\IfBooleanTF{#1}{\left(}{(}\IfValueT{#2}{#2;}{} #3, #4\IfBooleanTF{#1}{\right)}{)}}
+\NewDocumentCommand{\SN}{o}{\mathcal{N}(\IfValueT{#1}{#1;}{} \vzero, \mI)}
+\NewDocumentCommand{\uSN}{o}{\mathcal{N}(\IfValueT{#1}{#1;}{} 0, 1)}
+\NewDocumentCommand{\KF}{ommmmm}{\mathcal{KF}(\IfValueT{#1}{#1;}{} #2, #3, #4, #5, #6)}
+\NewDocumentCommand{\GP}{omm}{\mathcal{GP}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\Unif}{om}{\mathrm{Unif}(\IfValueT{#1}{#1;}{} #2)}
+\NewDocumentCommand{\Bern}{om}{\mathrm{Bern}(\IfValueT{#1}{#1;}{} #2)}
+\NewDocumentCommand{\Bin}{omm}{\mathrm{Bin}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\Beta}{omm}{\mathrm{Beta}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\Laplace}{omm}{\mathrm{Laplace}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\Cauchy}{omm}{\mathrm{Cauchy}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\GammaDistr}{omm}{\mathrm{Gamma}(\IfValueT{#1}{#1;}{} #2, #3)}
+\NewDocumentCommand{\Pareto}{omm}{\mathrm{Pareto}(\IfValueT{#1}{#1;}{} #2, #3)}
+
+\newcommand{\sigman}{\sigma_{\mathrm{n}}}
+\newcommand{\sigmap}{\sigma_{\mathrm{p}}}
+
+
+\newcommand{\vzero}{\vec{0}}
+\newcommand{\vone}{\vec{1}}
+\newcommand{\va}{\vec{a}}
+\newcommand{\vap}{\vec{a'}}
+\newcommand{\vas}{\vec{\opt{a}}}
+\newcommand{\vb}{\vec{b}}
+\newcommand{\vc}{\vec{c}}
+\newcommand{\vd}{\vec{d}}
+\newcommand{\ve}{\vec{e}}
+\newcommand{\vf}{\vec{f}}
+\newcommand{\vfhat}{\vec{\hat{f}}}
+\newcommand{\vg}{\vec{g}}
+\newcommand{\vh}{\vec{h}}
+\newcommand{\vk}{\vec{k}}
+\newcommand{\vm}{\vec{m}}
+\newcommand{\vp}{\vec{p}}
+\newcommand{\vq}{\vec{q}}
+\newcommand{\vr}{\vec{r}}
+\newcommand{\vs}{\vec{s}}
+\newcommand{\vt}{\vec{t}}
+\newcommand{\vu}{\vec{u}}
+\newcommand{\vv}{\vec{v}}
+\newcommand{\vvp}{\vec{v'}}
+\newcommand{\vvs}{\vec{\opt{v}}}
+\newcommand{\vw}{\vec{w}}
+\newcommand{\vwhat}{\vec{\hat{w}}}
+\newcommand{\vx}{\vec{x}}
+\newcommand{\vxp}{\vec{x'}}
+\newcommand{\vxs}{\vec{\opt{x}}}
+\newcommand{\vy}{\vec{y}}
+\newcommand{\vyp}{\vec{y'}}
+\newcommand{\vz}{\vec{z}}
+\newcommand{\valpha}{\vec{\alpha}}
+\newcommand{\valphahat}{\vec{\hat{\alpha}}}
+\newcommand{\vdelta}{\vec{\delta}}
+\newcommand{\vDelta}{\vec{\Delta}}
+\newcommand{\vepsilon}{\vec{\epsilon}}
+\newcommand{\vvarepsilon}{\vec{\varepsilon}}
+\newcommand{\veta}{\vec{\eta}}
+\newcommand{\vlambda}{\vec{\lambda}}
+\newcommand{\vmu}{\vec{\mu}}
+\newcommand{\vmuhat}{\vec{\hat{\mu}}}
+\newcommand{\vmup}{\vec{\mu'}}
+\newcommand{\vnu}{\vec{\nu}}
+\newcommand{\vomega}{\vec{\omega}}
+\newcommand{\vphi}{\vec{\phi}}
+\newcommand{\vpi}{\vec{\pi}}
+\newcommand{\vpsi}{\vec{\psi}}
+\newcommand{\vvarphi}{\vec{\varphi}}
+\newcommand{\vvarphihat}{\vec{\hat{\varphi}}}
+\newcommand{\vtheta}{\vec{\theta}}
+\newcommand{\vthetahat}{\vec{\hat{\theta}}}
+\newcommand{\vxi}{\vec{\xi}}
+\newcommand{\mzero}{\mat{0}}
+\newcommand{\mA}{\mat{A}}
+\newcommand{\mB}{\mat{B}}
+\newcommand{\mBs}{\mat{\opt{B}}}
+\newcommand{\mC}{\mat{C}}
+\newcommand{\mD}{\mat{D}}
+\newcommand{\mF}{\mat{F}}
+\newcommand{\mH}{\mat{H}}
+\newcommand{\mI}{\mat{I}}
+\newcommand{\mK}{\mat{K}}
+\newcommand{\mL}{\mat{L}}
+\newcommand{\mCalL}{\mat{\mathcal{L}}}
+\newcommand{\mM}{\mat{M}}
+\newcommand{\mP}{\mat{P}}
+\newcommand{\mQ}{\mat{Q}}
+\newcommand{\mS}{\mat{S}}
+\newcommand{\mT}{\mat{T}}
+\newcommand{\mU}{\mat{U}}
+\newcommand{\mV}{\mat{V}}
+\newcommand{\mW}{\mat{W}}
+\newcommand{\mX}{\mat{X}}
+\newcommand{\mLambda}{\mat{\Lambda}}
+\newcommand{\mPhi}{\mat{\Phi}}
+\newcommand{\mPi}{\mat{\Pi}}
+\newcommand{\mSigma}{\mat{\Sigma}}
+\newcommand{\mSigmap}{\mat{\Sigma'}}
+\newcommand{\rG}{\rvec{G}}
+\newcommand{\rQ}{\rvec{Q}}
+\newcommand{\rU}{\rvec{U}}
+\newcommand{\rV}{\rvec{V}}
+\newcommand{\rW}{\rvec{W}}
+\newcommand{\rX}{\rvec{X}}
+\newcommand{\rXp}{\rvec{X'}}
+\newcommand{\rY}{\rvec{Y}}
+\newcommand{\rZ}{\rvec{Z}}
+\newcommand{\sA}{\set{A}}
+\newcommand{\sB}{\set{B}}
+\newcommand{\sC}{\set{C}}
+\newcommand{\sD}{\set{D}}
+\newcommand{\sI}{\set{I}}
+\newcommand{\sM}{\set{M}}
+\newcommand{\sS}{\set{S}}
+\newcommand{\sU}{\set{U}}
+\newcommand{\sX}{\set{X}}
+\newcommand{\sY}{\set{Y}}
+\newcommand{\sZ}{\set{Z}}
+\newcommand{\spA}{\spa{A}}
+\newcommand{\spB}{\spa{B}}
+\newcommand{\spC}{\spa{C}}
+\newcommand{\spD}{\spa{D}}
+\newcommand{\spF}{\spa{F}}
+\newcommand{\spH}{\spa{H}}
+\newcommand{\spL}{\spa{L}}
+\newcommand{\spM}{\spa{M}}
+\newcommand{\spO}{\spa{O}}
+\newcommand{\spP}{\spa{P}}
+\newcommand{\spQ}{\spa{Q}}
+\newcommand{\spT}{\spa{T}}
+\newcommand{\spW}{\spa{W}}
+\newcommand{\spX}{\spa{X}}
+\newcommand{\spY}{\spa{Y}}
+\newcommand{\spZ}{\spa{Z}}
+\newcommand{\fs}{\opt{f}}
+\newcommand{\ps}{\opt{p}}
+\newcommand{\qs}{\opt{q}}
+\newcommand{\xs}{\opt{x}}
+\newcommand{\ys}{\opt{y}}
+\newcommand{\Bs}{\opt{B}}
+\newcommand{\Qs}{\opt{Q}}
+\newcommand{\sSs}{\opt{\sS}}
+\newcommand{\hQs}{\opt{\hat{Q}}}
+\newcommand{\Vs}{\opt{V}}
+\newcommand{\pis}{\opt{\pi}}
+
+\newcommand{\vF}{\rvec{F}}
+\newcommand{\vS}{\rvec{S}}
+\newcommand{\vT}{\rvec{T}}
+
+
+%%%% DAE
+\newcommand{\CELL}{\texttt{CELL}\xspace}
+\newcommand{\LINK}{\texttt{LINK}\xspace}
+\newcommand{\IUI}{\texttt{IUI}\xspace}
+\newcommand{\CELLs}{\CELL{}s\xspace}        % plural
+\newcommand{\LINKs}{\LINK{}s\xspace}        % plural
+\newcommand{\IKTYKTIKT}{\texttt{TIK\hspace{1pt}TYK\hspace{1pt}TIK} \xspace}
+\newcommand{\TTT}{\texttt{TIK\hspace{1pt}TYK\hspace{1pt}TIK} \xspace}

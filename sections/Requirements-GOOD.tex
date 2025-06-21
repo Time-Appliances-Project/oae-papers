@@ -1,0 +1,587 @@
+\documentclass[HFT-main.tex]{subfiles}
+
+\begin{document}
+%
+%\title{Open Atomic Ethernet:\\  Requirements}
+%\author{OAE Team et. al.}
+%\date{\today}
+%
+%\begin{document}
+%\maketitle
+%%\small{\epigraph{Perfection is Achieved Not When There Is Nothing More to Add, But When There Is Nothing Left to Take Away}{Antoine de Saint-Exupéry}}
+%%
+%%\begin{abstract}
+%%High-Frequency Trading (HFT) demands ultra-low latency, deterministic behavior, and extreme efficiency. Traditional Ethernet framing introduces overheads ill-suited for point-to-point deterministic environments. This proposal examines the feasibility of a radically minimalist Ethernet-like protocol tailored for applications that need ultra-low latency, such as HFT and AI/ML Inference: one without headers, preambles, gaps, or MAC addresses—because both ends \textit{already know} everything necessary to communicate.
+%%\end{abstract}
+%
+%\section{Introduction}
+
+\section{Open Atomic Ethernet (OAE) Requirements}
+
+
+%=============================
+% -------------------------------------------------------------------
+%  Open Atomic Ethernet – Requirements Draft (letterpaper, Tufte‑handout)
+% -------------------------------------------------------------------
+%
+%% -------------------- Question --------------------
+%\begin{marginfigure}
+%\footnotesize
+%\textbf{User prompt (2025‑04‑20)}\\[4pt]
+%\emph{“Please review this WhatsApp chat. Then extract a set of ‘requirements’ for the Open Atomic Ethernet (OAE) Working Group to move forward with.”}
+%\end{marginfigure}
+
+\section{REQUIREMENTS HARVESTED FROM OTHER SOURCES}
+% ==================== 1. Core Technical Architecture ====================
+\section*{1.\quad Core Technical Architecture}
+\begin{enumerate}
+\item \textbf{Lossless / Near‑Zero‑Loss Data Plane.} Hardware flow‑control or cell/TDM framing to eliminate random drops that invalidate atomic protocols.
+\item \textbf{In‑NIC Atomic Verbs.} One‑RTT line‑rate operations (e.g.\ CAS, multi‑word commit) at $\ge$100 GbE serialization latency.
+\item \textbf{Deterministic Scheduling.} Optional mesochronous or slot‑based service for bounded latency (AI \& HFT workloads).
+\item \textbf{Reference‑Free Causal Ordering.} Protocol must avoid dependence on globally synchronized clocks; use causal trees or hybrid logical clocks.
+\item \textbf{Self‑Stabilizing Control Plane.} Automatic convergence after arbitrary transient faults, no external reset.
+%\item \textbf{Pluggable Time/Frequency Sources.} GNSS, ensemble oscillators, or ARB (no‐time) modes; specify maximum tolerated drift. [EXPLICITLY EXCLUDED -- in contradiction with  the previous item]
+\item \textbf{Composable Security \& Isolation.} Native hooks for side‑channel detection and optional crypto/QKD overlays without mandatory encryption.
+\end{enumerate}
+
+% ==================== 2. Open Software Stack ====================
+\section*{2.\quad Open Software Stack}
+\begin{enumerate}
+\item \textbf{Open‑Source Reference NIC RTL.} Minimal FPGA bit‑file implementing OAE atomics; EFVI/Libfabric‑compatible.
+\item \textbf{Portable Verbs Library.} Unified C/C++/Rust API usable beneath Derecho, Raft, Aeron, Kafka, etc.
+\item \textbf{Self‑Healing Membership Service.} Gossip bootstrap $\rightarrow$ leader‑based virtual synchrony (Derecho‑style) with robust failure detection.
+\item \textbf{Lightweight Management Telemetry.} Binary or gRPC schema (REST/Redfish only for out‑of‑band).
+\end{enumerate}
+
+% ==================== 3. Research & Validation ====================
+\section*{3.\quad Research \& Validation}
+\begin{enumerate}
+\item Formal proofs for atomic commit without global time, gradient‑clock bounds, and self‑stabilizing recovery.
+\item Tail‑latency \& failure‑injection benchmark versus RoCE, DPDK, AF\_XDP, Ultra‑Ethernet, Tesla‑TTP.
+\item Hybrid quantum/classical shim for future Q‑NICs.
+\end{enumerate}
+
+% ==================== 4. Ecosystem & Governance ====================
+\section*{4.\quad Ecosystem \& Governance}
+\begin{enumerate}
+\item Public problem‑statement registry (GitHub).
+\item Sub‑groups: Data plane; Control plane; Timing; Security; Business \& Market.
+\item External expert engagement (Rachee Singh, Shlomi Dolev, Roel de Vries, Chris Batten, Chris Rossbach, Tanya Zelevinsky, \textit{etc.})
+\item Dedicated business‑case work‑stream quantifying TAM versus incumbent RDMA/RoCE.
+\end{enumerate}
+
+% ==================== 5. Near‑Term Deliverables ====================
+\section*{5.\quad Near‑Term Deliverables (next 3–6 months)}
+\footnotesize
+\begin{center}
+\begin{tabular}{@{}cllc@{}}
+\toprule
+\# & \textbf{Deliverable} & \textbf{Owner} & \textbf{Target Date}\\
+\midrule
+1 & OAE Problem Statement v1.0 (15 pp) & Draft team & 31 May 2025\\
+2 & FPGA NIC demo (64 B atomic commit @100 GbE) & Data‑plane SG & 30 Jun 2025\\
+3 & OpenAPI verbs library (C \& Rust) & Software SG & 15 Jul 2025\\
+4 & Self‑stabilizing membership prototype & Control SG & 15 Aug 2025\\
+5 & Market \& cost model white‑paper & Business SG & 30 Aug 2025\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vfill
+\begin{center}
+\rule{0.6\linewidth}{0.4pt}\\
+\footnotesize
+\textit{Draft for discussion—please annotate, refine, and assign owners at the next OAE Working Group call.}
+\end{center}
+ 
+ %==================================================
+ 
+ 
+ 
+\section{Ethernet 2025 Requirements}
+
+\section*{Ethernet 2025\,: Requirements v0.1}
+
+\subsection*{1.\ Scope}
+\begin{itemize}
+  \item \textbf{Target deployments}:  
+        \begin{itemize}
+            \item Chiplet–to–chiplet interconnects \emph{within a single package}.  
+            \item In–rack, short–reach data‑centre fabrics (one rack or a tightly‑coupled pod).  
+        \end{itemize}
+  \item \textbf{Out of scope (initial release)}:  
+        traditional multi‑rack Clos networks, WAN, metro, access, fieldbus and automotive links.
+\end{itemize}
+
+\subsection*{2.\ Functional Requirements}
+\begin{enumerate} % [label=F\arabic*.] -- THis DOESNT WORK IN Tufte
+  \item \textbf{Deterministic\,/\,Bounded‑Latency Delivery}\,: provide end‑to‑end latency and jitter bounds tight enough for real‑time AI training, HFT and chiplet coherency.
+  \item \textbf{Reliable Message Primitive of Bounded Size}\,:  
+        \begin{itemize}
+            \item Atomic “send $\rightarrow$ deliver” unit (frame or flit) \emph{either arrives whole or is discarded}.  
+            \item Optional acknowledged mode (\textit{reliable‐mode}) with automatic local retransmit; must be switch‑ and NIC‑assisted but not mandatory for every packet.
+        \end{itemize}
+  \item \textbf{Timeout‐And‐Retry (TAR) Elimination in Fast Path}\,:  
+        protocol state machines must not rely on software timeouts for forward progress under nominal conditions.
+  \item \textbf{Autonomous Discovery \& Configuration}\,:  
+        zero‑touch bring‑up, addressing and link training inside a rack/package; no DHCP or manual topology files.
+  \item \textbf{Packet‑Processing Programmability}\,:  
+        \begin{itemize}
+            \item Data‑plane micro‑ops exposed at Layer 2½ (e.g.\ P4‑like table, eBPF, or HDL modules) for in‑line reduction, aggregation, atomics.  
+            \item Configuration must be verifiable and sandboxed.
+        \end{itemize}
+  \item \textbf{Minimal Hardware Feature Set for Higher‑Level Semantics}\,:  
+        supportive of virtual synchrony, one‑sided RDMA, collective (AllReduce) and OLTP commit protocols, but \emph{does not bake them in}.
+  \item \textbf{Classical Quantum Interworking Hooks}\,:  
+        reserve opcode(s) and timing model for future quantum‑clock/entanglement assistance without constraining today’s PHY/MAC.
+\end{enumerate}
+
+\subsection*{3.\ Performance Requirements}
+\begin{enumerate}%[label=P\arabic*.]
+  \item \textbf{Latency Target}\,: single‑hop store‑and‑forward $<$100 ns; cut‑through path $<$50 ns (ASIC to ASIC).  
+  \item \textbf{Throughput Target}\,: scale line‑rate from 200 Gb/s (first silicon) to 1.6 Tb/s per lane within ten‑year roadmap.  
+        Prefer parallel lanes / wavelengths over ever‑higher SerDes clocks.  
+  \item \textbf{Transactional Round‑Trip}\,: single sender $\rightarrow$ single receiver ack $<$300 ns (in‑rack worst‑case).
+\end{enumerate}
+
+\subsection*{4.\ Reliability, Resilience \& “Atomicity”}
+\begin{enumerate}%[label=R\arabic*.]
+  \item \textbf{Loss\,/\,Corruption Handling}\,: per‑hop FEC optional; end‑to‑end CRC \textgreater\,$2^{32}$ for silent error budget in AI workloads.  
+  \item \textbf{Membership\,/\,Fail‑fast Signalling}\,: hardware assist for fast liveness vote (virtual‑synchrony–ready).  
+  \item \textbf{Rollback Support}\,: hardware tag for speculative packets so software can discard/commit without draining pipeline.  
+  \item \textbf{Graceful Degradation}\,: mandatory congestion / buffer health telemetry; receivers own promise to detect and mitigate incomplete transfers.
+\end{enumerate}
+
+\subsection*{5.\ Security}
+\begin{itemize}
+  \item \textbf{“Full‑trust domain” assumption inside package/rack}, but hooks for Zero‑Trust when links exit the trust boundary.  
+  \item Inline MACsec‑lite profile $\le$64 ns budget, key‑roll without traffic pause.
+\end{itemize}
+
+\subsection*{6.\ Energy \& Physical Layer}
+\begin{enumerate}%[label=E\arabic*.]
+  \item \textbf{Energy per bit}\,: \,$<$2\,pJ/bit at 200 Gb/s; target sub‑pJ with photonic lanes or advanced copper (e.g.\ TeraDSL\,/\,PAM8).  
+  \item \textbf{Clocking}\,: support distributed, low‑skew clock (photonic or electrical) to reduce SERDES power and jitter.  
+  \item \textbf{Media}\,: copper $<$50 cm, twin‑ax\,+\,+ and/or ribbon fibre; hot‑swap cages optional.
+\end{enumerate}
+
+\subsection*{7.\ Manageability \& Tooling}
+\begin{itemize}
+  \item Publish an open reference simulator (NS‑3 or similar) and FPGA test‑bed.  
+  \item Provide formal specs (TLA$^{+}$, DistAlg) and conformance suites for hardware vendors.  
+  \item Continuous telemetry stream: per‑flow latency, congestion window, SERDES margin, temperature, link trust‑state.
+\end{itemize}
+
+\bigskip
+\noindent\textbf{Note}: The list reflects consensus \emph{proposals} extracted from the chat; several items (e.g.\ mandatory rollback logic, quantum hooks) remain contentious and should be flagged for ballot.
+
+
+
+%=============================
+
+
+\appendix
+
+\section{Original Requirements}
+
+%TODO :
+%
+%In this model, consistency is derived from graph traversal over the causal DAG \( \mathcal{C} \), rather than from synchronized physical clocks.
+
+
+
+
+\subsection{Charter:}
+
+\subsection{Vision:}
+
+Ethernet has been the cornerstone of networking for over five decades, adapting to changing technologies, applications, and economic realities. New data center and edge opportunities—such as directly linking chiplet modules in ultra-low-cost meshes, achieving extreme low latency by executing application actions at hardware speed in the network interface, and applying these techniques to distributed updates of persistent storage or to distributed, application-level transactions-push beyond the boundaries Ethernet established in an earlier era. These needs cannot be met simply by extending Ethernet’s historical capabilities.
+
+The Ethernet 2025 Workshop and the Open Atomic Ethernet will look ahead to the next 50 years of Ethernet networking. It will focus on ways to achieve higher performance, guaranteed service, lower latency, fewer errors, and greater scalability. The idea is to make Ethernet omnipresent and capable of doing the job for everyone.
+
+\subsection{Scope:}
+
+Align what the network does with what the distributed application needs to accomplish. Build a world where the network is not allowed to create a mess the application must discover and then clean up, but rather must either ensure both sender and receiver (user space software endpoints in the distributed application) know a message was successfully sent and received, or only the sender "instantly" knows it failed, and no other node or part of the network knows that message ever existed.
+
+This entanglement between sender and receiver, with no library, software, or hardware permitted to disturb that entanglement, is a fundamental change from the "throw it over the wall and hope it gets there" of the last 50 years. From a different perspective, a network message becomes a transaction which exhibits ACID properties: atomicity, isolation, and durability directly, and consistency because that message exists only between endpoints and is not visible to any other observer.
+
+\begin{itemize}
+	\item Rethink Ethernet’s core primitives: frame structure, error recovery, and flow control, in the context of Shannon Information Theory.
+	\item ntroduce API’s for programmable minimal compute capability at the NIC level to enable reversibility and support application-specific protocol behavior.
+	\item Address the trade-oﬀs between signals, noise and energy dissipation, building upon principles from Quantum Thermodynamics.
+	\item New Fundamental multi-phase primitives: build state machines into the link itself to enable Network assisted transactions.
+	\item Create a protocol framework that is as simple as Ethernet’s original design but scalable to today’s and tomorrow’s use cases, including chiplet interconnects and AI accelerators.
+\end{itemize}
+
+\section{Problem}
+
+\subsection{Loss of Temporal Intimacy}
+
+\begin{enumerate}
+
+\item Maintaining liveness and synchronizing processes in networks is a challenge when packets can be dropped, reordered, duplicated or delayed
+\begin{itemize}
+    \item Conventional networks require protocol stacks and applications to use timeouts and retries (TAR) to maintain liveness
+    \item This makes exactly-once semantics impossible and precipitates retry storms which lead to unbounded tail latency and transaction failure
+    \begin {itemize}
+        \item This results in silent corruption of data structures and loss of data.
+        \end{itemize}
+    \item A problem seen in every distributed database for decades
+        \item These failures are not understood because customers (under NDA) may not publish results that embarrass vendors
+\item The core issue is the “Unreliable” nature of Ethernet. It doesn’t have to be this way
+\item Nvidia has clearly seen this and understood how to create a “lossless” network with Infiniband
+\item The Ethernet community sticks steadfastly to imposing multiple packets on the wire before expecting an acknowledgement.
+\item The argument for this (50 years ago, in The Metcalfe + Boggs paper, and Bob Metcalfe’s PhD thesis, is that bandwidth will be “throttled” too much if the sender has to wait for the acknowledgment before sending another packet.
+\item These assumptions are no longer true in a world of rack-scale and chiplet infrastructure, even with 100Gbit 400Gbit, 800Gbit or 1.6Tbit lanes.
+\item While the original Ethernet used “alternating slots” on the cable to transmit frames, Chiplet Ethernet must contend with minimum size (64-byte) frames on the wire 
+\end{itemize}
+
+\end{enumerate}
+
+\subsection{Network Faults Lead to Transaction Failure}
+
+\begin{itemize}
+\item 80\% of failures have a catastrophic impact, with data loss being the most common (27%)
+    \item 90\% of the failures are silent, the rest produce warnings that are unclear
+    \item 21\% of the failures lead to permanent damage to the system. 
+        \item This damage persists even after the network partition heals
+\end{itemize}
+
+\subsection{Market}
+\begin{itemize}
+\item (Current) Ethernet Has failed to resolve this issue with PFC or other inadequate congestion control algorithms.
+\item The world has chosen Nvidia. 
+\item Ethernet has become unnecessarily fragmented.
+\item We need to bring the World back together under ONE Ethernet.
+\end{itemize}
+
+%\section{Working Group Culture}
+%
+%\subsection{Make Ethernet Great Again}
+%
+%\subsection{Forward Progress: We make progress daily, meet weekly, and create specifications in months rather than years.}
+%
+%
+%\section{Ethernet Foundations and Mathematica}
+%
+%\begin{itemize}
+%\item We would like to promote the use of Mathematica for all the specifications for the new Open Atomic Ethernet (OAE) Standards Project in the OCP
+%\item Starting with:
+%\begin{enumerate}
+%\item 1. Metcalfe+Boggs Original 1976 Paper.
+% \item 2. Briggs 1978 Paper that defines
+%	\begin{itemize}
+%        \item Exactly once semantics and the alternating bit protocol by Briggs
+%        \item Verification in the [get ref] paper
+%	 \end{itemize}
+%\end{enumerate}
+%\end{itemize}
+%
+%
+%\section{Architecture:}
+%
+%\subsection{Strategic Significance of ONE Ethernet with Wolfram Mathematica}
+%
+%\subsection{Goal: promote Cellular Automata, and the Physics Project as a technical foundation for the Datacenter Industry:}
+%
+%\begin{itemize}
+%\item Promote Wolfram Language in the OCP, the IEEE and other standards organizations, as a design, specification, simulation, formal validation and modeling tool.
+%\item Open Atomic Ethernet is highly active in DÆDÆLUS Engineering, the Atomic Ethernet Industry Association (AEIA) — marketing. With weekly zoom meetings sponsored by the OCP. 
+%\item We're planning a SuperPanel at the Future of Memory and Storage (FMS) conference in August, we would like to invite both Bob Metcalfe, and Stephen Wolfram to be on this super-panel.  Yesterday, the organizers of FMS 
+%\item I’m also responsible for the Session on Networks \& Interconnects at FMS. 
+%\item Our team plans to demo of Open Atomic Ethernet on hardware in the Exhibit hall.
+%\item  We would like to propose a project for the Wolfram Summer School this year on “Reversible Computing and Reversible Networks” for Distributed Systems”
+%\item In October at the OCP Global Summit (we will be presenting, Atomic Ethernet to the world as an Open-Source and Open-Hardware implementation - Mathematically specified API, formally verified down to the bits on the wire.
+%\item Next January, we plan a Workshop in conjunction with the Chiplet Summit, to announce “Chiplet Ethernet”. With physical interconnect mapping and 3D stacking of arrays of chips. This is Bob Metcalfe’s vision on Steroids. Same concepts and terminology as the original Metcafle+Boggs paper, but adapted to the Rack-scale datacenter and chiplet world.
+%\end{itemize}
+%
+%\subsection{Near-term Time-critical Stuff }
+%
+%\begin{enumerate}
+%	\item 1.	We are at a pivotal moment in a historic email conversation with the original developers of Ethernet from PARC. 
+%
+%	\item 2.	We need a Mathematica simulation of certain aspects of the Ethernet Protocols to convince the naysayers that Ethernet’s performance does not get throttled when each packet is acknowledged.  This is deeply related to the question of whether we can achieve ACID properties (Atomicity and Isolation in particular) for databases and distributed systems in general.
+%\begin{itemize}
+%
+%\item The issue is highly controversial in the industry: Reliable vs. Unreliable (best effort delivery). 
+%\item This has huge implications on bringing everyone together under the same “ONE Ethernet” Umbrella across the industry.
+%\item his is precisely why nVidia is doing so well — they understand something about this in Infiniband that the Ethernet Community has overlooked for decades.
+%\item We believe  a realistic visualization of Ethernet, along with fine tuning of assumptions and models in Mathematica can convincingly illuminate this issue. We have 4-5 months to create this in Mathematica.  It is probably 2-3 weeks for an expert Mathematica programmer.
+%\item The solution to the problem requires some insight from Quantum Networks (Triangle Networks), which we can describe.
+%\end{itemize}
+%\end{enumerate}
+
+\subsection{Topologies}
+
+Physical Topologies are (relatively) static in the Chiplet and Rack-Scale Infrastructure, but  Logical and Virtual Topologies built on top of them are reconfigurable by Infrastructure software or operators, and programmable by application engineers within each secure enclave.
+
+\begin{itemize}
+\item Dedicated Circuit switching
+\item Link Level Negotiation
+\item May have cards from different manufacturers 
+\end{itemize}
+
+\subsection{Physical Link Protocol:}
+
+\begin{itemize}
+\item All packets use the Alternating Bit Protocol (each packet is acknowledged before the next packet is sent)
+\item Failures may not be immediately apparent, but they will stop all activity on that link and will minimize the blast radius of failures.
+\item Receivers may NAK at the Information level, to indicate any kind or error, or to simply refuse the transaction asking the sender to forward it somewhere else.
+\end{itemize}
+
+\subsection{Logical Link Protocol:}
+
+The roots of configuration trees don’t have to be fixed to physical nodes.  Graph Theory allows us to build logical and physical trees on top of physical trees (the groundplane).
+
+\subsection{Virtual Link Protocol:}
+
+The roots of application\ trees don’t have to be fixed to logical or physical nodes. New results in graph theory allows applications to program their own tree structures on top of logical trees.
+
+\section{Frame Structure}
+
+Ultra-Low Latency is not possible without eliminating unnecessary fields and features in Ethernet’s standard frame protocol 
+
+\begin{itemize}
+\item Streams without Headers whenever Point to Point
+\item No Preamble
+\item No Inter-record Gap (IRG)
+\item No Destination mac address
+\item No Source mac address
+\item Both sides know who is sending who is receiving and what
+\end{itemize}
+
+\subsection{Error Recovery}
+\begin{itemize}
+
+\item Conventional Ethernet is a one-way Shannon Channel
+    \item At Minimum, it needs “forward” Error detection (FED)
+    \item Increased “one-way” resilience (OWR) omes from “forward” Error correction (FEC)
+        \item FEC unnecessarily increases latency
+\item Atomic Ethernet is a bidirectional interaction Channel 
+    \item  Alternating Causality protocol (ACP) (based on ABP) returns the first slice to the sender
+        \item “This is what I heard you say”
+            \item Eliminates the need for FED/FEC
+    \item An entirely new way to think about Shannon Channels,
+ \end{itemize}
+ 
+\subsection{Flow Control}
+
+%\subsection{Infiniband has proven that }
+
+
+From Alan:
+\begin{itemize} 
+\item Separate identity from address: A node can have a unique identifier (GUID) distinct from its address, which can be a small integer.
+\end{itemize}
+
+\subsection{Secure Enclave}
+
+Security is impossible without renunciation of the source/destination mode of addressing.
+
+Physical links are  individually configured, identified, and provisioned, in seconds, reconfigured in milliseconds, and healed in microseconds.
+
+MAC Addresses (48+ 48) and IP Addresses (32+32 or 128 +128) are susceptible anonymous attacks by byzantine  players
+
+\begin{itemize}
+\item Adjacent (1-hop) links are semi-permanent. It takes physical action or decay processes to break them.
+\item Neighbor to Neighbor Networks (N2N) provide local privacy and eliminate global node identities  
+\end{itemize}
+ 
+\subsection{Leveraging Formal Methods}
+
+Formal Methods are essential to modern infrastructure verification.
+
+\section{Reconfigurable Topologies}
+
+\subsection{Self-Adjusting Networks}
+
+\begin{itemize}
+\item Infrastructure Reconfiguration
+\item Tenant Self-Reconfiguration
+\end{itemize}
+
+\subsection{Application Enablement}
+
+\subsection{Transaction Hyperparameter Space Features}
+
+\begin{itemize}
+\item Help manage the rapidly changing state of art software environment.
+\item Help keep the hardware optimized for best performance, for example, by avoiding power overdraws
+\item Gerrymander workloads to balance power dissipation and reduce hotspots
+\item Provide a lighthouse for engineers, so they know where they are in the hyper perimeter space and how their model is doing versus how it could be doing theoretically.
+\end{itemize}
+
+\subsection{Implementation Enablement}
+
+\begin{itemize}
+\item Three key concepts  around "Shannon information", the transfer of Shannon information between nodes, and how error recovery is done when that transfer fails or is interrupted, so that certain properties are protected (conserved quantities, “I know that you know that I know”, Common Knowledge).   
+\item We understand how to design and build everything above. Several implementations have been built and proven for the reversible transactions, in Javascript, in Rust, and in FPGA implementations of bits on the wire
+\item We use Wolfram Mathematica and the libraries and tools to explore the space of causal structures in ways that we expect to become standard industry toolchains for FPGA application fragments (specified by Petri nets, translated to rust, and compiled to verilog or VHDL.
+
+ \end{itemize}
+ \clearpage
+ \section{FEEDBACK SO FAR}
+ \section{Anonymous1}
+ \subsection{Distributed Systems Problems}
+ 
+ 
+I asked Grok what are the unsolvable distributed systems problems. Here is its answer:
+
+"In distributed systems, there are several fundamental problems that are proven to be unsolvable under certain conditions due to inherent limitations like latency, faults, and the lack of a global clock. These challenges arise from the nature of distributed computing, where multiple nodes must coordinate without perfect knowledge of each other's state. Here are some key examples:
+
+\begin{enumerate}
+
+\item Consensus in Asynchronous Systems with Faults (FLP Impossibility)  
+   The Fischer-Lynch-Paterson (FLP) impossibility result shows that in an asynchronous distributed system, it’s impossible to achieve consensus (agreement on a single value) if even one process can fail by crashing. This is because, without synchronized clocks or bounded message delays, the system cannot distinguish between a slow process and a failed one. Any algorithm that tries to guarantee agreement will either risk never terminating or fail to handle all possible failure scenarios.
+
+\item Byzantine Agreement with Too Many Faults  
+   In the Byzantine Generals Problem, nodes must agree on a decision despite some nodes behaving maliciously (e.g., sending conflicting messages). It’s provably unsolvable if more than one-third of the nodes are faulty in a synchronous system. In an asynchronous system, it’s even worse—Byzantine agreement becomes impossible with any faults unless additional assumptions (like trusted components or randomization) are introduced.
+
+\item Perfect Failure Detection  
+   Detecting whether a node has failed or is just slow is unsolvable in asynchronous systems. Without a global clock or guaranteed message delivery times, a process waiting for a response can’t determine if the other node crashed or if the network is delayed. This forces systems to rely on imperfect heuristics, like timeouts, which can lead to false positives or negatives.
+
+\item Simultaneous Agreement on Global State (Snapshot Problem)  
+   Capturing a consistent global snapshot of a distributed system’s state is tricky due to the lack of synchronized clocks and the possibility of in-flight messages. Chandy-Lamport’s algorithm provides a solution under specific conditions, but without those (e.g., in a fully asynchronous system with unbounded delays), it’s impossible to guarantee that all nodes agree on the exact same global state at the same logical "moment."
+
+\item Two-Phase Commit with Network Partitions  
+   The Two-Phase Commit (2PC) protocol ensures atomicity across distributed nodes, but it’s unsolvable in the face of network partitions. If the coordinator fails or becomes unreachable after sending "prepare" but before "commit," some nodes might be stuck indefinitely, unable to decide whether to proceed or abort. This is a practical manifestation of the CAP theorem, which states you can’t have full consistency, availability, and partition tolerance simultaneously.
+
+\item Exact Clock Synchronization  
+   Perfectly synchronizing clocks across distributed nodes is unsolvable due to variable network delays and relativity effects (though the latter is negligible in practice). Algorithms like NTP or Lamport’s logical clocks provide approximations, but absolute precision is unattainable—there’s always some drift or uncertainty.
+
+These problems are "unsolvable" in the sense that no algorithm can guarantee a solution in all cases under the given constraints. However, practical systems often work around them by relaxing requirements (e.g., assuming partial synchrony, tolerating inconsistency, or using probabilistic methods). For instance, Paxos and Raft sidestep FLP by assuming eventual message delivery, while Bitcoin uses proof-of-work to handle Byzantine faults probabilistically."
+
+\end{enumerate}
+
+\subsection{Funny, some of them are related: }
+
+\begin{itemize}
+\item consensus is impossible, it was proved by Bernadette Charron-Bost forever ago
+\item group membership service is impossible because it is a consensus: all the processes must agree on who is in each group
+\item  failure detection is impossible because it is a group membership problem: the processes must agree on who is dead and who is alive
+\end{itemize}
+
+There were also detailed responses from Ken Birman which we can discuss.
+
+\section{Anonymous 1}
+ I realize it's far too late to make any changes to this document before tomorrow morning.  But I am not seeing a requirements document at the requirements level of abstraction, I am seeing a proposed/example definition of a novel link layer, without enough information to infer how the rest of what link layers traditionally do would be implemented.  And my still-cloudy head doesn't yet grok what I am reading in the document.
+
+My abstract thinking keeps coming back to the choices IBM/Ancor made in "Class 1" Fibre Channel (the selector channel, which never got market traction) 35ish years ago.  Yes, I know, my employer was on the "Class 3" side of that bus war, and we won, and IBM lost, and Kumar made 3/4 of a billion dollars by selling his Brocade founder shares at the peak.
+
+But as we look at the atomicity problem we're trying to solve (immediately knowing if a packet/message was received at its destination), not just for adjacent nodes but for any pairwise combination in a 2-D mesh of only somewhat bounded size, I keep coming back to the idea of start a communication level transaction (what Fibre Channel calls a SCSI Exchange) by reserving a path all the way through the mesh between the two parties, with the intermediate nodes functioning as pass transistors (actually, retimers) in the style of what Ethernet calls Layer 1 switches; doing the series of data movements, acknowledgements, etc between the two endpoints as if they were directly connected, and then tearing down the connection when the communication level transaction (the SCSI Exchange) is finished.  Obviously we'd need setup and teardown at nanoseconds speed, not microseconds or worse.
+
+Note that the real difference between "class 1" and "class 3" is that "class 1" is dedicated/connected, while "class 3" has all of the DReDDful behaviors of switches.  "Class 3" still has to populate tables at least at both ends (for my employer's ASIC 30 years ago this was entries in the SCSI Exchange State Table) on a per communication level transaction basis; it's just the forwarding tables in the switches whose entries are longer lived.
+
+If we were to do this, there would be two "bits on the wire" packet formats, one used in reserving the path, and a second used within the path once established.  The protocol outlined in this document would be used in the second.  My guess is the second would need a subchannel like handful of bits to identify which of (say) 16 paths from or through or to a node to send this on, which is remapped by a tiny data structure at each hop.
+
+Separately
+
+I am steadfast in my belief that each node maintaining a data structure describing the next-hop for each destination, and therefore gathering data only from its immediate neighbors, is an O(N) algorithm in each node for discovering and maintaining the forwarding tables (as implemented in eBGP, for example), while the "probe" concept is an $O(N^2)$ algorithm which will collapse as it scales past N=100, just as "spanning tree" did, and just as OSPF and IS-IS do.  (Note that I am not an expert in this area, and that my characterization of $O(N)$ and $O(N^2)$are gross oversimplifications.)
+
+
+
+\section{Anonymous 2}
+
+\section{ All Mechanisms and Algorithms will be Self-Stabilizing}
+
+
+\href{https://www.cs.bgu.ac.il/~dolev/}{Shlomi Dolev} presentation  [02025-APR-09  \href{https://www.youtube.com/watch?v=2jRTtf5hvDI}{Video}	\href{https://drive.google.com/file/d/1Z6Ns7a5fivKMn79GrMGAQE__BLJ31Gbh/view}{Slides}]
+
+
+Self-Stabilizing Definition: [\href{https://en.wikipedia.org/wiki/Self-stabilization}{Wikipedia}].
+
+
+
+ 
+
+\section{Anonymous 3}
+
+%Hey Paul.  Thanks for forwarding this to me.  I've included some inline notes, and then some overall notes at the bottom.
+
+Maybe I am missing the context of the conversation, but I think you need to lead with the behavior you want to see, and from what perspective.  it will anchor the piece into a root outcome.
+
+Since it is really turtles all the way down, each individual reader perspective often only sees the turtle below them and above them.  I found myself bouncing between application developer, compute designer, network operator, network hardware designer, and network standards perspectives...and I know my perspective is limited.
+
+I'm fond of the idea, but without that grounding it feels a bit like you're trying to boil the ocean.
+
+Here are my inline notes:
+
+Thoughts on the introduction:
+
+- Atomic acceptance at all nodes in a network will require a shift in the hardware model.  Some form of separate item index, per interface, that would allow for signaling when a fan-in problem occurs and a buffer is overrun, the payload is lost but the header remains?
+
+- OSI abstraction was to limit information required across the layers, sure it can be rewritten but the scale of information leakage is key, more on this later.
+
+Efficiency of SAW:
+
+- I'm confused by your clustered ACKs proposal.  That's how windowing works.
+
+%A Change in Perspective: 
+
+- Your snakes proposal looks a lot like RSVP for the datacenter.  This is being worked on within Broadcom for Jericho3/Ramon3.  I'd love to see it outside of the hardware for network, but I'm not sure it could be fast enough.  I'd also love to see it in a public standard rather than proprietary firmware.  They aren't round-tripping the payload, but they are per-defining a path for a session and TDMing the links to guarantee the bandwidth.
+
+- Assuming you are immediately reversing the data flow of the snake, prior to processing, your ACK will arrive at 'almost' the same time as a traditional ACK - if you opened your traditional window size to the size of the snake.  Huge windows are pretty common, as are scaling windows tracking reliability.  This is why you often see a sawtooth pattern in throughput.  The difference would be waiting for the NIC to process and check the checksums on the traditional ACK.  It could give you a more reliable ACK, but puts the onus of checking the payload on the original sender. 
+
+    - Does the receiver proceed assuming good data or does it wait for a three-way handshake?  No, you'd still need some form of FEC or CRC on the snake to be able to NACK if it doesn't match.  Otherwise the failure scenario is rather painful.
+
+    - It might also push the operation ordering problem higher into the application, requiring it to know the order of atomic work asked for and ACK'd.
+
+    - Interface logic hardware scaling will be key, just as it is today.  You'll need to scale what the interface logic can handle to the total possible dangling snakes, which leads you to a hard timeout on transmission based on hardware limits if nothing else.
+
+Best Effort is not enough: 
+
+ - "A full-duplex link is a logical grouping of two simplex links that are independent failure domains". This has been true for more than 20 years.  In fact, they're no longer 2 simplex links but some arbitrary number of simplex links, often 4 each direction.  Interface logic is making them appear as one to you.  After the NIC packetizes it, the interface logic slices it up even further for sending.  Again, all abstracted away and bounded.  (Turtles all the way down.)
+
+ - You're talking about black and white failures, but those aren't the problem. Interface detection is pretty good.  The grey failures are what kill network behavior....that and badly behaving apps.  Parts degrade over time, someone stretches a fiber and cracks it just a bit, dust works its way into the interface, etc.  Networks watch for light level changes and error rates, but not as well as they should.  Every cycle not spent on sending traffic is latency.
+
+ - ACK/NACK, are you talking about it on a per-link basis or end-to-end?  If it is per link then the input buffers just got a LOT bigger.  Also, how do we account for the frame dropped from overrunning the buffer?  Also, deep buffers mean latency.  The first question in network hardware is 'drop or delay, which do you pick in contention?'
+
+- "But in practice, these networks routinely violate packet causality through multipath routing (ECMP), queuing disciplines (EQDS),
+and load-balancing heuristics that scatter IP fragments across the network."  You're going to need to back this up.  Session-based load balancing has been the norm for 20 years, specifically to solve the ordering problem.  To speed things up folks are starting to look at per-pack load balancing again, but it hasn't been common since the 90s.
+
+---
+
+Overall, it feels like a solid half of a proposal.  I'm coming at it from a, "What network hardware do I design to be able to do this?"  I know that's further down the line than you are yet, but there are some very fundamental gaps in the 'what', before i start thinking about the 'how'.  I think anchoring this, as I mentioned at the top, will help focus that conversation and aid sharpening the 'needs' portion of this paper.
+
+Pushing back the other direction, let me rehash an idea Mae posed:
+
+90+\% of this could be solved with a separate E2E timing estimation as a hard timeout.  Either declared based on architecture or as a side-channel application like MSFT's pingmesh, define a hard timeout that can be leveraged by the applications.  "I have not received ACK within TIMEOUT, therefore resend."  If all 'snakes' have a UUID, duplication isn't an issue.  A rolling hash where entries expire after an hour should easily cover that very managably.
+
+Now let's talk information leakage (necessary information sharing?).  Hearkening back to the line, "All models are wrong, but some models are useful." 
+The problem with pointing to the black box of infrastructure and citing reliability failures at the higher levels is that it is failing to discuss the scaling problems within the black box.  Information flow up from the black box to the application is reasonable because it is a bounded set of data.  Application knowledge flowing into the black box is an unbounded set.  Network latency, cost, and behavior is directly tied to the bounding of that set., otherwise no amount of hardware will accommodate the fan-in.
+
+End of the day, speaking across perspectives will be key to driving this.  Most everyone reading will only react to it from their own perspective, and they can be quite different.  When I need to demonstrate the difference, I explain it like this:"Developers are artists, they are sculpting in code and in math.  Infrastructure, on the other hand, is building a bridge out of bent and cracked tinker toys.  Nothing is to spec, the lengths aren't exact, the holes aren't drilled at exact angles, but they still need to be able to move the Tonka trucks over them."  That usually starts a larger conversation, but it is a good statement to anchor from.
+
+
+\section{[Anonymous 4]}
+
+\subsection{QUESTION: What's different about Atomic Ethernet?}
+
+\subsection{ANSWER:}
+
+There are some significant conceptual differences between the  Atomic Ethernet  \texttt{Link}\footnote{We distinguish between a conventional `link', and the AE  \texttt{Link}, with capitalization and a different type face.} Protocol (AE) and traditional networking protocols  in today's distributed microservices, key-value stores, and databases. For example:
+
+\begin{itemize}
+	\item The protocol is   \emph{not} an asymmetric `source-destination' protocol. But a bipartite `token coherence protocol' -- the ability of one side, to `know' whether or not  the other side has consumed (i.e., observed) the token. It is \emph{not} a source-destination protocol as in traditional Ethernet. Local Addressing is by port and compass point scout packets. Global  Addressing is rootward or leafward on trees.
+	\item Messages are not `resent'. If a failure occurs for any reason during the `transaction' then the transaction is first reversed out (`unsent') and then re-applied\footnote{If we allow message retry, there are classes of faults that only require one round trip (we don't allow message retry). If we allow packet loss, we would need a message retry in the 2-phase protocol. If there are no faults at all, one round trip suffices.}.  %Messages are not resent after a timeout. 
+	\item This is essential; any detritus\footnote{\href{http://erights.org/elib/concurrency/event-loop.html}{Even with sequential programs, once we have side-effects, we have many more opportunities to confuse ourselves, and this can get much worse with concurrency}.} from the previously attempted transactions must be completely eliminated, such that, the next time the transaction is attempted, is `the first time'.
+\end{itemize}
+
+This is in-contrast to the conventional `forward-in-time only' protocols, whose effect is transformation from a previous state to an irreversible future state. Genuine (logical or physical) reversibility provides simpler and more guaranteed capabilities for error recovery that are not available to forward-in-time only protocols.
+
+\end{document} %%%% DEBUG
+
+The new perspective, is that instead of the source (initiator) executing a state change in a forward direction in time, both parties are responsible for the successive forward, \emph{and} the successive reversal of the atomic operation when an error occurs; not just one of them, with perhaps an incomplete knowledge of what state changes may have occurred in the target. Logical reversibility can be viewed as \emph{time reversal}, only if (1) it is successive, and (2) all trace of the transaction has been removed with no evidence whatsoever that it occurred\footnote{This requires that the internals of the transaction must also be hidden from any kind of observation. until both sides have reached some system level threshold of knowledge needed for the promises expected.}.
+
+A central issue in the E2E debate appears to be whether or not the network is \emph{lossless}; and the performance penalties for recovering from those packet losses. 
+We summarize our position on packet loss thus\footnote{The Bill Jackson formulation.}:
+\begin{framed}
+\noindent In an event-driven system we convert a packet loss to a \texttt{Link} failure. The only failure we have to deal with is \texttt{Link}  failure; which is  recovered by another \texttt{Link}. % This is not true in a free running system.
+\end{framed}
+
+I.e. We treat packet loss (or corruption), not as an exponential complexity of failure recovery mechanisms, but as an opportunity to simply `reverse time' so that the error never occurred.  This new perspective is central to our ability to achieve exactly-once semantics, fast failover, and security guarantees.
+
+
+
+
+\end{document}
