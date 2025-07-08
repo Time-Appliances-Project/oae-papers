@@ -16,8 +16,7 @@ find . -type f \( \
   -name "*.ilg" -o -name "*.ind" -o -name "*.idx" -o -name "*.synctex.gz" -o \
   -name "*.glg" -o -name "*.glo" -o -name "*.gls" -o -name "*.ist" -o \
   -name "*.bcf" -o -name "*.mw" -o -name "*.run.xml" -o -name "*.xdy" -o \
-  -name "*.ent" -o -name "*.loq" -o -name "*acr" -o -name "*.mtc*" -o \
-  -name "*synctex(busy)" -o -name "*.maf" \
+  -name "*.ent" -o -name "*.loq" \
 \) -exec rm -f {} +
 
 echo "Clean-up completed!"
