@@ -20,7 +20,7 @@ An example\sidenote[][-40mm]{Synchronization of timing domains in computers gene
 
 Another example \LINK utility is \emph{Indivisible Unit of Information} (\texttt{IUI}). Unlike \emph{replicated} state machines (RSM's) used throughout distributed applications today, \LINKs \emph{are} state machines: the two halves of which maintain \emph{shared state} through hidden packet exchanges.  When a local agent or actor is ready, the\IUI protocol transfers \emph{indivisible}
 tokens across the LINK to  the other agent, \emph{atomically} (all or nothing)
-\sidenote[][-10mm]{\LINKs are \emph{exquisitely} sensitive to packet loss. This is intentional: we turn the \href{https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf}{FLP} result \emph{upside down}, and use ``a single unannounced process death'' to guarantee the atomic property for\IUI.}. 
+\sidenote[][-10mm]{\LINKs are \emph{exquisitely} sensitive to packet loss. This is intentional: we turn the \href{https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf}{FLP} result \emph{upside down}, and use ``a single unannounced process death'' to guarantee the atomic property for \IUI.}. 
  
 \noindent  \texttt{TIK\hspace{1pt}TYK\hspace{1pt}TIK} and \IUI properties are mathematically \emph{compositional}. 
 

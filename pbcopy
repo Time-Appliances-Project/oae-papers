@@ -1,0 +1,222 @@
+On branch refactor/new-version
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   .gitignore
+	new file:   .texproject
+	new file:   MASTER_REFERENCES.bib
+	modified:   OAE-SPEC-MAIN.pdf
+	modified:   OAE-SPEC-MAIN.tex
+	new file:   OAE-SPEC-MAIN.tex-backup.tex
+	modified:   chapters/01_principles-of-operation/.DS_Store
+	new file:   chapters/01_principles-of-operation/@@full.pdf
+	modified:   chapters/01_principles-of-operation/@@full.tex
+	new file:   chapters/01_principles-of-operation/cleanup.sh
+	renamed:    figures/8-slice-operator.pdf -> chapters/01_principles-of-operation/figures/8-slice-operator.pdf
+	renamed:    figures/InfiniteBandwidthPipe.png -> chapters/01_principles-of-operation/figures/InfiniteBandwidthPipe.png
+	renamed:    figures/SNAKEs.png -> chapters/01_principles-of-operation/figures/SNAKEs.png
+	new file:   chapters/01_principles-of-operation/figures/Transaction-Rate.pdf
+	new file:   chapters/01_principles-of-operation/section/considerations.tex
+	new file:   chapters/01_principles-of-operation/section/counting-protocols.tex
+	new file:   chapters/01_principles-of-operation/section/interactions-bandwidth.pdf
+	new file:   chapters/01_principles-of-operation/section/interactions-bandwidth.tex
+	new file:   chapters/01_principles-of-operation/section/intro 2.pdf
+	new file:   chapters/01_principles-of-operation/section/intro.pdf
+	new file:   chapters/01_principles-of-operation/section/intro.tex
+	new file:   chapters/01_principles-of-operation/section/once-delivery.tex
+	new file:   chapters/01_principles-of-operation/section/promised-networks.tex
+	new file:   chapters/01_principles-of-operation/section/slots.tex
+	new file:   chapters/01_principles-of-operation/section/symmetric-reversibility.tex
+	modified:   chapters/02_bits-and-bytes/.DS_Store
+	new file:   chapters/02_bits-and-bytes/@@full.pdf
+	modified:   chapters/02_bits-and-bytes/@@full.tex
+	renamed:    figures/1-slice.pdf -> chapters/02_bits-and-bytes/figures/1-slice.pdf
+	renamed:    figures/2-flow-subtransactions.pdf -> chapters/02_bits-and-bytes/figures/2-flow-subtransactions.pdf
+	renamed:    figures/2-slice-operator.pdf -> chapters/02_bits-and-bytes/figures/2-slice-operator.pdf
+	renamed:    figures/4-flow-subtransactions.pdf -> chapters/02_bits-and-bytes/figures/4-flow-subtransactions.pdf
+	renamed:    figures/4-slice-operator.pdf -> chapters/02_bits-and-bytes/figures/4-slice-operator.pdf
+	renamed:    figures/64-Byte-record.pdf -> chapters/02_bits-and-bytes/figures/64-Byte-record.pdf
+	new file:   chapters/02_bits-and-bytes/figures/8-flow-subtransactions.pdf
+	new file:   chapters/02_bits-and-bytes/figures/8-slice-operator.pdf
+	renamed:    figures/8-slices.pdf -> chapters/02_bits-and-bytes/figures/8-slices.pdf
+	renamed:    figures/First-Slice-Encodings.pdf -> chapters/02_bits-and-bytes/figures/First-Slice-Encodings.pdf
+	renamed:    figures/General-Frame.pdf -> chapters/02_bits-and-bytes/figures/General-Frame.pdf
+	renamed:    figures/LIVENESS.pdf -> chapters/02_bits-and-bytes/figures/LIVENESS.pdf
+	renamed:    figures/Mixed-1-2-4-slice-flowtransactions.pdf -> chapters/02_bits-and-bytes/figures/Mixed-1-2-4-slice-flowtransactions.pdf
+	renamed:    figures/Protocol-Byte.pdf -> chapters/02_bits-and-bytes/figures/knowledge.pdf
+	renamed:    figures/opcode.pdf -> chapters/02_bits-and-bytes/figures/opcode.pdf
+	renamed:    figures/transform1.pdf -> chapters/02_bits-and-bytes/figures/transform1.pdf
+	new file:   chapters/02_bits-and-bytes/section/byte-record.pdf
+	new file:   chapters/02_bits-and-bytes/section/byte-record.tex
+	new file:   chapters/02_bits-and-bytes/section/flow-transactions.pdf
+	new file:   chapters/02_bits-and-bytes/section/flow-transactions.tex
+	new file:   chapters/02_bits-and-bytes/section/fpga-spec.pdf
+	new file:   chapters/02_bits-and-bytes/section/fpga-spec.tex
+	new file:   chapters/02_bits-and-bytes/section/risc-liveliness.pdf
+	new file:   chapters/02_bits-and-bytes/section/risc-liveliness.tex
+	new file:   chapters/02_bits-and-bytes/section/risc-protocol.tex
+	new file:   chapters/02_bits-and-bytes/section/slice-1.tex
+	modified:   chapters/03_cells-and-links/.DS_Store
+	new file:   chapters/03_cells-and-links/@@full.pdf
+	modified:   chapters/03_cells-and-links/@@full.tex
+	new file:   chapters/03_cells-and-links/figures/Bipartite-discovery.pdf
+	new file:   chapters/03_cells-and-links/figures/Quadpartite-discovery.pdf
+	new file:   chapters/03_cells-and-links/figures/Tripartite-discovery.pdf
+	new file:   chapters/03_cells-and-links/section/cells.tex
+	new file:   chapters/03_cells-and-links/section/discovery.tex
+	new file:   chapters/03_cells-and-links/section/fault-model.tex
+	new file:   chapters/03_cells-and-links/section/links.tex
+	new file:   chapters/03_cells-and-links/section/set-reconciliation.pdf
+	new file:   chapters/03_cells-and-links/section/set-reconciliation.tex
+	new file:   chapters/03_cells-and-links/section/tango-party 2.pdf
+	new file:   chapters/03_cells-and-links/section/tango-party.pdf
+	new file:   chapters/03_cells-and-links/section/tango-party.tex
+	modified:   chapters/04_addressing-and-routing/.DS_Store
+	new file:   chapters/04_addressing-and-routing/@@full.pdf
+	modified:   chapters/04_addressing-and-routing/@@full.tex
+	new file:   chapters/04_addressing-and-routing/figures/HexagonPortIdentifiers2.pdf
+	new file:   chapters/04_addressing-and-routing/section/ants-worms.tex
+	new file:   chapters/04_addressing-and-routing/section/biology-inspired.tex
+	new file:   chapters/04_addressing-and-routing/section/bufferless-deflection-routing.tex
+	new file:   chapters/04_addressing-and-routing/section/conclusion.tex
+	new file:   chapters/04_addressing-and-routing/section/design-principles.tex
+	new file:   chapters/04_addressing-and-routing/section/hesham.tex
+	new file:   chapters/04_addressing-and-routing/section/intro-graph.tex
+	new file:   chapters/04_addressing-and-routing/section/intro.tex
+	new file:   chapters/04_addressing-and-routing/section/pbcopy
+	new file:   chapters/04_addressing-and-routing/section/protocol-description.tex
+	new file:   chapters/04_addressing-and-routing/section/routing-info.tex
+	new file:   chapters/04_addressing-and-routing/section/scouting-before-routing.tex
+	new file:   chapters/04_addressing-and-routing/section/spiders.tex
+	new file:   chapters/04_addressing-and-routing/section/wormhole-routing.tex
+	modified:   chapters/05_reversible-transactions/.DS_Store
+	modified:   chapters/05_reversible-transactions/@@full.pdf
+	modified:   chapters/05_reversible-transactions/@@full.tex
+	new file:   chapters/05_reversible-transactions/section/gpt-reversibility.pdf
+	renamed:    chapters/05_reversible-transactions/gpt-reversibility.tex -> chapters/05_reversible-transactions/section/gpt-reversibility.tex
+	new file:   chapters/05_reversible-transactions/section/gpt-reversible-transactions.pdf
+	renamed:    chapters/05_reversible-transactions/gpt-reversible-transactions.tex -> chapters/05_reversible-transactions/section/gpt-reversible-transactions.tex
+	new file:   chapters/05_reversible-transactions/section/linearizeability.pdf
+	renamed:    chapters/05_reversible-transactions/linearizeability.tex -> chapters/05_reversible-transactions/section/linearizeability.tex
+	new file:   chapters/05_reversible-transactions/section/mathematical-foundations.pdf
+	renamed:    chapters/05_reversible-transactions/mathematical-foundations.tex -> chapters/05_reversible-transactions/section/mathematical-foundations.tex
+	new file:   chapters/05_reversible-transactions/section/rethinking-atomicity.pdf
+	renamed:    chapters/05_reversible-transactions/rethinking-atomicity.tex -> chapters/05_reversible-transactions/section/rethinking-atomicity.tex
+	modified:   chapters/06_architecture/@@full.pdf
+	modified:   chapters/06_architecture/@@full.tex
+	renamed:    figures/BSW.pdf -> chapters/06_architecture/figures/BSW.pdf
+	renamed:    figures/Baran-Centralized.png -> chapters/06_architecture/figures/Baran-Centralized.png
+	new file:   chapters/06_architecture/figures/Baran-Evolving.png
+	renamed:    figures/Feedback-slice-1.pdf -> chapters/06_architecture/figures/Feedback-slice-1.pdf
+	renamed:    figures/Full-Duplex-Bi-Pipelined.pdf -> chapters/06_architecture/figures/Full-Duplex-Bi-Pipelined.pdf
+	renamed:    figures/Full-Duplex-Metcalfe.png -> chapters/06_architecture/figures/Full-Duplex-Metcalfe.png
+	renamed:    figures/Half-Duplex-Metcalfe.png -> chapters/06_architecture/figures/Half-Duplex-Metcalfe.png
+	renamed:    figures/One-Way-Shannon.png -> chapters/06_architecture/figures/One-Way-Shannon.png
+	new file:   chapters/06_architecture/figures/Triangle-clock.pdf
+	renamed:    figures/Two-Independent-Metcalfe.pdf -> chapters/06_architecture/figures/Two-Independent-Metcalfe.pdf
+	renamed:    figures/feedback-slice-8.pdf -> chapters/06_architecture/figures/feedback-slice-8.pdf
+	new file:   chapters/06_architecture/section/B2B_Shannon_Channels.pdf
+	renamed:    chapters/06_architecture/B2B_Shannon_Channels.tex -> chapters/06_architecture/section/B2B_Shannon_Channels.tex
+	renamed:    chapters/06_architecture/bsw-abp.tex -> chapters/06_architecture/section/bsw-abp.tex
+	renamed:    chapters/06_architecture/hybrid-clocks.tex -> chapters/06_architecture/section/hybrid-clocks.tex
+	renamed:    chapters/06_architecture/packet-clocks.tex -> chapters/06_architecture/section/packet-clocks.tex
+	renamed:    chapters/06_architecture/rethinking-datacenter-management.tex -> chapters/06_architecture/section/rethinking-datacenter-management.tex
+	modified:   chapters/07_topology/.DS_Store
+	modified:   chapters/07_topology/@@full.pdf
+	modified:   chapters/07_topology/@@full.tex
+	new file:   chapters/07_topology/figures/Omni-Figure-1.pdf
+	new file:   chapters/07_topology/figures/One-Link.pdf
+	renamed:    "chapters/07_topology/Chiplet-\303\206thernet.tex" -> chapters/07_topology/section/Chiplet-Aethernet.tex
+	new file:   "chapters/07_topology/section/Chiplet-\303\206thernet.pdf"
+	new file:   chapters/07_topology/section/clos.pdf
+	renamed:    chapters/07_topology/clos.tex -> chapters/07_topology/section/clos.tex
+	new file:   chapters/07_topology/section/graph-aware-determinism.pdf
+	renamed:    chapters/07_topology/graph-aware-determinism.tex -> chapters/07_topology/section/graph-aware-determinism.tex
+	new file:   chapters/07_topology/section/mathematica-spec-language.pdf
+	renamed:    chapters/07_topology/mathematica-spec-language.tex -> chapters/07_topology/section/mathematica-spec-language.tex
+	new file:   chapters/07_topology/section/trees-dags-graphs.pdf
+	renamed:    chapters/07_topology/trees-dags-graphs.tex -> chapters/07_topology/section/trees-dags-graphs.tex
+	modified:   chapters/08_context-and-comparisons/.DS_Store
+	new file:   chapters/08_context-and-comparisons/@@full.pdf
+	modified:   chapters/08_context-and-comparisons/@@full.tex
+	renamed:    chapters/08_context-and-comparisons/broadcom-uec.tex -> chapters/08_context-and-comparisons/section/broadcom-uec.tex
+	renamed:    chapters/08_context-and-comparisons/infiniband-ethernet.tex -> chapters/08_context-and-comparisons/section/infiniband-ethernet.tex
+	renamed:    chapters/08_context-and-comparisons/link-objective-comparison.tex -> chapters/08_context-and-comparisons/section/link-objective-comparison.tex
+	renamed:    chapters/08_context-and-comparisons/llc.tex -> chapters/08_context-and-comparisons/section/llc.tex
+	renamed:    chapters/08_context-and-comparisons/synchronous-review.tex -> chapters/08_context-and-comparisons/section/synchronous-review.tex
+	modified:   chapters/09_history/@@full.pdf
+	modified:   chapters/09_history/@@full.tex
+	new file:   chapters/09_history/figures/ATM.png
+	renamed:    figures/aloha.png -> chapters/09_history/figures/aloha.png
+	deleted:    chapters/09_history/intro.tex
+	renamed:    chapters/09_history/aloha.tex -> chapters/09_history/section/aloha.tex
+	renamed:    chapters/09_history/atm.tex -> chapters/09_history/section/atm.tex
+	renamed:    chapters/09_history/ethernet.tex -> chapters/09_history/section/ethernet.tex
+	new file:   chapters/09_history/section/intro.tex
+	deleted:    chapters/10_theory.synctex(busy)
+	modified:   chapters/10_theory/@@full.pdf
+	modified:   chapters/10_theory/@@full.tex
+	renamed:    chapters/10_theory/andromeda.tex -> chapters/10_theory/section/andromeda.tex
+	renamed:    chapters/10_theory/conveyor-belt.tex -> chapters/10_theory/section/conveyor-belt.tex
+	renamed:    chapters/10_theory/introduction.tex -> chapters/10_theory/section/introduction.tex
+	renamed:    chapters/10_theory/tiktyktik.tex -> chapters/10_theory/section/tiktyktik.tex
+	renamed:    chapters/10_theory/time-relativity-ethernet.tex -> chapters/10_theory/section/time-relativity-ethernet.tex
+	renamed:    chapters/10_theory/tsvf.tex -> chapters/10_theory/section/tsvf.tex
+	renamed:    chapters/10_theory/zero.tex -> chapters/10_theory/section/zero.tex
+	modified:   chapters/11_requirements-and-usecases/@@full.pdf
+	modified:   chapters/11_requirements-and-usecases/@@full.tex
+	new file:   chapters/11_requirements-and-usecases/figures/XPU-market.png
+	renamed:    chapters/11_requirements-and-usecases/market.tex -> chapters/11_requirements-and-usecases/section/market.tex
+	renamed:    chapters/11_requirements-and-usecases/requirements-1.tex -> chapters/11_requirements-and-usecases/section/requirements-1.tex
+	renamed:    chapters/11_requirements-and-usecases/unfair-advantage.tex -> chapters/11_requirements-and-usecases/section/unfair-advantage.tex
+	modified:   cleanup.sh
+	new file:   deprecated/oae-chapter-settings.tex
+	new file:   deprecated/oae-chapter.cls
+	new file:   deprecated/oae-section.cls
+	new file:   figures-refactor.sh
+	deleted:    figures/Alternating-Causality-Protocol.png
+	deleted:    figures/B2B-Shannon.png
+	deleted:    figures/Baran-Chiplet.png
+	deleted:    figures/Baran-Decentralized-PNP.png
+	deleted:    figures/Baran-Decentralized.png
+	deleted:    figures/Baran-Distributed.png
+	deleted:    figures/Baran-redundancy.pdf
+	deleted:    figures/Baran-stations.pdf
+	deleted:    figures/Baran-valency-8.png
+	deleted:    figures/Compass-Rose.pdf
+	deleted:    figures/FPGA-Pipeline-Model.png
+	deleted:    figures/Flakey-Network.png
+	deleted:    figures/Full-Duplex-Bi-Piplelined.png
+	deleted:    figures/OAE_Logo.pdf
+	deleted:    figures/OAE_Logo.png
+	deleted:    figures/One-way-Shannon-LR.pdf
+	deleted:    figures/One-way-Shannon-RL.pdf
+	deleted:    figures/Pipelined-SerDes.png
+	deleted:    figures/Pipelined-Serdes-Vertical.png
+	deleted:    figures/README.pdf
+	deleted:    figures/README.tex
+	deleted:    figures/SNAKE_dualframe.png
+	deleted:    figures/Shannon-Reversibility-Levels.pdf
+	deleted:    figures/Shannon-slots.png
+	deleted:    figures/Slice-Engine-SACKs.png
+	deleted:    figures/Two-State-Vector.png
+	deleted:    figures/cc-by-nc-sa.png
+	deleted:    figures/slice-arrival.pdf
+	deleted:    figures/ternary-link.pdf
+	new file:   hierarchy.txt
+	new file:   missing-figures.sh
+	modified:   oae-commands.tex
+	modified:   oae-settings.tex
+	new file:   scripts/subfile-modification.sh
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   OAE-SPEC-MAIN.pdf
+	modified:   chapters/05_reversible-transactions/.DS_Store
+	modified:   chapters/05_reversible-transactions/section/gpt-reversible-transactions.pdf
+	modified:   chapters/05_reversible-transactions/section/gpt-reversible-transactions.tex
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	pbcopy
+
