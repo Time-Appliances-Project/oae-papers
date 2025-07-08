@@ -7,17 +7,20 @@
 
 \usepackage{tikz}
 \usetikzlibrary{calc, arrows}
+\usetikzlibrary{automata}
 \usetikzlibrary{shapes}
 \usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{longtable}
 \usepackage{makecell}
-\usepackage{amsmath,amsfonts,amsthm,amssymb,mathrsfs,bbm,mathtools,nicefrac}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,mathrsfs,mathtools,nicefrac}
+
 \usepackage{enumitem}
 \usepackage[noabbrev,capitalize]{cleveref}
-\usepackage[italic]{derivative}
+%\usepackage[italic]{derivative}
 \usepackage{xparse}
 \usepackage{upgreek}
 \usepackage{setspace}
@@ -35,14 +38,27 @@
 \setcitestyle{authoryear}
 \bibliographystyle{plainnat}
 \usepackage{usebib}
-\bibinput{../../REFERENCES/MASTER_REFERENCES}
+\bibinput{./MASTER_REFERENCES}
+%\bibinput{./REFERENCES/MASTER_REFERENCES}
+
+%\bibinput{Users/bozprog/Library/Mobile Documents/com~apple~CloudDocs/REFERENCES/MASTER_REFERENCES}
 \NewDocumentCommand{\pcite}{m}{\citeauthor*{#1} (\citeyear{#1}).\\\emph{\usebibentry{#1}{title}}.}
 \NewDocumentCommand{\icite}{m}{``\usebibentry{#1}{title}'' \citep{#1}}
 
 \hyphenation{Ber-noul-li Me-trop-o-lis Hast-ings a-le-a-toric}
 
 \usepackage{graphicx}
-
+\graphicspath{
+  {./figures/}
+  {../figures/}
+  {../../figures/}
+  {../../../figures/}
+  {./FIGURES/}
+  {../FIGURES/}
+  {../../FIGURES/}
+  {../../../FIGURES/}
+}
+\usepackage{grffile}
 \usepackage[list-style=longtable]{acro}
 \usepackage{imakeidx}
 \usepackage{hyperref}
@@ -56,7 +72,6 @@
 \indexsetup{headers={\indexname}{\indexname}}
 \acsetup{index/use=true}
 
-\usepackage[most]{tcolorbox}   % load once in *HFT-main.tex*
 \newtcolorbox{highlightbox}[1][]{%
   breakable,                    % allow page breaks
   colback=gray!8,               % light gray background
@@ -279,6 +294,8 @@
 }
 
 \usepackage{titlesec}
+\usepackage{currfile}
+
 \titleclass{\part}{top} %
 \titleformat{\part}
 [display]
@@ -295,11 +312,12 @@
   {0pt}{2.5ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
 % Subsection: smaller, not bold
-\titleformat{\subsection}
-  {\normalfont\sffamily\large}
-  {\thesubsection}{1em}{}
-\titlespacing*{\subsection}
-  {0pt}{2ex plus 1ex minus .2ex}{1ex plus .2ex}
+\makeatletter
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+  {-2ex \@plus -1ex \@minus -.2ex}%
+  {1ex \@plus .2ex}%
+  {\normalfont\sffamily\large\bfseries}}
+\makeatother
 
 \NewDocumentEnvironment{exercise}{mm}{\begin{exc}{#1}{#2}}{\par\textit{\hyperref[solution:#2]{$\triangleright$ Solution}}
 \end{exc}}
@@ -326,10 +344,6 @@
 \NewDocumentCommand{\exerciserefmark}{mo}{\hyperref[exercise:#1]{\circled{\normalfont\textbf{?}}}\exerciseref{#1}[#2]}
 
 \NewDocumentEnvironment{solution}{m}{\paragraph{\normalfont{\textbf{Solution to \cref{exercise:#1}.}}}\label{solution:#1}}{}
-
-
-
-
 
 
 % Make chapters not take so much space vertically

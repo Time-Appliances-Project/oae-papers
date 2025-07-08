@@ -1,0 +1,109 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{Link Fabrics: An Objective Comparison}
+% \marginnote{From ./AE-Specifications-ETH/standalone/Objective-Comparison.tex}
+
+This document provides a technical overview of five prominent link fabrics: NVLink, UALink, Scale-Up Ethernet, InfiniBand, and conventional Ethernet. We evaluate their architectural characteristics, header overheads, and implications for block-size efficiency, with particular focus on suitability for modern workloads such as AI, HPC, and disaggregated systems. We present side-by-side comparisons of header sizes relative to data payloads and reflect on architectural biases that favor or hinder scalability, latency, and composability.
+
+
+\subsection{Introduction}
+
+As computation and memory disaggregation evolve, the role of the interconnect becomes central. Whether linking GPUs in an AI training pod, scaling up a symmetric multiprocessor system, or tying together memory and compute pools across racks, the \textit{link fabric} is the substrate on which system performance is built.
+
+Each fabric comes with assumptions about packet size, latency, error recovery, congestion handling, and topology. In this review, we provide a comparative analysis of five contenders:
+
+\begin{itemize}
+  \item \textbf{NVLink} (NVIDIA): High-bandwidth, low-latency GPU interconnect
+  \item \textbf{UALink} (AMD, Broadcom et al.): Emerging open alternative to NVLink
+  \item \textbf{Scale-Up Ethernet}: Evolving conventional Ethernet for tightly coupled systems
+  \item \textbf{InfiniBand}: HPC-focused with credit-based flow control and low-latency verbs
+  \item \textbf{Conventional Ethernet}: Ubiquitous best-effort packet transport
+\end{itemize}
+
+\subsection{Architectural Overview}
+
+\subsection{Topology and Purpose}
+
+%\begin{marginfigure}
+%\includegraphics[width=\linewidth]{link-fabrics-topology.pdf}
+%\caption{Conceptual topology for each link fabric: tightly coupled GPU rings (NVLink), switch-based scale-up topologies (UALink, InfiniBand), and packet-oriented overlays (Ethernet).}
+%\end{marginfigure}
+
+\begin{itemize}
+  \item \textbf{NVLink}: Point-to-point or mesh GPU topologies with explicit scheduling and hardware-managed coherence domains.
+  \item \textbf{UALink}: Targeted as a broader standard across vendors; switch-based; supports memory pooling and accelerator interconnect.
+  \item \textbf{Scale-Up Ethernet}: Designed to bring reliability and ordered delivery to Ethernet via reduced headers, low-latency slicing, and potential for transaction-level acknowledgment.
+  \item \textbf{InfiniBand}: Mature switch-based architecture, deeply integrated into RDMA stacks and MPI; emphasis on zero-copy and reliable transport.
+  \item \textbf{Ethernet}: Best-effort delivery; scales via oversubscription and buffering; header-heavy; assumes software-managed retry.
+\end{itemize}
+
+\subsection{Header Overhead vs. Block Size}
+
+Link fabrics differ significantly in header-to-payload ratio, especially at small block sizes. Header overhead penalizes small messages in conventional Ethernet, motivating larger minimum block sizes to maintain efficiency. For AI and tightly coupled compute, where atomicity and latency matter, small block sizes with low overhead are preferable.
+
+\subsection{Header Size vs Block Size Table}
+
+\begin{table}[h]
+\centering
+%\caption{Header Overhead (in bytes) by Fabric Type}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Fabric} & \textbf{Header} & \textbf{64B} & \textbf{128B} & \textbf{256B} & \textbf{512B} & \textbf{1024B} \\
+\midrule
+NVLink v3       & 16     & 25.0\% & 12.5\% & 6.3\% & 3.1\% & 1.6\% \\
+UALink (proj.)  & 20     & 31.3\% & 15.6\% & 7.8\% & 3.9\% & 2.0\% \\
+Scale-Up ETH    & 8–16   & 12.5\% & 6.3\% & 3.1\% & 1.6\% & 0.8\% \\
+InfiniBand HDR  & 64     & 100\%  & 50.0\% & 25.0\% & 12.5\% & 6.3\% \\
+Ethernet + IP + TCP & 76–92  & 143.8\% & 57.8\% & 28.9\% & 14.5\% & 7.1\% \\
+\bottomrule
+\end{tabular}
+\label{tab:header-overhead}
+\end{table}
+
+\begin{highlightbox}[Does not Include Atomic Ethernet]
+We wanted to  review and compare  these systems  before introducing OAE. Imagine what this table looks like when we add OAE's 4-byte header,  with fixed size: 64B, 256B, 1024B and 4096B  transfers.% using beats.% octaves (beats).  
+\end{highlightbox}
+
+%\begin{marginfigure}
+%\includegraphics[width=\linewidth]{header-vs-block.pdf}
+%\caption{Header overhead as a function of block size. Fabrics with lower fixed header sizes (Scale-Up Ethernet, NVLink) maintain efficiency at smaller payloads.}
+%\end{marginfigure}
+
+\subsection{Latency and Atomicity Considerations}
+
+Atomic operations (e.g., tensor updates, semaphore-based locking) are increasingly being performed across links. The cost of round-trips, retries, or failed speculative execution due to packet drops grows nonlinearly with header size and tail latency variance.
+
+\begin{itemize}
+  \item \textbf{NVLink}: High atomicity; limited to GPU domain.
+  \item \textbf{UALink}: Claims to enable coherent memory semantics across nodes.
+  \item \textbf{InfiniBand}: Explicit verbs for atomic ops, requires RDMA semantics.
+  \item \textbf{Ethernet}: Lacks atomic primitives; must emulate via protocols.
+  \item \textbf{Scale-Up Ethernet}: Explicit focus on atomic packet slices, with transaction-layer feedback.
+\end{itemize}
+
+\subsection{Bias Toward Large Packets: A Critical View}
+
+Switch-centric fabrics such as Ethernet and InfiniBand often exhibit biases toward large block sizes, due to:
+
+\begin{enumerate}
+  \item \textbf{Header amortization}: Larger blocks reduce relative overhead.
+  \item \textbf{Switch buffer economics}: Designed for long flows, not short atomic ops.
+  \item \textbf{Congestion avoidance}: Larger packets allow queue shaping, but penalize small-ops latency.
+\end{enumerate}
+
+This introduces architectural bias that disfavors emerging patterns such as sparse updates, fine-grain load/store traffic between heterogeneous xPUs, or distributed execution of transactional graphs.
+
+\subsection{Conclusion}
+
+While Ethernet and InfiniBand continue to evolve, they remain biased toward packetization strategies that penalize small atomic units of work. NVLink and UALink challenge this by focusing on coherence and bandwidth at short distances, but they remain vendor-specific or in flux.
+
+Scale-Up Ethernet presents a new opportunity: to build an atomic-capable, low-latency, congestion-aware transport that preserves Ethernet compatibility while shedding unnecessary biases—especially those that require applications to batch operations just to amortize protocol overhead.
+
+
+\begin{quote}
+Future fabrics should not merely transmit data, but should transmit \emph{meaningful, recoverable state}—one slice at a time.
+\end{quote}
+
+\end{document}

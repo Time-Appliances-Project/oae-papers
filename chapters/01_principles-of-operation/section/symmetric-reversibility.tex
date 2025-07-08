@@ -1,0 +1,70 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+
+\section{Symmetric Reversibility}
+
+At the heart of Atomic Ethernet lies a symmetric, reversible link protocol, governed by deterministic state machines operating on both ends of a point-to-point connection. Together, these machines co-create a unified, bidirectional construct called a \LINK. \LINKs are not merely a passive channel, but an active agent with its own \textit{failure domain}, \textit{causal boundaries}, and defined \textit{error recovery semantics}.
+
+A \LINK is thus a joint stateful system. Both peers (e.g., Alice and Bob) implement identical state machines that evolve synchronously via the exchange of fixed-size, causally significant tokens. These tokens encode both data and flow-control intent, and their transitions are mirrored on each end. There is no concept of master/slave. Either side may assume the role of \texttt{INITIATOR} or \texttt{RESPONDER}, depending on who possesses the token.
+
+\begin{highlightbox}[Definitions]
+\textbf{symmetric}: each side executes the same logic, defined by the same transition rules, enabling fully mirrored behavior. No global sequencing is required beyond token ownership.
+
+\textbf{reversible}: for every operation on the link, there exists a logically defined inverse that restores the prior state.
+\end{highlightbox}
+
+Together, a \texttt{symmetric}, \texttt{reversible} protocol enables new guarantees on the network:
+\begin{itemize}
+\item Partial transactions can be aborted cleanly, returning to an equilibrium where no partial, unconfirmed state is leaked on either side.
+
+\item Errors (e.g., bit flips, packet loss) can be rolled back without corrupting state.
+
+\item All token transfers are atomic: they either complete fully or leave the system unchanged.
+\end{itemize}
+
+These properties allow \LINKs to resume normal operation even in the presence of transient failures. No global reset is needed; instead, local error recovery and rebalancing maintain the equilibrium between peers.
+
+This symmetry and reversibility simplify correctness proofs, enable formal verification of protocol behavior, and provide a foundation for constructing reliable distributed systems from fundamentally unreliable components.
+
+
+\subsection*{Physics is Time-Reversible}
+
+Traditional networking systems are rooted in a \emph{Forward-In-Time-Only (FITO)} model--a consequence of human cognition and the constraints of classical computation. This FITO mindset leads to systems that rely on:
+\begin{description}
+\item[Preemption and Speculative Execution:]
+Traditional systems often rely on speculative steps that assume future success, executing tasks before their prerequisites have fully resolved. When these guesses fail, the system must backtrack or retry. This introduces inefficiencies, side effects, and non-determinism. This speculative mindset is a direct byproduct of FITO thinking: always pushing forward, and retrying on failure.
+
+\item[Halting and Sleep States:]
+Mechanisms like halting, pausing, and sleeping (e.g., the Sleeping Beauty problem) reflect our inability to carry forward context across time. A container, for instance, may be restarted by Kubernetes without memory of its past states--like Rip van Winkle waking with no recollection of the world he once knew. This statelessness forces systems to infer or rehydrate their place in the world, often incorrectly.
+
+\item[Retry Loops and Stuttering:]
+When systems fail to complete an operation, the default response is to try again, often without understanding the cause of failure. This leads to stuttering behaviors: repeated attempts that may succeed eventually, but with no guarantee of consistency or progress. These retry loops clog the network, waste energy, and complicate reasoning. Worse, they mask latent failures and blur accountability.
+\end{description}
+
+But nature itself is reversible. When we model computation and communication the same way, we open up new possibilities: conserved quantities, reversible transactions, and memory-ful systems that avoid redundant restarts. Instead of containers that forget and retry blindly, \LINKs can maintain identity and progress symmetrically.
+
+Within the link, we distinguish between \textbf{entanglement} (externally visible state) and \textbf{intanglement} (internally distinguishable state). Even when a system appears symmetric from the outside, internal roles can be differentiated. For example, a two bit counter incremented on each token exchange can ensure that Alice always sees odd tokens and Bob sees even counts, allowing each side to infer causality without global coordination.
+
+This model reinterprets what coherence means on the wire. Prior attempts like Homa (at L3) or Aeron (at L4) focus on throughput and tail latency, but fail to establish reliable pairing of messages. \AE thernet instead solves the pairing problem at the layer it was created: Ethernet.
+
+
+
+\subsection*{Temporal Intimacy and Message Coherence}
+
+Symmetric reversibility permits a form of \emph{temporal intimacy}: a tight binding between request and response that emerges not from round-trip timers or speculative sprays, but from the causal loop of token exchange. This cannot be emulated at higher layers; it is a property of the \LINK itself.
+
+Approaches like Amazon’s SRD (Scalable Reliable Datagram) scatter packets across paths to reduce jitter, and RoCE uses Priority Flow Control (PFC) to simulate backpressure, but both ultimately introduce complexity and failure modes (e.g., head-of-line blocking, incast microbursts, silent corruption) that are sidestepped entirely with a conserved, reversible link protocol.
+
+Instead of relying on retry logic, timeout windows, or routing indirection, \AE thernet builds coherence into the wire. Every token is a conserved object: inserted, tracked, and retired without ambiguity. This enables applications to own and reason about their own network semantics — spanning trees, message lifetimes, and all.
+
+This is not just a transport improvement. It is a paradigm shift, replacing FITO assumptions with a model that aligns closer to physics, and gives us new tools to reason about responsibility, identity, and truth in distributed systems.
+
+
+
+
+
+
+
+\end{document}

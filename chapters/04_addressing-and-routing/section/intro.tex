@@ -1,0 +1,62 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+
+\section{Addressing and Routing in Chiplet Ethernet}
+\marginnote{\footnotesize\textit{Adapted from [PLB][WIP] DAE-Spec/source-destination-routing.tex}}
+
+In a Chiplet Ethernet environment, routing mechanisms determine how packets traverse the on-chip network from source to destination. Depending on the architectural goals and design constraints, various routing schemes may be employed. The three primary approaches considered here are:
+
+\begin{description}[leftmargin=0pt, itemsep=0.5ex]
+\item[\textbf{Source Routing}] The sender encodes the entire route in the packet.
+\item[\textbf{Destination-Based Routing}] Each hop examines the destination address and forwards accordingly.
+\item[\textbf{Name-Based Routing}] The routing is based on service or data identifiers, rather than physical addresses.
+\end{description}
+
+\subsection{Source Routing}
+
+In source routing, the source node determines and encodes the full path the packet should follow.
+
+\begin{itemize}
+\item \textbf{Mechanism:} Routing instructions are embedded in the packet header, specifying port transitions at each node.
+\item \textbf{Advantages:} Low per-hop complexity; ideal when the source has full network visibility.
+\item \textbf{Drawbacks:} Overhead due to path encoding; lacks flexibility under topology changes.
+\end{itemize}
+
+\subsection{Destination-Based Routing}
+
+Here, packets carry a destination address and each node independently determines the next hop.
+
+\begin{itemize}
+\item \textbf{Mechanism:} Intermediate nodes use forwarding tables to route toward the destination.
+\item \textbf{Advantages:} Familiar, scalable, and adaptive; supports route recalculation during faults.
+\item \textbf{Drawbacks:} Per-hop table lookups increase logic complexity and memory footprint.
+\end{itemize}
+
+\subsection{Name-Based Routing}
+
+Packets are routed based on service names or abstract identifiers rather than fixed addresses.
+
+\begin{itemize}
+\item \textbf{Mechanism:} Routers resolve names via distributed directories or longest-prefix matching.
+\item \textbf{Advantages:} Enables service-level decoupling, dynamic mapping, and resource abstraction.
+\item \textbf{Drawbacks:} Requires complex lookup mechanisms and incurs packet header overhead.
+\end{itemize}
+
+\subsection{Routing Paradigm Summary}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Routing Type} & \textbf{Header Overhead} & \textbf{Per-Hop Logic} & \textbf{Flexibility} \\
+\midrule
+Source Routing        & High                    & Low                & Low         \\
+Destination-Based     & Low                     & Medium             & Medium      \\
+Name-Based            & Medium/High             & High               & High        \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
+

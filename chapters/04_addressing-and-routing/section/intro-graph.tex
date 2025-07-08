@@ -1,0 +1,40 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+
+
+
+\section{Introduction}
+\marginnote{\footnotesize\textit{Came from ./AE-Specification-ETH/standalone/Graph-Algorithms.tex}}
+
+This document proposes a Layer 2 Ethernet routing protocol called \emph{Scouting at Layer 2}, inspired by recent advances in edge coloring algorithms from graph theory. It aims to enable deterministic, loop-free path discovery and forwarding solely at the MAC layer, bypassing the need for Layer 3 mechanisms such as IP routing.
+
+Ethernet is traditionally a broadcast-based Layer 2 protocol, relying on IP-based Layer 3 protocols for routing. However, modern data centers and specialized networks demand low-latency, deterministic, and topology-aware communication mechanisms without the full overhead of the IP stack. To this end, we introduce \emph{Scouting at Layer 2}, a distributed routing protocol that operates entirely within the Data Link Layer.
+
+The design is motivated by recent work on edge coloring of graphs in near-linear time \cite{li2024vizing}, which provides a scalable and collision-free scheme for link differentiation.
+
+\section{Design Goals}
+
+\begin{itemize}[label=--]
+    \item \textbf{Layer 2 Only}: Operates exclusively using MAC addresses.
+    \item \textbf{No Broadcast Storms}: Avoids STP/RSTP flooding and enables deterministic paths.
+    \item \textbf{Loop-Free Forwarding}: Guarantees no cycles using path identifiers.
+    \item \textbf{Dynamic Topology Support}: Accommodates changes in network structure.
+    \item \textbf{Low Computational Overhead}: Efficient enough to run in SmartNICs or ASICs.
+\end{itemize}
+
+\section{Graph-Theoretic Inspiration}
+
+In the protocol, each Ethernet node and its direct connections are modeled as a graph $G = (V, E)$, where:
+
+\begin{itemize}
+    \item Vertices $V$ are MAC-layer devices (bridges, switches, NICs).
+    \item Edges $E$ represent Ethernet links.
+    \item Each edge is assigned a \textbf{color}, i.e., a unique local forwarding tag, such that no two edges incident to the same vertex share the same color.
+\end{itemize}
+
+Using the result of Li et al.~\cite{li2024vizing}, we can perform this coloring with at most $\Delta+1$ colors in $O(m \log \Delta)$ time, where $m = |E|$ and $\Delta$ is the maximum degree.
+
+\end{document}
+

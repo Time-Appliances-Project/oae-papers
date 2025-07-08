@@ -1,0 +1,189 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\section{Introduction}
+
+It would be a mistake to assume conventional network concepts and terminology that you already know and love will remain unscathed in this project. We have no intention of reinventing the wheel, yet some new concepts and terminology will be necessary in order to escape the incrementalist momentum of the last five decades. %in Networking. %, which has plagued the networking world for five decades. Old Concepts to unlearn:
+
+\marginnote{We carefully described in four presentations why the concept of time is widely misunderstood in the OCP TAP (Time Appliance Community).  We respectfully request that you watch those presentations before insisting on timestamps or synchronized time in the context of Open Atomic Ethernet. \href{https://www.opencompute.org/w/index.php?title=Open_Atomic_Ethernet}{Open Atomic Ethernet}}
+
+\begin{enumerate}
+\item The word and the concept of TIME does not appear in this specification. This concept is the largest single source of misunderstanding in computer science today, so we  eliminate that first. 
+We replace this with intervals that are defined within sets (not on the real line).  Definite Total Order (DTO), Definite Partial Order (DPO), Indefinite Partial Order (IPO). \marginnote{Formal analysis and connections to the literature will appear in the index.}. 
+\item 	 Claude Shannon described information as \emph{surprisal}.  We will call it Shanformation in this document to tear everyone away from old ideas that have been conflated for too long about ``bits in memory or storage'', hiding its deeper meaning of "the resolution of uncertainty".
+\item 	We replace conventional notions of  Error Detection and Correction (ECC, EDC, FEC, Parity, etc.) with a new concept, while not new, is widely misunderstood: Common Knowledge.
+\item 	We replace conventional notions of liveness with  a continuously circulating token, within which we define ``logical simultaneity"
+\item		We are not shy of delving into Quantum Information Theory or Quantum Thermodynamics to find solutions to the problems in hardware and software infrastructure.
+\end{enumerate}
+
+\begin{description}
+\item [THERE IS NO GLOBAL DRUM BEAT]-  In Episodes 1 through 4 we expressed doubts about the common belief system of a Newtonian view of the world in this community. We showed how to think about race conditions, and why Timeouts and Retries (TAR) are the root of all evil. Our conclusion is that Timestamps are an Illusion. They can’t be fixed by software.
+The quest for a single, consistent timeline across distributed systems collides with the reality that physics itself does not provide a universal notion of time—and in quantum mechanics (the machine code of our universe), there is no consistent causal order at all. We cannot, therefore, rely on this illusion of an irreversible drumbeat on an inaccessible “real line” to provide linear time order for events in our networked systems.
+Although timestamps will remain indispensable in engineering practice, we must recognize them as approximations rather than absolutes, and design our systems accordingly.
+
+\item [EPISODE 1 -- There is no "now"] \mbox{}
+
+There is no now. You cannot synchronize clocks the way you think. Talk Originally given at the 2023 Asilomar Microcomputer Workshop presented live with Jonathan Gorard.
+Motivation: (1) To get people thinking about the nature of time and causality, as far removed from the Earth (and TAI/GPS) as possible. (2) To stimulate ``First Principles Thinking'' for Distributed Systems.% \marginnote{See The Last Theory Newsletter on What is the causal graph in Wolfram Physics}
+
+	\begin{itemize}
+	\item  Clocks can be disseminated, but require interaction to be synchronized:
+	\item  Simultaneity planes don’t exist (except in an empty frozen universe) Einstein proved this over 100 years ago Why do we still think we can synchronize clocks?
+	\item  Network Time Protocol (NTP) and Precision Time Protocol (PTP) are causal TREES -- choose your root, and how you do failover
+	\item  Entanglement and indefinite causal order are the new relativity (Not restricted to low relative velocities or atomic scales)
+	\item  We cannot assume spacetime is irreversible and monotonic
+	\item  Irreversibility and monotonicity is in the Eye of the Observer
+	\end{itemize}
+	
+\item [EPISODE 2 - Hidden assumptions about causality lead to lost \& corrupted data] \mbox{}
+
+When we think about clocks as an incrementing number, we are committing the FITO fallacy -- ``Forward In-Time-Only'' Thinking
+- Counterfactuals, i.e., “events that could have occurred but eventually did not, play a unique role in quantum mechanics in that they exert causal effects despite their non-occurrence”
+	\begin{itemize}
+	\item  Clock Synchronization Error is indistinguishable from Latency
+	\item  Irreversibility (Monotonicity) is an illusion not guaranteed by physics, unless we build Ancilla to explicitly manipulate causality
+	\item  Irreversibility and “causal order” are IN THE EYE OF THE OBSERVER—not guaranteed to be consistent across different observers
+	\end{itemize}
+\item [EPISODE 3 -- Dynamic PTP hierarchy for causal failover] \mbox{}
+
+In Episode 1(What) \& Episode 2 (Why) we showed how misunderstandings accumulate within a Newtonian framework of time, and how this leads to lost transactions and corrupted data. In this Episode we help the audience make the leap from Newtonian Time (what we know for certain that just ain't so) to Post-Newtonian Time (relativistic SR/GR, and QM — Indefinite Causal Order (ICO).
+	\begin{itemize}
+	\item PTP is widely available in Datacenters, we propose experiments to falsify beliefs about Newtonian Time.
+	\item All is not lost. The excellent engineering behind PTP and PTM, can still be used with a different perspective, by using the clock hierarchy to build Causal Trees and reliable failover, to help address race conditions and achieve Exactly Once Semantics
+	\end{itemize}
+	
+\item [EPISODE 4  -- Why we can’t have nice things in Distributed Systems] \mbox{}
+	\begin{itemize}
+	\item  Instants are meaningless, only intervals (on the same computer/timeline) are relevant
+	\item  Photons don’t carry timestamps, but timestamps are carried by photons
+	\item The speed of light is the ``pivot'' around which time and space evolve
+	\item Timeout and retry (TAR) on different timelines will silently corrupt data structures
+	\item  Shannon entropy is a logarithm. The logarithm of zero (no information) is minus infinity.
+	\item  Bayesian approaches require a prior belief, which can be unbounded (zero to infinity). Actually, it’s much worse: can be $\{-\infty-1-0,+0,+1,+\infty\}$. We can’t do Bayesian statistics under those conditions, mathematically, their results are undefined.
+	\item Shannon Entropy is uncertainty, and the same problem applies when you apply the set $\{-\infty-1-0,+0,+1,+\infty\}$ to Information and Entropy $p*log(p)$
+	\item  Measurements ``appear'' instantaneous because there is no background of time on which to measure anything\marginnote{It \emph{does} appear instantaneous to an observer, because when they receive a packet (or a photon in a detector), you capture information and turn it into knowledge (state in a register you can do something with)}. Timestamps don’t help with causal order.
+	\end{itemize}
+\end{description}
+
+% --------------------------------------------------------------------------------------------------
+
+
+\subsection{Proof of Fallibility}
+
+\begin{quote}
+\textit{``The alternating validation bit becoming the additionally the \emph{alternation} bit for message transmission in one direction, while the alternation bit for the reverse directions serves additionally as a validation bit.''} \hfill ---SBW \cite{SBW}
+\end{quote}
+
+\marginnote{\footnotesize Lynch's scheme is constructed from independent simplex procedures}
+
+% --------------------------------------------------------------------------------------------------
+
+\subsection{Framing the Vocabulary}
+
+In 1967 \emph{Bartlett, Scantlebury \& Wilkinson} (BSW) sketched the
+\emph{alternating-bit protocol} (ABP): add one history bit to every frame,
+wait for an ACK that echoes it, and retransmit until the right ACK appears.
+ABP wraps an \emph{unreliable} medium and presents a service that looks
+reliable---even \emph{infallible} in steady state.
+
+\begin{marginfigure}
+  \footnotesize
+  \centering
+  \begin{tabular}{@{}l@{~}l@{}}
+    \toprule
+    Term & Meaning\\
+    \midrule
+    Unreliable & Frames may be lost.\\
+    Fallible   & Channel may violate any promise\\
+               & (drop, duplicate, reorder, corrupt).\\
+    Reliable   & No drops in steady state;\\
+               & recovery still required.\\
+    Infallible & No violations ever; no recovery\\
+               & logic needed above the link.\\
+    \bottomrule
+  \end{tabular}
+  \caption{Taxonomy of link qualities.\label{tab:taxonomy}}
+\end{marginfigure}
+
+Nancy Lynch later formalised these ideas with the
+\emph{I/O-automaton}: a fallible channel is one whose execution may
+deviate from the specification, subject only to fairness.
+
+% --------------------------------------------------------------------------------------------------
+
+\subsection{Lessons from BSW and Lynch}
+
+\begin{itemize}
+\item \emph{Make reliability local}.  ABP attaches one bit; InfiniBand embeds
+      a few more.  End-to-end recovery alone expands the failure scope.
+\item \emph{Fail fast}.  InfiniBand retransmits on explicit NACK within
+      microseconds; Ethernet traditionally converts a microsecond drop into a
+      millisecond TCP timeout.
+\item \emph{Separate reliability from recovery}.  Even a reliable link needs
+      a failsafe plan; design that plan explicitly.
+\end{itemize}
+
+\begin{highlightbox}[]
+\noindent
+BSW showed that a single alternating bit can tame a capricious wire; Lynch
+supplied the proof rules.  InfiniBand adopted both insights in hardware and
+delivers a fabric whose normal behavior feels \emph{infallible}.  Classic
+Ethernet remains best-effort---unreliable and fallible---and relies on upper
+layers for recovery.  Bridging that gap means absorbing more of the ABP
+playbook at the link: credits, link-level retransmission, and tight ACK/NACK
+loops that shrink recovery from milliseconds to microseconds.
+\end{highlightbox}
+
+% --------------------------------------------------------------------------------------------------
+
+\subsection{IP and Patent Implications}
+
+The core concept of credit-based flow control is now public domain, but a
+handful of post-2005 implementation patents remain enforceable through
+at least 2036.  Modern designs should audit those families but can build
+freely on the expired foundational work.
+
+
+\paragraph{Practical Take-Aways}
+\begin{enumerate}
+\item \textbf{Freedom to Operate.}  A straightforward ``one credit = one
+buffer'' design can rely on the expired Intel/Compaq and Brocade patents
+for prior-art cover.  Avoid features identical to the still-active
+patents or license them.
+\item \textbf{Design Around.}  Active claims tend to be narrow.  You can
+sidestep the Mellanox ``macro credit'' idea by limiting link span or by
+using rate-based pacing instead of credit aggregation.
+%\item \textbf{Confirm Status.}  Patents may lapse for maintenance-fee
+%non-payment or be revived; continuations can extend claim scope.
+%Commission a professional search and legal opinion before product
+%freeze.
+\end{enumerate}
+
+
+
+
+
+
+ 
+
+%=========================
+%\documentclass[letterpaper,openany]{tufte-book}
+%\usepackage{amsmath, amssymb}
+%\usepackage{graphicx}
+%\usepackage{physics}
+%\usepackage{tcolorbox}
+%\tcbuselibrary{breakable}
+%\usepackage{booktabs}
+%
+%\title{Forward and Backpropagation Through the Lens of the Two-State Vector Formalism}
+%\author{Paul Borrill}
+%\date{}
+%
+%\newtcolorbox{highlightbox}{breakable, enhanced, colback=gray!10, colframe=black!50, boxrule=0.5pt, arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt}
+%
+%\begin{document}
+%\maketitle
+%
+%%\chapter{Question}
+
+\end{document}
