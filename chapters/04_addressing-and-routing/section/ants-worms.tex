@@ -80,22 +80,22 @@ Benefits:
 	\item Occasional Diagnostics: Particularly useful for network-wide verification or fault checks.
 \end{itemize}
 
-\section{4. Spiders: Building and Maintaining “Webs” of Connectivity}
-
-Spiders create webs that dynamically adapt to external stresses or breaks. A “web-based” approach for chiplet networks focuses on building a resilient mesh:
-
-\begin{enumerate}
-	\item  	Web Construction: Each router sends out “threads”—short discovery packets—on all ports. Neighbors respond, forming local connectivity data structures.
-	\item  	Local Weave: Threads intersect and overlap, letting routers learn about multi-hop neighbors.
-	\item  	Damage Repair: If a link fails, local threads are resent to repair or reroute around the break.
-	\item  Tension Metrics: Each link in the web holds a “tension” (latency, throughput) that can be monitored and used to shift traffic if congestion or errors rise.
-\end{enumerate}
-
-Benefits:
-\begin{itemize}
-	\item Resilience Through Redundancy: Overlapping “threads” ensure multiple known paths.
-	\item Incremental Updates: Each node refines its local web structure.
-	\item Ease of Local Addressing: Short IDs can be assigned to neighbors, aggregated as the web extends outward.
-\end{itemize}
-
-\end{document}
+%\section{4. Spiders: Building and Maintaining “Webs” of Connectivity}
+%
+%Spiders create webs that dynamically adapt to external stresses or breaks. A “web-based” approach for chiplet networks focuses on building a resilient mesh:
+%
+%\begin{enumerate}
+%	\item  	Web Construction: Each router sends out “threads”—short discovery packets—on all ports. Neighbors respond, forming local connectivity data structures.
+%	\item  	Local Weave: Threads intersect and overlap, letting routers learn about multi-hop neighbors.
+%	\item  	Damage Repair: If a link fails, local threads are resent to repair or reroute around the break.
+%	\item  Tension Metrics: Each link in the web holds a “tension” (latency, throughput) that can be monitored and used to shift traffic if congestion or errors rise.
+%\end{enumerate}
+%
+%Benefits:
+%\begin{itemize}
+%	\item Resilience Through Redundancy: Overlapping “threads” ensure multiple known paths.
+%	\item Incremental Updates: Each node refines its local web structure.
+%	\item Ease of Local Addressing: Short IDs can be assigned to neighbors, aggregated as the web extends outward.
+%\end{itemize}
+%
+%\end{document}
