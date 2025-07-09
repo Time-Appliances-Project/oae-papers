@@ -507,9 +507,7 @@ At this stage, the NIC has a full understanding of the message, knowing exactly 
 %
 %Each SACK boundary (\texttt{00}, \texttt{01}, \texttt{10}, \texttt{11}) maps neatly onto these four conceptual leaps. As soon as the sender receives each partial ACK, it gains confidence that the receiver has \emph{progressed} one step deeper in turning raw signals (bits) into a \emph{fully understood} data frame. This four-layer design captures a more Shannon-like architecture in which each additional SACK message not only signals success \emph{so far}, but also narrows the set of potential failure modes and clarifies how the data \emph{will} be handled.
 
-%\bibliographystyle{ieeetr}
 
-%\bibliography{references/references.bib}
 
 \clearpage
 \begin{fullwidth}

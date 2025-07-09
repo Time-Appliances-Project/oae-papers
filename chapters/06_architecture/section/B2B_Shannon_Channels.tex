@@ -29,7 +29,8 @@
 
 \subsection{Internal (SACK) Feedback on first slice}
 
-\marginnote{See SACK description by Sahas \cite{sahas-02025-1}}
+% TODO: add \cite{sahas2025}
+\marginnote{See SACK description by Sahas}
 
 \begin{figure*}
 \includegraphics[width=\textwidth]{FIGURES/Feedback-slice-1.pdf}
@@ -79,7 +80,8 @@ At this stage, the NIC has a full understanding of the message, knowing exactly 
 
 Shannon Channels are normally shown in one \emph{direction} of flow -- from Information source to Information Destination. Here we exploit two-way communication (signaling) Back to Back Channels with immediate (slice by slice) feedback. Then the equations tell us something interesting about the \emph{symmetry} of set reconciliation on both sides of the link.
 
-With back-to-back Shannon Channels, with (immediate) slice by slice feedback, we get Perfect Information Transfer (PIT) \cite{soltted-aloha}. We can therefore dispense with Checksums, CRC's, FEC or even Parity,  because the failure modes these EDC and ECC codes address are already covered by PIT.  This has two advantages:
+% TODO: cite: \cite{soltted-aloha}
+With back-to-back Shannon Channels, with (immediate) slice by slice feedback, we get Perfect Information Transfer (PIT. We can therefore dispense with Checksums, CRC's, FEC or even Parity,  because the failure modes these EDC and ECC codes address are already covered by PIT.  This has two advantages:
 
 \begin{itemize}
 \item The elimination of spatial redundancy on the wire makes the packets shorter
