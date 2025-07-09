@@ -2,6 +2,10 @@
 
 This repository contains the LaTeX source for the Open Atomic Ethernet (OAE) specification document.
 
+<div align="center">
+<img width="617" alt="Screenshot 2025-07-08 at 6 24 10 PM" src="https://github.com/user-attachments/assets/633a67f8-90b3-419a-96e0-267c4cf36e7c" />
+</div>
+
 ## Document Structure
 
 The specification is organized into the following chapters:
