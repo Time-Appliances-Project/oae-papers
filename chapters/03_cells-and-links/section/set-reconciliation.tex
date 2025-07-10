@@ -1,0 +1,37 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+
+\section{Set Reconciliation of Shannon Slots}
+
+The first claim is that a finite and enumerable number of  `slots' exist on both sides of the LINK. In conventional Ethernet, once these slots are exhausted (with for example, a timeout and retry, the XPU CELLS (SmartNICs) on both sides of the LINK must evict (erase) the information on one side and then the other. This `loss of Koherence' is the central problem of Distributed Systems.  From an information theoretic (Back to Back Shannon channel) perspective, this precipitates a `smash and restart (SAR) of the Shannon Information --  the loss of `pairing' of information. This is described in more detail in the specification of back-to-back Shannon Pairs.
+
+Timeouts and Retries are the root of all evil.  Once a Timeout Storm occurs, in a switched network, the distributed systems in the Host processor are all broken. Unless RELIABILITY (maintenance of Shannon Link Pairing),  the `global' illusion of event ordering in distributed systems will be lost, and corruption will occur.  This is why queue-pairs work in Infiniband/RDMA. This is why information pairing is essential, in Tandem's Process Pairs, and RDMA's Queue pairs.
+
+The whole point of this specification is to engineer a solution, where Shannon-pairing is never lost, but if it is, a TRIANGLE healing occurs locally, without the need to depend on a switched or router to discover and  `reconverge' their routing tables, to re-establish the point to point connections over a different paths in the network.  
+
+The main mechanism to do this is to make the Æthernet Link maintain Koherence, and when loss occurs, a 3rd party (The Triangle relationship) can recover with local information only. This makes XPU/SmartNICs, where the recovery algorithms (healing the tree) occur locally, instead of waiting for the switched or routed packets (in a separate switched network.
+
+The original Ethernet was unreliable. This was a mistake. Infiniband already proved this, and succeeded both in the trust system archicitcts have in the far greater. The unique contributions of this specification is to go (far) beyond Infiniband's discovery, and recognize the fundamental simplifications and benefits that Infiniband (and Token Ring,  Fibrechannel, and Sonet), in creating `Race-Free' protocols, where distributed systems can guarantee, not just the `ordering of events', but the guarantee of recovery of transactional loss in when failures occur in the middle of, say, a 2 Phase Commit. 
+
+Æthernet (Atomic Ethernet) guarantees that Shannon Pairing is never lost, and if a link breaks, that the Coordinator (Charlie, Carol, Chief) can recover with TRIANGLE Relationships, far faster than any protocol stack in the host processor, or in the RMDA message relationships, but then add, on top of this a true `atomic' relationship between CELLS (nodes) in a distributed system.
+
+The original Ethernet [ref] was designed around a notion of slots. These were `time slots' on an imaginary timeline that each node on the Ethernet Cable, could manage in a half-Duplex way.  The new notion is to replace this with circulating tokens, where each slice is independently acknowledged, providing a guarantee of delivery to the NEXT hop in the network.
+
+This is achieved with 1PC (one phase commit), where each Ethernet Packet (eight slices) are fully acknowledged in each link. The generalization of this is to explicitly manage Shannon slots (data structures on each side of the link) to maintain Koherence, even when the link fails (in one direction, the other direction, or in both directions at once).
+
+This can be done (as in Fibrechannel)  by arranging the `interaction protocol' to guarantee the pairing of events, and not resort to Timeout and Retry (TAR), which causes cascade failures in networks, both large and small.
+
+This is achieved with the Link Protocol employing the Alternating Bit protocol, and adding the Bill Lynch ABP reconciliation, with two or more bits instead of the individual 1 bit of alternation, which required a round trip to guarantee Shannon Slot Pairing.
+
+
+\section{FAQ}
+
+Q1 (Alan) What problem are you addressing in the scouting writeup?  If it’s discovering routes, it’s not clear to me that ant or bees or even both together do full discovery of the network.  In what way are they better than the flooding algorithm I used?
+
+A1 This is how to achieve `Scale-Independence' We eliminate the need for   every node  to do a `full discovery' of the network, which is what a flooding algorithm would do.  ANTs and BEEs explicitly do not do ``Global" routing. This is an extra way to limit the size of the secure enclave, and not have it able to connect to the outside world.  
+
+
+
+\end{document}

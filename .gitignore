@@ -1,3 +1,56 @@
-.DS_Store
 daedaelus-files/
 
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.nlo
+*.nls
+*.ilg
+*.ind
+*.idx
+*.synctex.gz
+*.glg
+*.glo
+*.gls
+*.ist
+*.bcf
+*.mw
+*.run.xml
+*.xdy
+*.ent
+*.loq
+*acr
+*.mtc*
+*synctex(busy)
+*.maf
+
+# Additional common LaTeX files
+*.acn
+*.acr
+*.alg
+*.glsdefs
+*.lol
+*.nav
+*.snm
+*.vrb
+*.figlist
+*.makefile
+*.fdb_latexmk
+
+# OS generated files
+.DS_Store
+DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

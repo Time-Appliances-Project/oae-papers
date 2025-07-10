@@ -1,0 +1,92 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\section{Rethinking Atomicity: Counterfactual Transactions}
+\marginnote{From ./AE-Specifications-ETH/standalone/Transactions-maybe-dup.tex}
+
+This document challenges the Forward-In-Time-Only (FITO) assumptions behind conventional transactions in distributed systems. It argues that atomicity, as currently conceived, is a flawed abstraction and proposes a framework for reversible subtransactions as a more robust alternative.
+
+\begin{quote}
+\emph{“Transactions begin and they end.”}\\
+\hspace*{0.5cm}---Charlie Johnson, TMF Product News
+\end{quote}
+
+This simple phrase conceals deep design hazards. Transactions appear to begin with a trigger and end with a commit, but in distributed systems, these bookends obscure severe internal inconsistencies. 
+
+At issue are the mechanisms we use to track and guarantee these transactional intervals: timestamps, logs, filesystems, and even our concepts of causality. Each introduces cracks in the facade of atomicity.
+
+\section{The Forward-In-Time-Only Fallacy}
+\marginnote{FITO: Forward-In-Time-Only thinking assumes linear causality.}
+Most distributed systems today adopt what we call \textbf{Forward-In-Time-Only (FITO)} thinking. That is:
+\begin{enumerate}
+  \item \textbf{Open a transaction} with a timestamp.
+  \item \textbf{Apply a sequence} of operations.
+  \item \textbf{Close the transaction} with a commit or rollback.
+\end{enumerate}
+
+But this approach breaks down under scrutiny.
+
+\subsection*{Three FITO Hazards}
+\begin{enumerate}
+  \item \textbf{Timestamps are not unique.} Even on a single machine with GHz processors and nanosecond clocks, timestamp collisions occur. OS-level clock management does not guarantee uniqueness.
+  \item \textbf{Timestamps are single points of failure.} Any drift, packet loss, or sync error in NTP/PTP introduces false ordering assumptions.
+  \item \textbf{Simultaneity is an illusion.} Relativity tells us simultaneity is observer-dependent. Building global event orderings on timestamps is unsafe.
+\end{enumerate}
+
+\section{The False Comfort of Atomicity}
+We often say: "all or nothing." But our stack is built on sand:
+\begin{itemize}
+  \item The database relies on the log.
+  \item The log relies on the filesystem.
+  \item The filesystem relies on \texttt{fsync}.
+  \item \texttt{fsync} relies on storage hardware.
+\end{itemize}
+Each of these layers fails to guarantee true atomicity. When one fails, the recovery model becomes:\textbf{ Smash and Restart}.
+
+\section{The Myth of Reliable Commit}
+Protocols like Two-Phase Commit (2PC) attempt to enforce distributed agreement. But they depend on:
+\begin{itemize}
+  \item Log synchronization across nodes
+  \item Network reliability
+  \item Time-based coordination
+\end{itemize}
+
+When any assumption breaks, so does safety. Eventually, we replace consistency with survivability—and correctness with heuristics.
+
+\section{Toward Reversible Thinking}
+Suppose we reject FITO. Suppose we view the transaction as \emph{reversible}. 
+
+\begin{quote}
+If the forward protocol is correct, we can construct a reverse protocol.
+\end{quote}
+
+This leads to \textbf{reversible subtransactions}: bounded operations that can be undone without global rollback.
+
+\subsection*{Counterfactual Transactions}
+\begin{itemize}
+  \item A transaction can end, then begin again.
+  \item Logs become braids, not linear sequences.
+  \item Atomicity becomes a constraint, not an assumption.
+\end{itemize}
+
+Inspired by Marletto's counterfactual physics, this model embraces partial reversibility as an engineering practice.
+
+\section{Closing the Interval—Reopened}
+\marginnote{Simultaneity is not fundamental. Causality is.}
+"Closing the interval" with a commit only makes sense if we know the state is stable. In reality, it's a guess based on layers of non-atomic operations.
+
+By rethinking transactions through reversible logic, we can:
+\begin{itemize}
+  \item Define precise causal dependencies
+  \item Undo partial effects
+  \item Recover without restart
+\end{itemize}
+
+Reversibility isn't science fiction. It is what rollback always wanted to be.
+
+\section{Conclusion}
+The abstraction of atomicity has outlived its usefulness as a guarantee. In modern distributed systems, FITO thinking and timestamp dependency introduce hazards we can no longer ignore.
+
+It is time to engineer \textbf{reversible protocols}, built on causal semantics—not illusions of simultaneity. Let us design transactions that don't just commit or roll back, but that can \emph{unwind}.
+
+\end{document}

@@ -1,0 +1,100 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{64-Byte Record}
+\marginfig{64-Byte-record.pdf}[64-Byte Record. $8\times8$ byte slices, pre-emptible by responders]
+
+
+
+%64-Byte-Record\footnote{Frames are variable Length in ATM -- return to original Manchester encoding where \texttt{record} is fixed size [ref] }
+
+\AE thernet operates exclusively on fixed-sized records so every transmission has bounded entropy, and pipelines can be made in the hardware with latency guarantees. Most SerDes on the market are designed to operate on 8-byte (64-bit) atomic slices, which align naturally with fixed size encoding schemes like 64b/66b and enable efficient, low-entropy, and latency-predictable data movement through hardware pipelines.
+
+8-bytes is the atomic unit of transmission in \AE thernet, but the fundamental record size is 64 bytes, representing the maximum uninterrupted knowledge transfer permitted by a \LINK. Each frame is structured into \emph{slots} that correspond to exponentially increasing levels of entropy, at the expense of temporal intimacy.
+
+
+
+%\begin{enumerate}
+%\item The protocol prioritizes information reliability and bandwidth allocation on a Neighbor-to-Neighbor (N2N), instead of an End-to-End (E2E) principle in conventional networks.
+%\item Each pair of neighbor nodes is connected \emph{directly} to its neighbor and does not go through any other device or entity.  Advantages include:
+%	\begin{itemize}
+%	\item Security - Connections between nodes is private and near impossible to eavesdrop on without both parties being able to detect that.
+%	\item Confinement - 
+%	\item Temporal intimacy -- events on one side can be precisely correlated with events on the other side
+%	\end{itemize}
+%\item Processing of the packets is  organized in order to process information from the inside out
+%	\begin{itemize}
+%	\item LINK (Fast ULL computations in the Link itself. E.g. for ML/AI linear algebra operators)
+%	\item CELL (the unit of network presence, whether or not it connects via PCIe bus to a host processor
+%	\item TILE (Graph computations such as consensus (Paxos/Raft), including atomic cluster management
+%	\item Local Topology Awareness beyond the 1-hop (3 x 3) tile.
+%	\item	Remote Topology awareness of secure enclave boundaries and gateways to the IP world
+%	\end{itemize}
+%\end{enumerate}
+
+\subsection{Slot Boundaries}
+
+\marginfig[width=1.12\linewidth]{slice-arrival.pdf}[Slice Arrival order (Temporal Intimacy Depth)][][\hspace{-18pt}][+40mm]
+
+In \AE thernet, each slot boundary contributes to the progressive construction of meaning. Rather than dividing slots into fixed roles (e.g., header vs payload), each slice refines the shared semantic context between sender and receiver. This unfolding process is tracked through a series of Sub-ACKs (SACKs), signaling progressively deeper certainty at four boundaries (1, 2, 4, and 8 slices). These boundaries correspond to conceptual layers of comprehension:
+
+\begin{description}
+  \item [Slice 1:] \textbf{Arrival of Context} — Establishes the physical link is live. The receiver confirms deserialization and framing; the message has landed.
+
+  \item [Slice 2:] \textbf{Recognition of Form} — Basic headers or structure emerge. Receiver begins to interpret role and framing, setting state machines into motion.
+
+  \item [Slices 3–4:] \textbf{Activation of Semantics} — The receiver has seen enough to begin logical interpretation: which class of message is it? What resources must it allocate?
+
+  \item [Slices 5–8:] \textbf{Consolidation of Understanding} — With full delivery, the entire 64-byte message is interpreted as a coherent unit. At this point, delivery to the host or downstream actor becomes safe and lossless.
+
+\end{description}
+
+Every slice carries data, but also a layer of \textbf{epistemic weight}. The meaning of the message doesn't come from a single part, but from the \textbf{cumulative structure of all slices}, layered like a wavefunction collapsing toward certainty.
+
+
+
+\subsection{Pre-Emption}
+
+In \AE thernet, it is the responsibility of the receiver to jam the sender and borrow the sender's token to transfer a frame the receiver wants to send. Due to physical limitations, the first few slices will arrive at the receiver before the jam signal contained in the first slice acknowledgement will override the frame's ownership to the receiver until the other side jams for ownership.
+
+This allows one side of the link to jam the other side and utilize the full interaction capacity of the link for its frames. Pre-emption is decided on the first slice acknowledgement, until the other side has something it needs to send, and jams for ownership of one or both snakes. 
+
+There is no jam hierarchy or recursive jamming, frame ownership is a state owned entirely by the \LINK and the \LINK state machines determine when a frame is jammed for ownership. The jammed frame is immediately removed from the sender's queue, and ownership of the jammed frame is returned to the controller for possible re-routing or to jam the frame in at some backoff.
+
+To ensure fair use of frames for maximum throughput, each link communicates status frames with the other side for leaning throughput in one direction or the other.
+
+
+
+
+
+
+%\subsection{Protocol hierarchy:  Four levels of Reversibility:}
+
+%\begin{itemize}
+%\item Context Slice Reversibility 
+%\item Shannon Information (Operand Zone A in Serdes)
+%\item Spekkens Knowledge (Operand Zone B  FPGAs, 2-3 clock cycles in)
+%\item Metcalfe Semantics (Operand Zone C in FPGA, 5-8 clock cycles in)
+%\end{itemize}
+
+
+%\subsection{Extended Addressing Modes for Legacy Compatibility}
+
+%To guarantee that no information is lost %\footnote[][-20mm]{All distributed systems need transactions. Even applications that run on a single (multicore) machine need them.  If it runs in the cloud, it needs a transactional infrastructure underneath.}% to provide tenant provisioning \& isolation.}, 
+%the slots must be fixed size.  PCIe and CXL attempt to transfer 64 bytes minimum.  This makes the latency (occupation time on the wire) too long for ULL applications. Instead, we propose a minimum of the first slice (Protocol  -- Context).  Optional second slice  (Reliability/Recoverability). The rest is payload for local Ultra-Low-Latency (ULL) Transactions.
+
+%\begin{description}
+%\item [Mode 1]- N2N Neighbor Self-Addressing
+%\item [Mode 2]- Ethernet MAC Addressing
+%\item [Mode 3]- 32-Bit IP Addressing
+%\item [Mode 4]- 128-Bit IP Addressing (Container virtual addresses?)
+%\item [Mode 5]- 10-Bit Cluster Addressing 12-bit VLAN Addressing.
+%\item [Modes 6..8]- Reserved
+%\item [Mode 7]- Reserved
+%\item [Mode 8]- Reserved
+%\end{description}
+
+
+
+\end{document}

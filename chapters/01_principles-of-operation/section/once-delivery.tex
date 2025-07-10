@@ -1,0 +1,80 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+
+\section{Exactly Once Delivery}
+
+\subsection*{Best-Effort is not Good Enough}
+
+Best-effort delivery means packets may be lost, reordered, duplicated, or delayed arbitrarily, and the network makes no guarantees beyond basic frame integrity. This was tolerable when applications lived on the same machine or within a few hops of each other and could tolerate latency spikes or re-transmissions. Today, however, large-scale systems depend on deterministic behavior:
+\begin{itemize}
+	\item \textbf{Distributed databases} depend on atomic commit, snapshot isolation, and causal ordering.
+	\item \textbf{Control loops} in robotics and finance demand low-jitter, bounded-latency paths.
+	\item \textbf{AI accelerators} and smartNICs coordinate at sub-microsecond time scales.
+\end{itemize}
+\vspace{1em}
+
+Classical packet networks were never designed to guarantee \emph{reliability}.  From ALOHA to Ethernet, the assumptions of lossy media, finite buffers, and decentralized contention required higher layers to shoulder the burden of correctness.  Over time we have erected towering protocol stacks whose very purpose is to \emph{mask} loss, duplication, reordering, and delay.  Yet the mechanisms we depend upon--\textit{timeouts and retries}--carry hidden costs that threaten latency, availability, and correctness in ways subtle and profound.
+
+Packets may vanish without a trace (loss), arrive multiple times (duplication), appear in bizarre permutations (reordering), or crawl through the network long after their sender has moved on (delay).  Physical phenomena such as bit errors, congestion, link flaps, and transient routing loops ensure that these pathologies are not edge cases but everyday realities.  The canonical wisdom \textemdash embodied in TCP, QUIC, and countless RPC frameworks \textemdash is to \emph{wait} for an acknowledgement and, failing that, \emph{retry}.  This simple recipe, however, is deceptively dangerous.
+
+A \textbf{timeout} is an admission of ignorance: we do not know whether the message was lost or merely late.  We therefore \emph{speculate} by retransmitting.  Each additional round inflates network load, potentially exacerbating the congestion that caused the delay in the first place.  Worse, timeouts must be conservative---long enough to accommodate the \emph{long tail} of delays---or else false positives trigger needless work.  The tension between responsiveness and safety is irreconcilable: choose a short timeout and risk spurious resends, choose a long one and endure sluggish progress.
+
+
+\subsection*{Timeout and Retries are the Root of All Evil}
+
+Timeouts and retries (TAR) are a ubiquitous mechanism used in database systems, distributed systems, and network protocols to handle the inherent uncertainty of real-time and distributed environments. While they seem to be essential for providing fault tolerance and resilience, they can introduce significant anomalies, inefficiencies, and complexities into transaction systems, often leading to unintended consequences. This essay explores the inherent dangers and drawbacks of using timeouts and retries in distributed systems and databases, with references to transaction anomalies such as deadlocks, inconsistent states, and race conditions.
+
+Distributed systems are inherently complex due to the need to coordinate and synchronize actions across multiple independent components. When an operation or transaction is executed in such systems, timeouts and retries often serve as a safety net. However, these mechanisms can create situations where the assumptions made about system state, consistency, and ordering are violated, leading to various anomalies.
+
+\begin{description}
+
+  \item[Deadlocks]  
+  Retries can reintroduce or prolong circular dependencies in locking systems, especially under protocols like two-phase locking (2PL). A retried transaction may attempt to reacquire locks still held by other retried transactions, amplifying contention and risking system-wide stalling.
+
+  \item[Inconsistent States]  
+  Retrying a partially completed transaction without a full rollback can leave the system in an inconsistent state. Distributed updates that timeout mid-flight may result in divergent views across nodes, violating ACID guarantees.\sidenote{See \cite{Lamport1978} and \cite{Brewer2000}.}
+
+  \item[Race Conditions]  
+  Unsynchronized retries may overwrite concurrent updates, especially in eventually consistent systems.\sidenote{As discussed in \cite{AmazonDynamo2007}.} If two transactions operate on the same key with conflicting logic, retries can lead to lost updates and read anomalies.
+
+  \item[Resource Contention]  
+  High retry rates can overwhelm limited resources--CPU, memory, or bandwidth--triggering more timeouts and creating a feedback loop of congestion. Sophisticated systems like \cite{GoogleSpanner2012} mitigate this with controlled backoff and load-aware retry policies.
+
+\end{description}
+
+
+\subsection*{Exactly-Once Delivery: A Mirage}
+
+Exactly-once semantics require that every message be delivered to the application \emph{once and only once}, despite failures.  In an asynchronous network with crash--stop faults, the famous FLP result shows consensus is unattainable without additional assumptions.  In practice, we settle for \emph{at--least--once} plus idempotent operations or \emph{at--most--once} with explicit application-level deduplication.  Timeouts and retries break the illusion of exactly-once by turning every uncertainty into a potential duplicate.
+
+Under load, synchronized clients often hit the same timeout threshold, regenerating the same request and filling buffers anew.  This \emph{thundering herd} magnifies congestion, extends queueing delays, and forces still more timeouts--a positive feedback loop sometimes called a \emph{retry storm}.  Empirically, tail latencies inflate by orders of magnitude, and coordinated transactions miss their SLA windows. Eventually, upper layers declare failure, roll back work, or attempt compensating actions, further stressing the system.
+
+\subsection*{Beyond Timeout and Retry}
+
+The path to dependable systems begins not with coping mechanisms, but with structural guarantees. Instead of treating uncertainty as inevitable, we can engineer systems that reject ambiguity outright.
+
+\begin{description}
+
+  \item[Fail-Fast Links.]  
+  Rather than tolerate silence, links should fail at the first sign of uncertainty. Inverting the logic of FLP, every ambiguity becomes a deliberate event—a trigger for rollback and recovery, not speculation. This model borrows from quantum triangle networks, where a third party observes and validates the transaction, ensuring that every failure is acknowledged and acted upon.
+
+  \item[Verifiable Stacks.]  
+  From API call to physical transmission, the full stack must be introspectable and enforce ownership, accountability, and intent. Every packet is a commitment; every bit must trace back to its origin. Only then can distributed systems enforce end-to-end responsibility.
+
+  \item[Structural Backpressure.]  
+  Congestion control must be native to the fabric, not bolted on. Credit-based protocols provide bounded buffers and network-level flow control, ensuring packets are never dropped due to oversubscription. The sender sees congestion as feedback, not failure.
+
+  \item[Deterministic Delivery.]  
+  In a truly reliable system, no packet is ever "lost"—it is either delivered or explicitly rejected. Conservation is paramount: every packet must be accounted for, even in failure. The sender must know, with certainty, the fate of every transaction.
+
+\end{description}
+
+We cannot build certainty atop silence. Timeout and retry are holdovers from a more forgiving era, where best-effort sufficed and correctness was the domain of upper layers. But at hyperscale, correctness must begin at the wire. Only by embedding reliability into the fabric—structurally, verifiably, and deterministically—can we create systems that are not only fast, but fundamentally sound.
+
+Together, these four pillars—fail-fast semantics, verifiable responsibility, built-in backpressure, and packet conservation—form the basis for true exactly-once delivery. They eliminate ambiguity not through speculation, but through structure. When the network itself guarantees delivery, rejection, and accountability, the illusion of exactly-once becomes a reality. Not probabilistic. Not eventual. But provable.
+
+
+
+\end{document}

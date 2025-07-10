@@ -1,0 +1,29 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+
+\section{Protocol Description}
+
+\subsection{Initialization Phase}
+
+Each node performs neighbor discovery and assigns temporary colors (tags) to its outgoing links, ensuring local uniqueness. Nodes then gossip their tag assignments to neighbors until a global stable coloring is reached.
+
+\subsection{Path Discovery Phase}
+
+To reach a given MAC address, a node constructs a sequence of tags (path identifiers) describing a color-consistent path through the network. These path sequences are constructed in a Dijkstra-like traversal with color-awareness to avoid collisions.
+
+\subsection{Frame Forwarding}
+
+Frames are modified to include a \emph{Path Identifier Sequence (PIS)} field, which encodes the list of edge colors (tags) to follow. As the frame traverses the network:
+
+\begin{enumerate}
+    \item The switch reads the next tag in the PIS.
+    \item It matches this tag to an outbound port.
+    \item It decrements the PIS and forwards the frame.
+\end{enumerate}
+
+This process continues until the PIS is empty, and the destination MAC is reached.
+
+\end{document}
+

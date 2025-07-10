@@ -1,0 +1,36 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\CELLs and \LINKs are  fundamental elements. \LINKs are \emph{bipartite} causal relationships connected over physical cables (backplanes, coax, fiber). 
+
+
+\section{Cells}
+
+A \CELL is not merely a general-purpose computer. It is a reactive, self-contained participant in a global program. Each \CELL holds local state, executes transactions, and engages in atomic communication with its neighbors. It participates in reversible protocols, encodes causal histories in state transitions, and makes decisions based on local information while remaining consistent with a global ordering.
+
+\CELLs maintain a timebase, manage a local execution queue, and process both incoming transactions and local tasks. Their execution model is event-driven and transactional, but grounded in physical links—each \CELL’s “world” is bounded by the links it can reach.
+
+Crucially, \CELLs are interchangeable. There is no distinction between a compute node, a storage node, or a network switch. Each \CELL contains a portion of all three. The specialization comes from programmatic configuration and emergent behavior, not fixed hardware roles.
+
+\subsection{Failure Modes}
+
+\CELLs fail in bounded ways. The execution environment guarantees that failure is:
+\begin{itemize}
+\item \textbf{Local}: A failing \CELL does not compromise its neighbors.
+\item \textbf{Detectable}: Liveness and responsiveness can be externally verified through link activity and expected transactions.
+\item \textbf{Reversible}: As much as possible, computation and state changes at a \CELL can be rolled back or isolated through transaction lineage and local journaling.
+\end{itemize}
+
+Failures may be:
+\begin{itemize}
+\item \textbf{Crash-fail}: power loss, watchdog-triggered resets, or thermal shutdowns.
+\item \textbf{Byzantine}: misbehavior due to bitflips, radiation events, or malicious actors. These are constrained by cryptographic and causal transaction tracking.
+\item \textbf{Soft}: overloaded slots, or clock skew outside tolerances.
+\end{itemize}
+
+The system design assumes failure. What matters is how neighboring \CELLs detect, isolate, and route around the failure using only local knowledge.
+
+
+
+
+\end{document}

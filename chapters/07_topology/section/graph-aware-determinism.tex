@@ -1,0 +1,139 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\section{Graph Aware Determinism}
+
+%In distributed systems, consensus protocols etc, it's easy to miss how varied network partitions can be. 
+
+When treating the ``Network'' as an \emph{opaque cloud}, it's easy to underestimate how varied network partitions when link failures are 
+asymmetrical:  A can see B, but B can't see A. In a 4 node setup, there are over 1295 potential partitions, and a flaky network can reproduce them all. % ref[ ]
+From a distributed systems (event ordering in a cluster)  as an availability equation, we can easily overestimate how reliable they are, by 3 orders of magnitude.  
+
+Link failures are invisible (hidden) in a Clos. They are 100\% Visible to us in a local graph of \emph{triangular} relationships.
+
+And that's only the clean (binary) binary failures. Real system \emph{flakey} connections are much worse.
+
+\subsection{Transactions need a coordinator\cite{Jim Gray}}
+
+The Æthernet   protocol is designed to be exquisitely sensitive to packet loss and corruption We monitor, detect, diagnose link failures, and recover reversibly and automatically.
+
+
+\subsection{A Resilience Metric for Mesh Networks}
+
+\subsection{Graph Laplacian and Algebraic Connectivity}
+
+\paragraph{The Graph Laplacian.}
+For a simple, undirected graph $G=(V,E)$ with $n = |V|$ vertices, the \emph{combinatorial Laplacian} matrix $L$ is defined as
+\[
+  L \;=\; D \;-\; A,
+\]
+where
+\begin{itemize}
+\item $A$ is the $n\times n$ adjacency matrix, with $A_{ij}=1$ if there is an edge between $i$ and $j$, and $0$ otherwise,
+\item $D$ is the $n\times n$ diagonal \emph{degree matrix}, whose diagonal entries are $D_{ii}=\deg(i)$.
+\end{itemize}
+The Laplacian $L$ is central in spectral graph theory, encoding many connectivity properties of $G$.
+
+\paragraph{Algebraic Connectivity ($\lambda_2$).}
+Let the eigenvalues of $L$ be ordered as
+\[
+  0 \;=\; \lambda_1 \;\le\; \lambda_2 \;\le\; \cdots \;\le\; \lambda_n.
+\]
+The second-smallest eigenvalue, $\lambda_2$, is the \emph{algebraic connectivity} (or Fiedler value). It satisfies
+\begin{itemize}
+\item $\lambda_2>0$ if and only if $G$ is connected,
+\item A larger $\lambda_2$ generally indicates stronger connectivity and a larger cut is required to disconnect $G$.
+\end{itemize}
+Thus, $\lambda_2$ is often seen as a ``spectral'' measure of how robustly $G$ remains connected under certain disruptions.
+
+\subsection{Classical Connectivity Measures}
+
+Beyond $\lambda_2$, there are other classical measures:
+\begin{enumerate}
+\item \textbf{Edge Connectivity} $\lambda(G)$: The minimum number of edges whose removal disconnects $G$.
+\item \textbf{Vertex Connectivity} $\kappa(G)$: The minimum number of vertices whose removal disconnects $G$.
+\item \textbf{Expansion or Isoperimetric Constants}: Relate cut sizes to the cardinalities of sets being separated.
+\end{enumerate}
+These capture \emph{global} connectivity but may not reflect the incremental or adversarial removal of edges in a constrained-valency network.
+
+\subsection{Incremental Link Failures in Constrained-Valency Networks}
+
+In HPC or data-center systems (e.g.\ with IPUs or smartNICs), each node has limited valency (e.g.\ 8 ports), and edges can fail one by one. A single $\lambda_2$ value may not capture how partial or progressive failures degrade connectivity.
+
+\paragraph{Why a single $\lambda_2$ may not suffice.}
+\begin{itemize}
+\item $\lambda_2$ is a \emph{one-shot} global measure. It does not directly model how connectivity degrades as edges fail in sequence.
+\item Some topologies might remain connected but experience severe bottlenecks after a few critical edges fail, which does not show up immediately in a single baseline $\lambda_2$.
+\end{itemize}
+
+\subsection{Potential Approaches for a ``Resilience Metric''}
+
+\subsection{Spectral-Based Extensions}
+
+\paragraph{(a) Expected $\lambda_2$ under random failures.}
+If edges fail independently with probability $p$, form a random subgraph $G_p$. One could define:
+\[
+  \mathbb{E}\bigl[\lambda_2(G_p)\bigr]
+\]
+as a measure of \emph{average} resilience. Larger expected algebraic connectivity implies better tolerance to random edge losses.
+
+\paragraph{Worst-case sequence of $\lambda_2$ values.}
+Define:
+\[
+  R(k)
+  \;=\;
+  \min_{\substack{F \subseteq E \\ |F| = k}}
+  \lambda_2\bigl(G - F\bigr),
+\]
+where $G - F$ is the graph with edges $F$ removed. $R(k)$ measures the smallest $\lambda_2$ achievable \emph{after $k$ edge removals}. A graph is more resilient if $R(k)$ remains high for larger $k$. If $R(k)$ drops to $0$, it indicates that with $k$ removed edges, $G$ can be disconnected.
+
+\subsection{Connectivity-Based Ideas}
+
+\paragraph{(a) $k$-Edge Connectivity Functions.}
+Beyond the single value of $\lambda(G)$ (the edge connectivity), define
+\[
+   \phi(k)
+   \;=\;
+   \min_{\substack{F \subseteq E\\|F|=k}}
+   \Bigl(\text{size of the largest connected component of }G-F\Bigr).
+\]
+If $\phi(k)$ remains large, it means removing any $k$ edges fails to isolate more than a small fraction of nodes. This complements $\lambda_2$ by focusing on \emph{component sizes}.
+
+\paragraph{(b) Edge-disjoint path counts.}
+Using Menger's Theorem, one can track the number of edge-disjoint paths between certain pairs of nodes. Higher numbers of disjoint paths generally imply more resilient connectivity.
+
+\subsection{Weighted or Dynamic Laplacian}
+
+A \emph{dynamic} Laplacian $L(\mathbf{w})$ might assign weights $w_e$ to edges. If an edge is fully failed, $w_e=0$. Then one can track how $\lambda_2\bigl(L(\mathbf{w})\bigr)$ evolves as edges degrade from weight~1 to weight~0, either in random or adversarial patterns.
+
+\subsection{A Concrete Proposal}
+
+A practical ``resilience function'' might be:
+\[
+  R(k)
+  \;=\;
+  \min_{\substack{F \subseteq E\\|F| = k}}
+  \lambda_2\!\bigl(G - F\bigr),
+\]
+where the minimum is taken over all subsets $F$ of $k$ edges. Then:
+\begin{itemize}
+\item $R(0) = \lambda_2(G)$ is the baseline algebraic connectivity.
+\item If $R(k) > 0$, the graph \emph{cannot be disconnected} by removing any $k$ edges. 
+\item The rate at which $R(k)$ decreases with $k$ reflects how fast the network's connectivity deteriorates under incremental failures.
+\end{itemize}
+
+\subsection{Computational Observations}
+Exact computation of $R(k)$ can be expensive for large graphs because there are $\binom{|E|}{k}$ subsets. One may:
+\begin{itemize}
+\item Use \emph{heuristics} or \emph{approximation algorithms} to identify critical edges,
+\item Leverage \emph{min-cut} or \emph{max-flow} bounds to quickly estimate how easy it is to disconnect the graph,
+\item Perform \emph{sampling} over subsets $F$ if a random measure of resilience suffices.
+\end{itemize}
+
+\begin{itemize}
+\item The \emph{graph Laplacian} (and in particular $\lambda_2$) is a powerful spectral tool. It already gives a measure of connectivity robustness.
+\item For \emph{incremental} or \emph{adversarial} link failures, a single $\lambda_2$ value may not capture the full picture. A \emph{function} $R(k)$ over subsets of size $k$ can indicate how robustly the graph handles multiple simultaneous failures.
+\item In \emph{constrained-valency} networks, certain edges are more critical, because each node has fewer possible alternate paths. Thus, a spectral-based metric that accounts for edge removals (like $R(k)$) can better reflect real-world vulnerability.
+\item Combined with classical connectivity measures (e.g.\ $\lambda(G)$, $\kappa(G)$), a Laplacian-based incremental approach provides a practical, mathematically grounded way to define and quantify \emph{resilience} of a network topology.
+\end{itemize}
+\end{document}

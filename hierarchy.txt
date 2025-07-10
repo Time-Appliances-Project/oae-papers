@@ -1,0 +1,286 @@
+.
+├── chapters
+│   ├── 01_principles-of-operation
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   ├── cleanup.sh
+│   │   └── section
+│   │       ├── considerations.tex
+│   │       ├── counting-protocols.tex
+│   │       ├── interactions-bandwidth.tex
+│   │       ├── intro.pdf
+│   │       ├── intro.tex
+│   │       ├── once-delivery.pdf
+│   │       ├── once-delivery.tex
+│   │       ├── promised-networks.tex
+│   │       ├── slots.tex
+│   │       └── symmetric-reversibility.tex
+│   ├── 01_principles-of-operation.pdf
+│   ├── 02_bits-and-bytes
+│   │   ├── @@full-REVIEW.txt
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── byte-record.pdf
+│   │       ├── byte-record.tex
+│   │       ├── flow-transactions.pdf
+│   │       ├── flow-transactions.tex
+│   │       ├── fpga-spec.pdf
+│   │       ├── fpga-spec.tex
+│   │       ├── risc-liveliness.pdf
+│   │       ├── risc-liveliness.tex
+│   │       ├── risc-protocol.tex
+│   │       └── slice-1.tex
+│   ├── 02_bits-and-bytes.pdf
+│   ├── 03_cells-and-links
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── cells.tex
+│   │       ├── discovery.tex
+│   │       ├── fault-model.tex
+│   │       ├── links.tex
+│   │       ├── set-reconciliation.tex
+│   │       └── tango-party.tex
+│   ├── 03_cells-and-links.pdf
+│   ├── 04_addressing-and-routing
+│   │   ├── @@full.pdf
+│   │   └── @@full.tex
+│   ├── 04_addressing-and-routing.pdf
+│   ├── 05_reversible-transactions
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── gpt-reversibility.pdf
+│   │       ├── gpt-reversibility.tex
+│   │       ├── gpt-reversible-transactions.pdf
+│   │       ├── gpt-reversible-transactions.tex
+│   │       ├── linearizeability.pdf
+│   │       ├── linearizeability.tex
+│   │       ├── mathematical-foundations.pdf
+│   │       ├── mathematical-foundations.tex
+│   │       ├── rethinking-atomicity.pdf
+│   │       └── rethinking-atomicity.tex
+│   ├── 05_reversible-transactions.pdf
+│   ├── 06_architecture
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── B2B_Shannon_Channels.pdf
+│   │       ├── B2B_Shannon_Channels.tex
+│   │       ├── bsw-abp.tex
+│   │       ├── hybrid-clocks.tex
+│   │       ├── packet-clocks.tex
+│   │       └── rethinking-datacenter-management.tex
+│   ├── 06_architecture.pdf
+│   ├── 07_topology
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── Chiplet-Æthernet.pdf
+│   │       ├── Chiplet-Aethernet.tex
+│   │       ├── clos.pdf
+│   │       ├── clos.tex
+│   │       ├── graph-aware-determinism.pdf
+│   │       ├── graph-aware-determinism.tex
+│   │       ├── mathematica-spec-language.pdf
+│   │       ├── mathematica-spec-language.tex
+│   │       ├── trees-dags-graphs.pdf
+│   │       └── trees-dags-graphs.tex
+│   ├── 07_topology.pdf
+│   ├── 08_context-and-comparisons
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── broadcom-uec.tex
+│   │       ├── infiniband-ethernet.tex
+│   │       ├── link-objective-comparison.tex
+│   │       ├── llc.tex
+│   │       └── synchronous-review.tex
+│   ├── 08_context-and-comparisons.pdf
+│   ├── 09_history
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── aloha.tex
+│   │       ├── atm.tex
+│   │       ├── ethernet.tex
+│   │       └── intro.tex
+│   ├── 09_history.pdf
+│   ├── 10_theory
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── andromeda.tex
+│   │       ├── conveyor-belt.tex
+│   │       ├── introduction.tex
+│   │       ├── tiktyktik.tex
+│   │       ├── time-relativity-ethernet.tex
+│   │       ├── tsvf.tex
+│   │       └── zero.tex
+│   ├── 10_theory.pdf
+│   ├── 11_requirements-and-usecases
+│   │   ├── @@full.pdf
+│   │   ├── @@full.tex
+│   │   └── section
+│   │       ├── market.tex
+│   │       ├── requirements-1.tex
+│   │       └── unfair-advantage.tex
+│   └── 11_requirements-and-usecases.pdf
+├── cleanup.sh
+├── daedaelus-files
+│   ├── 01_principles-of-operation
+│   │   ├── Bandwidth.pdf
+│   │   ├── CASE.pdf
+│   │   ├── ethernet-best-effort-memoir.pdf
+│   │   ├── Fragiligy.pdf
+│   │   ├── GPT-Essay-Reliable-Ethernet.pdf
+│   │   ├── HFT-Tufte.pdf
+│   │   ├── Hypertransactions.pages.pdf
+│   │   ├── Message-Pairs.pdf
+│   │   ├── Not-good-enough.pdf
+│   │   ├── Reliable-Transport.pdf
+│   │   ├── TAR.pdf
+│   │   └── Unreliable-Ethernet.pdf
+│   ├── 02_bits-and-bytes
+│   │   ├── DAE-Bits.pages.pdf
+│   │   ├── Dual-Frames.pages.pdf
+│   │   ├── ML-operands.pdf
+│   │   ├── Protocol-Byte.pdf
+│   │   ├── Record.pdf
+│   │   └── Topology-Addressing.pdf
+│   ├── 03_cells-and-links
+│   │   ├── Chiplet-Ethernet.pdf
+│   │   ├── DAE-main.pdf
+│   │   ├── Link-beat.pdf
+│   │   ├── Scale-Up-Fabrics.pdf
+│   │   ├── Scouting.pdf
+│   │   └── Slice-Engine.pdf
+│   ├── 04_addressing-and-routing
+│   │   ├── Biology.pdf
+│   │   ├── DAE-BOOK.pdf
+│   │   ├── Graph-Algorithms.pdf
+│   │   ├── Scouting-Routing.pages.pdf
+│   │   └── Secure Addressing.pdf
+│   ├── 05_reversible-transactions
+│   │   ├── @GPT-reversibility.pdf
+│   │   ├── 02_reversibility_AE.pdf
+│   │   ├── 8_reversibility_article.pdf
+│   │   ├── BSW.pdf
+│   │   ├── Counting-Protocols-tufte.pdf
+│   │   ├── Monotonicity.pages.pdf
+│   │   ├── Mulligan Stew.pages.pdf
+│   │   ├── Stirred.pages.pdf
+│   │   └── Transactions-maybe-dup.pdf
+│   ├── 06_architecture
+│   │   ├── hlc_common_knowledge.pdf
+│   │   ├── Rethinking-Datacenter-Management.pdf
+│   │   ├── rethinking-fabrix.pdf
+│   │   ├── serpent.pdf
+│   │   └── Summary-Links.pdf
+│   ├── 07_topology
+│   │   ├── Chiplet-Æthernet.pdf
+│   │   ├── Clos.pdf
+│   │   ├── CLOS5.pdf
+│   │   ├── Daedaelus_Requirements.pdf
+│   │   ├── Mathematica-Spec-Language.pdf
+│   │   └── Trees-DAGs-Graphs.pdf
+│   ├── 08_context-and-comparisons
+│   │   ├── Broadcom-UEC.pdf
+│   │   ├── Infiniband-vs-Ethernet.pdf
+│   │   ├── Infiniband.pdf
+│   │   ├── LLC.pdf
+│   │   ├── Objective-Comparison.pdf
+│   │   └── syncnronous-review.pdf
+│   ├── 09_history
+│   │   ├── ATM.pdf
+│   │   ├── Atomicity-ChatGPT-1.pdf
+│   │   ├── compass.pdf
+│   │   └── History.pdf
+│   ├── 10_theory
+│   │   ├── Andromeda.pdf
+│   │   ├── Conveyor-Belt.pdf
+│   │   ├── Mathematical-Foundation.pdf
+│   │   ├── Patents.pdf
+│   │   ├── Shannon-Content 2.pdf
+│   │   ├── Shannon.pdf
+│   │   ├── Time-Relativity-Ethernet.pages.pdf
+│   │   ├── WSS22-Quantum-Ethernet.nb.pdf
+│   │   └── Zero-Not-Natural.pdf
+│   ├── 11_requirements-and-usecases
+│   │   ├── DAE-main.pdf
+│   │   ├── Daedaelus-Digital-Twins.pdf
+│   │   ├── Market.pdf
+│   │   ├── Requirements-GOOD.pdf
+│   │   ├── Requirements-Tufte 2.pdf
+│   │   ├── Solving_Sudoku.pdf
+│   │   └── Unfair-Advantage.pages.pdf
+│   └── xx_archive
+│       ├── Bandwidth.tex
+│       ├── Biology.tex
+│       ├── BSW.pdf
+│       ├── BSW.tex
+│       ├── compass.tex
+│       ├── EDC-Philosphy.tex
+│       ├── HFT.tex
+│       ├── History.tex
+│       ├── Implementation.tex
+│       ├── Lynch.tex
+│       ├── Metcalfe.tex
+│       ├── OPCODE-Byte.tex
+│       ├── PNP.tex
+│       ├── Record.tex
+│       ├── Requirements-GOOD.tex
+│       ├── Reversibility.tex
+│       ├── Scouting.tex
+│       ├── Shannon.tex
+│       ├── Thermodynamics.tex
+│       ├── TIKTYKTIK.tex
+│       ├── Topology.tex
+│       ├── Triangle.tex
+│       └── Unreliable.tex
+├── deprecated
+│   ├── oae-chapter.cls
+│   └── oae-section.cls
+├── hierarchy.txt
+├── MASTER_REFERENCES.bib
+├── oae-chapter-settings.tex
+├── oae-commands.tex
+├── oae-settings.tex
+├── OAE-SPEC-MAIN.pdf
+├── OAE-SPEC-MAIN.tex
+├── OAE-SPEC-MAIN.tex-backup-${timestamp}.tex
+├── pages
+│   ├── preface.pdf
+│   └── preface.tex
+├── README.md
+├── README.pdf
+├── scripts
+│   └── subfile-modification.sh
+└── sections
+    ├── archived:unused
+    │   └── EDC-Philosphy.tex
+    ├── Bandwidth.tex
+    ├── Biology.tex
+    ├── BSW.pdf
+    ├── BSW.tex
+    ├── compass.tex
+    ├── HFT.tex
+    ├── History.tex
+    ├── Implementation.tex
+    ├── Lynch.tex
+    ├── Metcalfe.tex
+    ├── OPCODE-Byte.tex
+    ├── PNP.tex
+    ├── Record.tex
+    ├── Requirements-GOOD.tex
+    ├── Reversibility.tex
+    ├── Scouting.tex
+    ├── Shannon.tex
+    ├── Thermodynamics.tex
+    ├── TIKTYKTIK.tex
+    ├── Topology.tex
+    ├── Triangle.tex
+    └── Unreliable.tex
+
+41 directories, 243 files

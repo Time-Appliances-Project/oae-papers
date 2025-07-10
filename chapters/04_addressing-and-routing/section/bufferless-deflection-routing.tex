@@ -1,0 +1,96 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+\section*{PART TWO: Connection with Bufferless and Deflection Routing}
+
+Below is an overview of how biologically inspired “scouting” or “discovery” mechanisms connect with key ideas in bufferless (hot-potato) routing and deflection routing, especially in mesh-like topologies where routers have ports arranged along the cardinal (N, E, S, W) and intercardinal (NE, SE, SW, NW) directions.
+
+\subsection*{1. Biologically Inspired “Scouting” and “Routing”}
+
+\textbf{Local decisions and emergent global organization:}
+\begin{itemize}
+    \item \textbf{Scouting/Discovery Phase}: Biologically inspired methods (e.g., ant-colony-inspired or pheromone-based algorithms) often employ “scout” packets or “explorer” agents that roam the network. These scouts collect local congestion or path-quality information and deposit some form of “trail” (akin to pheromones).
+    \item \textbf{Emergent Routing Table Updates}: Each router or switch updates local routing information (sometimes called a local “pheromone table”). Over time, paths that prove consistently “good” get reinforced; less efficient paths fade.
+\end{itemize}
+
+\textbf{Relevance to On-Chip or 2D Mesh Topologies:}
+\begin{itemize}
+    \item \textbf{Local Compass Directions}: In a regular mesh (e.g., 2D grid) or torus, each router has up to 4 (N, E, S, W) or 8 ports (adding NW, NE, SW, SE). A biologically inspired algorithm can treat each output port as a possible “direction of travel.”
+    \item \textbf{Natural Fit for Scouting}: The local directional structure matches how “ants” or “foraging agents” might look around in each direction, choosing a route based on local pheromone levels (akin to local congestion or link utilization).
+\end{itemize}
+
+\subsection*{2. Bufferless (Hot-Potato) Routing}
+
+\textbf{Basics of Bufferless Routing:}
+\begin{itemize}
+    \item \textbf{No Packet Buffers (or Very Limited Buffers)}: Every router either immediately forwards or deflects each incoming packet.
+    \item \textbf{Hot-Potato / Deflection Character}: If the preferred output port is unavailable, the packet is sent out another (less ideal) port.
+\end{itemize}
+
+\textbf{Connection with Biologically Inspired Approaches:}
+\begin{itemize}
+    \item \textbf{Continuous Movement}: Biologically inspired scouts are designed to wander; in a bufferless system, “wandering” (via deflections) is also central.
+    \item \textbf{Adaptive Reinforcement Over Time}: Pheromone or congestion metrics guide most packets down better ports, even if some must deflect.
+\end{itemize}
+
+\subsection*{3. Deflection Routing}
+
+\textbf{How It Works:}
+\begin{itemize}
+    \item \textbf{Forced Misrouting / Deflection}: If the best output port is busy, the packet takes an alternative route.
+    \item \textbf{Common in Low- or No-Buffer Architectures}: Used when buffering is not an option.
+\end{itemize}
+
+\textbf{Compass Ports Integration:}
+\begin{itemize}
+    \item \textbf{Local Prioritization}: A packet heading NE may prefer N or E, deflect to NE, or in worst cases, NW/SE.
+    \item \textbf{Biologically Inspired Ranking}: Use pheromone levels to rank output directions and pick the best available port.
+\end{itemize}
+
+\subsection*{4. Example Flow in an 8-Port Router}
+
+\begin{enumerate}
+    \item Receive a packet from the south port.
+    \item Look up destination (e.g., north-east direction).
+    \item Check local pheromone table: NE is preferred.
+    \item If NE port is free, forward the packet.
+    \item If NE is busy, try N or E or fallback ports.
+    \item If all preferred ports are busy, deflect to any open port (e.g., SW).
+    \item Update pheromone levels based on eventual delivery success.
+\end{enumerate}
+
+\subsection*{5. Literature and Further Reading}
+
+\begin{itemize}
+    \item \textbf{Hot-Potato Routing / Deflection Routing:}
+    \begin{itemize}
+        \item Baran, P. (1962). \textit{On Distributed Communications Networks}. IEEE Transactions on Communications.
+        \item Dally, W., \& Towles, B. (2004). \textit{Principles and Practices of Interconnection Networks}.
+    \end{itemize}
+    
+    \item \textbf{Biologically Inspired / Ant-Based Routing:}
+    \begin{itemize}
+        \item Di Caro, G. A., \& Dorigo, M. (1997). \textit{AntNet: Distributed stigmergetic control for communications networks}. JAIR.
+        \item Schoonderwoerd, R., et al. (1996). \textit{Ant-based load balancing in telecommunications networks}. Adaptive Behavior.
+    \end{itemize}
+
+    \item \textbf{NoC with Deflection / Bufferless Routing:}
+    \begin{itemize}
+        \item Moraes, F. et al. (2004). \textit{A Low Area Overhead Packet-switched Network on Chip}. SBCCI.
+        \item Fallin, C., et al. (2012). \textit{CHIPPER: A Low-Complexity Bufferless Deflection Router}. HPCA.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{6. Concluding Remarks}
+
+\begin{itemize}
+    \item \textbf{Shared Tenets}: Both biologically inspired scouting and deflection routing use localized decision making to produce emergent behavior.
+    \item \textbf{Complementary Mechanics}: Pheromone feedback integrates naturally with bufferless routing decisions.
+    \item \textbf{Directional Routing}: Cardinal and intercardinal ports align well with the 2D mesh and natural directional behavior in biological metaphors.
+\end{itemize}
+
+
+Overall, if you combine a scouting mechanism (to adaptively find good routes) with deflection routing (to handle buffer constraints or high contention), you get a dynamic, emergent routing system in which packets flow continuously and local updates shape global traffic patterns in a self-organizing fashion.
+
+\end{document}

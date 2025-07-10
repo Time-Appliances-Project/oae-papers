@@ -1,34 +1,36 @@
 \documentclass[justified,nobib,oneside]{tufte-book}
-
 \input{oae-settings}
 \input{oae-commands}
-
 \title{Open Atomic \\ Ethernet}
-\author{V0.6}
+\author{V0.6a}
 \date{June 2025}
 \publisher{Open Compute Project -- OAE Workstream}
-
 \begin{document}
   \frontmatter\pagenumbering{roman}
-
   \maketitle
-  
   \subfile{pages/preface.tex}
-
   \tableofcontents
-
-  \mainmatter\setcounter{page}{1}\pagenumbering{arabic}
-
-  \subfile{chapters/01_principles-of-operation/@@full}
-  \subfile{chapters/02_bits-and-bytes/@@full}
-  \subfile{chapters/03_cells-and-links/@@full}
-  \subfile{chapters/04_addressing-and-routing/@@full}
-  \subfile{chapters/05_reversible-transactions/@@full}
-  \subfile{chapters/06_architecture/@@full}
-  \subfile{chapters/07_topology/@@full}
-  \subfile{chapters/08_context-and-comparisons/@@full}
-  \subfile{chapters/09_history/@@full}
-  \subfile{chapters/10_theory/@@full}
-  \subfile{chapters/11_requirements-and-usecases/@@full}
   
+  \mainmatter\setcounter{page}{2}\pagenumbering{arabic}
+  \subfile{chapters/01_principles-of-operation/principles-of-operation}  
+ \subfile{chapters/02_bits-and-bytes/bits-and-bytes}
+  \subfile{chapters/03_cells-and-links/cells-and-links}
+  \subfile{chapters/04_addressing-and-routing/addressing-and-routing}
+  \subfile{chapters/05_reversible-transactions/reversible-transactions}
+  \subfile{chapters/06_architecture/architecture}
+  \subfile{chapters/07_topology/topology}
+  \subfile{chapters/08_context-and-comparisons/context-and-comparisons}
+  \subfile{chapters/09_history/history}
+  \subfile{chapters/10_theory/theory}
+  \subfile{chapters/11_requirements-and-usecases/requirements-and-usecases}
+  
+  
+  
+ %/Users/Sumanth/Library/Mobile Documents/com~apple~CloudDocs/REFERENCES/MASTER_REFERENCES.bib
+ % Or other style
+\bibliographystyle{plainnat}
+\bibliography{MASTER_REFERENCES}
 \end{document}
+
+
+
