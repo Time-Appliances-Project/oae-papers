@@ -3,7 +3,45 @@
 
 \newcommand{\course}{\ifthenelse{\boolean{manuscript}}{manuscript}{course}\xspace}
 
+
 \newcommand{\ak}[1]{{\bf[AK: #1]}}
+
+%  Macro that creates a figure from the global FIGURES dir (margin)
+\usepackage{ifthen}
+
+\NewDocumentCommand{\marginfig}{O{width=\linewidth} m o o o o}{%
+  \begin{marginfigure}\IfValueT{#6}{[#6]}%
+    \IfValueTF{#5}{#5}{\centering}%
+    \includegraphics[#1]{#2}%  % ← Just use the filename, let graphicspath handle it
+    \IfValueTF{#3}{%
+      \caption{#3}%
+    }{%
+      \caption{#2}%
+    }
+    \IfValueTF{#4}{%
+      \label{#4}%
+    }{%
+      \label{fig:#2}%
+    }
+  \end{marginfigure}
+}
+
+\NewDocumentCommand{\fig}{O{width=\linewidth} m o o}{%
+  \begin{figure}
+    \centering
+    \includegraphics[#1]{#2}% 
+    \IfValueTF{#3}{%
+      \caption{#3}%
+    }{%
+      \caption{#2}%
+    }
+    \IfValueTF{#4}{%
+      \label{#4}%
+    }{%
+      \label{fig:#2}%
+    }
+  \end{figure}
+}
 
 \NewDocumentCommand{\floor}{m}{\left\lfloor #1 \right\rfloor}
 \NewDocumentCommand{\ceil}{m}{\left\lceil #1 \right\rceil}
@@ -272,6 +310,11 @@
 \newcommand{\vF}{\rvec{F}}
 \newcommand{\vS}{\rvec{S}}
 \newcommand{\vT}{\rvec{T}}
+
+\let\originalbibliography\bibliography
+\let\originalbibliographystyle\bibliographystyle
+
+% Redefine to suppress bibliographies in chapters when compiling main document
 
 
 %%%% DAE

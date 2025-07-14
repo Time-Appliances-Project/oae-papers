@@ -1,0 +1,226 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\section{TIKTYKTIK}
+\marginnote{From: ./AE-Specifications-ETH/standalone/TIKTYKTIK.tex}
+
+TIKTYKTIK is like the alternating-bit and stop-and-wait protocols in that receipt of a
+packet over a link is acknowledged over that link with a “signal” packet. 
+In that sense,
+these three protocols implement credit based flow control, which simplifies buﬀer management and makes it possible to not have to drop packets when there is a lot of traﬃc.
+
+TIKTYKTIK adds a second round trip, which provides partial common knowledge
+helpful for recovery from link failures. This document walks through TIKTYKTIK
+showing how that common knowledge is used.
+First look at the various stages of common knowledge as the protocol runs without
+failure when Alice sends a packet to Bob.
+
+\begin{enumerate}[itemsep=0.5ex]
+\item \textbf{Alice sends the packet to Bob}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Alice doesn't know if Bob received the packet
+	\item Bob does not know the packet exists
+	\end{itemize}
+
+\item \textbf{Bob receives the packet}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Bob knows that Alice doesn't know that Bob received the packet
+	\end{itemize}
+
+\item \textbf{Bob sends a signal to Alice}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Bob doesn't know if Alice knows that Bob received the packet
+	\end{itemize}
+
+\item \textbf{Alice receives the signal}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Alice knows that Bob received the packet
+	\item Alice knows that Bob doesn't know that Alice knows that Bob received the packet
+	\end{itemize}
+
+\item \textbf{Alice sends the signal}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Alice doesn't know if Bob knows that Alice knows that Bob received the packet
+	\end{itemize}
+
+\item \textbf{Bob receives the signal}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Bob knows that Alice knows that Bob received the packet
+	\item Bob doesn't know if Alice knows that Bob knows that Alice knows that Bob received the packet
+	\item \textbf{Bob can forward the packet}
+	\end{itemize}
+
+\item \textbf{Alice receives the signal}
+	\begin{itemize}[itemsep=0.2ex]
+	\item Alice knows that Bob knows that Alice knows that Bob received the packet
+	\item \textbf{Alice can delete her copy of the packet}
+	\end{itemize}
+\end{enumerate}
+
+This common knowledge is not needed if links never fail. Alice could delete the packet
+as soon as she sent it, and Bob could forward it as soon as he received it. That’s what
+current systems do and why it’s so hard to recover from a link failure.
+
+A data packet can serve as a signal.\sidenote{A data packet can serve as a signal.}
+Links can fail in a number of ways. If they physically break or are unplugged, the PHY
+detects the lost of electrical signal and informs the higher layers. Links can also fail
+silently, such as when the NIC misbehaves. They can also fail in one direction but not
+the other. Silent failures can be detected in these protocols because a signal will never
+be received in either direction. In that sense, there is a level of common knowledge on
+a link failure.
+In what follows, I’ll describe what happens when Alice wants to send a packet to Bob,
+but the link fails at various steps of the protocol. The link is no longer used once one of
+these failures occurs. (The link can be used later after re-initializing the connection.)
+
+\vspace{10px}
+\begin{enumerate}[itemsep=1ex]
+\item \textbf{Alice has a packet to send when link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows Bob doesn't have the packet
+            \item Knows Alice is responsible for it
+        \end{itemize}
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know the packet exists
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Alice sends the packet to Bob then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know if Bob got the packet
+            \item Knows that Bob knows Alice is responsible
+        \end{itemize}
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know that the packet exists
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Bob receives the packet then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Alice knows that Alice is responsible
+        \end{itemize}
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item \textcolor{red}{Alice doesn't know if Alice or Bob is responsible}
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Bob sends signal then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know if Alice got the signal
+            \item \textcolor{red}{Doesn't know if Bob or Alice is responsible}
+        \end{itemize}
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item \textcolor{red}{Alice doesn't know if Alice or Bob is responsible}
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Alice receives the signal then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Bob is responsible
+            \item Knows that Bob doesn't know he is responsible
+        \end{itemize}
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know if Alice got the signal
+            \item \textcolor{red}{Doesn't know if Alice knows that Bob is responsible}
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Alice sends signal then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Bob is responsible
+            \item \textcolor{red}{Doesn't know if Bob knows he is responsible}
+        \end{itemize}
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item \textcolor{red}{Doesn't know if he's responsible for the packet}
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Bob receives the signal then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Alice knows that Bob is responsible
+        \end{itemize}
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Doesn't know if Bob knows that Bob is responsible
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Bob sends signal then link fails}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Bob:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that he is responsible
+            \item Doesn't know if Alice knows he is responsible
+        \end{itemize}
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Bob is responsible
+            \item Doesn't know if Bob knows that Bob is responsible
+        \end{itemize}
+    \end{description}
+    
+\item \textbf{Alice receives signal}
+    \begin{description}[leftmargin=2em, itemsep=0.3ex]
+        \item[Alice:] \begin{itemize}[leftmargin=1em, itemsep=0.2ex]
+            \item Knows that Bob knows that he is responsible
+        \end{itemize}
+    \end{description}
+\end{enumerate}
+
+
+At this point, Alice knows that Bob knows that Bob is responsible, and Bob knows that
+Alice knows that Bob is responsible.
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{%
+\footnotesize
+\textbf{Note:} The items in \textcolor{red}{red} indicate where incomplete common knowledge needs to be resolved over the new path between Alice and Bob.
+}}
+\end{center}
+
+\subsection{TIKTYKTIK: Feedback from ChatGPT}
+
+The analysis you provided explores how "common knowledge" operates within the TIKTYKTIK protocol, especially in the context of link failure recovery. The progression of common knowledge is explained through several stages, starting with Alice sending a packet to Bob and progressing through various acknowledgment signals and link failures.
+
+\paragraph{Key observations:}
+
+\begin{enumerate}
+\item Common Knowledge Phases: The stages you outlined show how knowledge evolves between Alice and Bob as they interact, especially when there’s uncertainty about packet receipt and acknowledgment. These stages are useful for understanding how communication protocols can handle and resolve ambiguities.
+
+\item Link Failures: You go into detail about different link failure scenarios, from Alice sending the packet before failure to Bob acknowledging receipt of the packet after a failure. Each failure step indicates the differing levels of knowledge held by Alice and Bob. These steps, especially when the link fails, highlight the challenges of network fault tolerance, and the importance of "common knowledge" for recovering from these failures.
+
+\item Protocol Behavior with Failure: The distinction between knowledge of responsibility and knowledge of receipt is well captured. The incomplete common knowledge as the link fails suggests that TIKTYKTIK, by adding a second round-trip acknowledgment, resolves uncertainties that could otherwise hinder recovery.
+
+\end{enumerate}
+
+\paragraph{Suggested Refinements:}
+
+\begin{description}
+	\item [Clarity:] Consider rephrasing the stages of knowledge with more emphasis on the protocol mechanics and timing of messages. It could be helpful to lay out the flow of the protocol in a diagram or a clearer timeline to illustrate the evolution of knowledge.
+	\item [Link Failures and Recovery:] While the failure scenarios are well outlined, you could further enhance the analysis by providing examples of real-world failure cases and how TIKTYKTIK compares to other protocols in handling these failures. For example, you could contrast how TCP handles packet loss versus how TIKTYKTIK’s multi-step acknowledgment approach helps resolve knowledge gaps.
+	\item [Mathematical Notation:]If possible, you could introduce formal mathematical notations to express the knowledge states. This would help readers better grasp the protocol’s behavior in a more structured form.
+\end{description}
+
+
+
+\section{Common Knowledge}
+
+In what follows, assume that node Alice is sending a packet to node Bob over the single, fallible link between them.
+
+The Stop and Wait and alternating bit protocols provide credit based flow control using a single round trip.  Bob is free to forward the packet as soon as it arrives, but Alice must wait for a signal from Bob before sending another packet.  If the link breaks before Alice gets a signal from Bob, then Alice may forward the packet again, perhaps on another path.  This behavior makes exactly-once, in-order delivery difficult to implement.
+
+TIKTYKTYK is one round trip beyond stop and wait, which provides partial common knowledge that aids in recovery from failures.  Bob cannot forward the packet until he receives the signal from Alice that completes the second round trip.  A key point is that there are many times when both sides know that both sides know which of them is responsible for forwarding the packet.  In the other cases, the partial common knowledge simplifies recovery.  Alice and Bob use their partial common knowledge to ensure that any packet is only forwarded once, which is a key condition for exactly-once, in-order delivery.
+
+There is minimal loss in latency, because Bob doesn't have to wait for the entire packet to arrive before signaling to Alce that the packet is arriving.  He can do any integrity checks (CRC) while waiting for Alice's signal.  Any loss in latency is compensated for by needing smaller buffers.  There is minimal loss in bandwidth because the signal can be a data packet going in the other direction.
+
+Sometimes links fail silently, which means a signal might not arrive.  In those cases, he nodes will need some heuristic to decide when to stop waiting and declare the link dead.  Fortunately, this heuristic can be purely local because Bob will never get a signal from Alice once she's decided the link is dead.  A clock is commonly used for the heuristic, but care is needed.  For example, if Bob is heavily loaded but Alice is not, she might set her timeout to be too short.  If the situation is reversed, the timeout may be too long.  An alternative is for Alice to count the events she receives on her other ports.  She can declare the link dead if too many of these events are received before she gets one from Bob.  This heuristic is effectively averaging over the workload of all the nodes connected to her, providing a more consistent metric.
+
+
+
+
+
+
+\end{document}

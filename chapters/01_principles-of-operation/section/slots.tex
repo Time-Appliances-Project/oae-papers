@@ -1,0 +1,27 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+
+\section{Fixed size Slots, Perfect Information Feedback}
+
+\AE thernet operates exclusively on fixed-size records, or \emph{slots}, ensuring every transaction carries a known, bounded amount of entropy. This constraint, far from limiting expressiveness, unlocks a powerful class of deterministic behaviors aligned with the structure of digital hardware and the limits of information theory. Each transaction transfers exactly one slot: a fixed-length, self-contained unit of data and control.
+
+Because slots are of known and equal size, \textbf{flow control is dramatically simplified}. This ensures that the sender knows exactly how much information is in flight, and the receiver can verify completeness without ambiguity. There is no need to infer transfer boundaries, negotiate variable lengths, or guess at incomplete frames. Every interaction is atomic and unambiguous. The result is a link state that evolves in predictable, stepwise increments.
+
+\begin{highlightbox}[Definitions]
+\begin{itemize}
+\item \textbf{Shannon Slots}, the logical atomic units of information maintained in the protocol state machine (typically within FPGA registers).
+\item \textbf{Wire Slots}, the physical representation of a slot as it is serialized across the wire.
+\end{itemize}
+\end{highlightbox}
+
+
+The transition from Shannon Slot to Wire Slot is a fixed-length encoding operation — deterministic, invertible, and clock-aligned. Timing closure in the FPGA limits the frequency at which these slots can be emitted or consumed. However, because the slot size is constant and interaction is feedback-governed, the system avoids speculative overrun and maintains perfect pacing even at high utilization.
+
+\AE thernet treats \textbf{Shannon slots as conserved quantities}. Each slot represents an indivisible unit of knowledge. Slots are never silently dropped, corrupted, or left in undefined states. This conservation principle draws a key distinction from best-effort packet-switched networks, where data loss is expected and recovery is probabilistic. In \AE thernet, every Shannon slot is not merely a container of bits, but a semantic object with causal responsibility.
+
+\AE thernet is fully \emph{reversible}; on any error the receiver can reverse the transfer of a token returning ownership, and return responsibility  for correct operation to the initiator  (e.g. Hardware Error, Protocol violation, Software Error or resource exhaustion error). 
+
+
+\end{document}

@@ -1,0 +1,82 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+\section{Ants, Bees, Snakes, Spiders, and Worms: Biologically Inspired Topology Learning}
+
+To support adaptive and scalable routing in chiplet interconnects, we propose several biologically inspired methods for topology discovery and maintenance, especially for networks with nodes of valency 4, 6, or 8.
+
+\subsection{Ant-Based Discovery}
+
+\begin{itemize}
+\item \textbf{Scouts:} Explore the network, collecting path metrics.
+\item \textbf{Pheromone Trails:} Nodes cache recent path qualities.
+\item \textbf{Reinforcement:} Successful paths are promoted; old paths decay.
+\item \textbf{Usage:} Enables adaptive routing without global knowledge.
+\end{itemize}
+
+\subsection{Bee-Inspired Exploration}
+
+\begin{itemize}
+\item \textbf{Hive Nodes:} Aggregate partial topological information.
+\item \textbf{Scouts:} Sample paths and report back.
+\item \textbf{Dance Protocols:} Broadcast high-quality routes to other nodes.
+\item \textbf{Usage:} Useful for semi-centralized routing optimization.
+\end{itemize}
+
+\subsection{Snake Traversals}
+
+\begin{itemize}
+\item \textbf{Traversal Packet:} Systematically visits each reachable node.
+\item \textbf{Data Aggregation:} Builds complete network maps.
+\item \textbf{Return Path:} Reports findings back to the origin node.
+\item \textbf{Usage:} Suitable for diagnostics or rare full-network verification.
+\end{itemize}
+
+\subsection{Spider Web Construction}
+
+\begin{itemize}
+\item \textbf{Threads:} Discovery packets sent on all ports.
+\item \textbf{Local Web:} Maintains neighbor lists and multi-hop connections.
+\item \textbf{Tension Metric:} Indicates link quality (latency, congestion).
+\item \textbf{Usage:} Builds resilient, redundant local meshes.
+\end{itemize}
+
+\subsection{Wormhole Routing: Worm Behavior as Forwarding Strategy}
+
+Wormhole routing segments packets into flits and forwards them in a pipeline manner.
+
+\subsection{Comparison with Other Techniques}
+
+\begin{itemize}
+\item \textbf{Store-and-Forward:} Full packet buffered at each hop; simple but high-latency.
+\item \textbf{Cut-Through:} Begin forwarding upon header arrival; requires moderate buffer sizes.
+\item \textbf{Wormhole:} Forward flits immediately, with minimal buffers.
+\end{itemize}
+
+\subsection{Mechanics of Wormhole Routing}
+
+\begin{itemize}
+\item \textbf{Head Flit:} Reserves path.
+\item \textbf{Body Flits:} Stream through reserved path.
+\item \textbf{Tail Flit:} Releases resources.
+\end{itemize}
+
+\subsection{Hardware Considerations}
+
+\begin{itemize}
+\item \textbf{Buffers:} Minimal per-port buffering (1--2 flits).
+\item \textbf{Flow Control:} Credit-based or handshake-based.
+\item \textbf{Stall Propagation:} Congestion can block entire worm.
+\item \textbf{Virtual Channels:} Prevent deadlocks and increase concurrency.
+\end{itemize}
+
+\subsection{Integration Strategies}
+
+\begin{itemize}
+\item \textbf{Ant + Wormhole:} Explore paths via ants, forward data via wormhole flits.
+\item \textbf{Snake + Destination-Based:} Use full traversals to populate local forwarding tables.
+\item \textbf{Spider + Name-Based:} Webs retain service-to-node mappings.
+\end{itemize}
+
+\end{document}

@@ -1,11 +1,23 @@
 #!/bin/bash
 
-cd "$(dirname "$0")"  # go to the directory of the script
+# Ask for confirmation (optional)
+# osascript -e 'display dialog "Are you sure you want to clean up LaTeX files?" buttons {"Cancel", "OK"} default button "OK"'
 
-# File extensions to delete
-EXTENSIONS=("*.log" "*.idx" "*.maf" "*.mtc*" "*.out" "*.synctex.gz" "*.toc" "*.aux")
+# Change to the directory of the script
+cd "$(dirname "$0")"
 
-# Loop through each pattern and delete matching files
-for pattern in "${EXTENSIONS[@]}"; do
-  find . -type f -name "$pattern" -exec rm -v {} +
-done
+echo "Cleaning up LaTeX auxiliary files..."
+
+# Recursively find and delete LaTeX-generated files
+find . -type f \( \
+  -name "*.aux" -o -name "*.bbl" -o -name "*.blg" -o -name "*.fdb_latexmk" -o \
+  -name "*.fls" -o -name "*.log" -o -name "*.out" -o -name "*.toc" -o \
+  -name "*.lof" -o -name "*.lot" -o -name "*.nlo" -o -name "*.nls" -o \
+  -name "*.ilg" -o -name "*.ind" -o -name "*.idx" -o -name "*.synctex.gz" -o \
+  -name "*.glg" -o -name "*.glo" -o -name "*.gls" -o -name "*.ist" -o \
+  -name "*.bcf" -o -name "*.mw" -o -name "*.run.xml" -o -name "*.xdy" -o \
+  -name "*.ent" -o -name "*.loq" -o -name "*acr" -o -name "*.mtc*" -o \
+  -name "*synctex(busy)" -o -name "*.maf" \
+\) -exec rm -f {} +
+
+echo "Clean-up completed!"

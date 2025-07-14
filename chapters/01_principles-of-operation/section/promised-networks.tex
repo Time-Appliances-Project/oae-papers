@@ -1,0 +1,81 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{Imposition vs. Promise Networks}
+
+At the heart of modern networking lies a fundamental architectural choice: whether communication is \textbf{imposed} or \textbf{promised}. This distinction shapes not just how data is transmitted, but whether it arrives usefully—or contributes to congestion.
+
+\subsection*{Imposition Networks}
+
+In an \emph{imposition network}, transmitters force their state onto the fabric, assuming the network will carry and deliver their packets.\sidenote{Classic Ethernet operates this way: a sender injects frames without guarantee of delivery.} If a switch is overloaded, a buffer is full, or a receiver is slow, frames are dropped silently. The network does not push back; the burden of recovery is delegated to higher layers like TCP, which react only after detecting loss.
+
+This model works under light load and modest expectations, but under stress, it fails noisily. Without link-layer accountability, the sender has no idea how the network is coping—until it’s too late.
+
+\subsection*{Promise Networks}
+
+\emph{Promise networks} invert the flow of responsibility. Rather than pushing unilaterally, each agent advertises what it will accept, under clearly stated conditions. Transmission becomes a handshake, not a shove.
+
+These networks are built on \textbf{contracts}: link-local credits, flow control, congestion notification, and explicit acceptance of responsibility.\sidenote{Technologies like InfiniBand, Fibre Channel, and CAN are promise networks by design.} Ethernet-based protocols such as RoCEv2 attempt to retrofit this model via Priority Flow Control (PFC), with mixed results.
+
+\subsection*{Paired vs. Unpaired Traffic}
+
+The difference between these network philosophies becomes clear when categorizing traffic:
+
+\begin{description}
+  \item[Paired (Acknowledged) Traffic] Every frame is matched by a return promise—an acknowledgment, a credit, or some confirmation that the receiver is ready. These packets carry not just data, but a commitment to deliver it reliably.
+  \item[Unpaired (Blind) Traffic] Sent speculatively or in excess of what the receiver can accept, these packets consume bandwidth, saturate buffers, and are often dropped. They provide no assurance of delivery and may never be noticed by the receiver.
+\end{description}
+
+Promise networks emphasize paired traffic, ensuring that every transmitted bit contributes to mutual information.\marginnote{Unpaired frames do not increase entropy—they leave a correlation hole.} Imposition networks permit unpaired traffic to accumulate, especially under congestion, where it becomes noise—expensive, harmful, and avoidable.
+
+\subsection*{The Congestion Pathology}
+
+Unreliable links are not a solution to congestion, they are its amplifier. When loss is used as a congestion signal, it arrives \emph{late}: often one to three round-trip times after the overload has begun. Meanwhile, high-throughput endpoints may inject millions of unpaired frames, deepening the crisis.
+
+\begin{quote}
+\centering
+\texttt{loss $\rightarrow$ retransmit $\rightarrow$ more traffic $\rightarrow$ more loss}
+\end{quote}
+
+This positive feedback loop turns instability into collapse.\sidenote{TCP's loss-based control is inherently reactive and lagging.} Attempts to band-aid the problem, like bufferbloat, only add latency and jitter. Head-of-line blocking, reordering, and recovery delays further degrade tail-latency guarantees.
+
+\subsection*{Promised Traffic on \AE thernet}
+
+At the core of \AE thernet’s reliability is a circulating token: a physical representation of promise and permission to transmit. Each token is issued by the receiver, and it embodies a credit of exactly one frame. A sender must possess a token to transmit; the token carries the data forward, then returns with its own embedded acknowledgment.
+
+Tokens are not metaphors—they are \emph{entities} in the protocol: atomic, bounded, and verifiable. They circulate continuously between two state machines on either end of a link, forming a closed loop of accountability.
+
+\marginfig{SNAKEs.png}[Each token carries data forward and acknowledgment back, ensuring pairing and fairness at the link level.]
+
+Because a sender cannot outpace the receiver’s ability to consume and recycle tokens, congestion becomes \emph{visible} at the source as backpressure from the network. Transmission slows not due to dropped packets, but because tokens are withheld—the fabric communicates its limits by design, not through failure. This token-based link discipline gives rise to a new set of capabilities:
+
+\begin{description}
+
+  \item[Link-level feedback]  
+  Feedback is embedded in the physics of the link. There is no guesswork, no need for loss-based heuristics. If tokens stop arriving, the sender knows immediately that the path is congested. All outstanding data is bounded by the number of tokens in flight, making buffer overflow and speculative retransmission impossible.
+
+  \item[Lossless credit return]  
+  Each token is both a permission and an acknowledgment: it grants authority to send and confirms receipt of the last transmission. This dual role eliminates the need for separate ACK channels and ensures all traffic is paired and meaningful. There is no such thing as an unacknowledged frame in \AE thernet.
+
+  \item[Actionable ECN marks]  
+  With loss removed as a congestion signal, Explicit Congestion Notification (ECN) becomes trustworthy. Tokens can be marked in-line when passing through congested nodes, then returned to the sender along their normal acknowledgment path. This allows for immediate, unambiguous congestion signaling with no packet loss and no guesswork.
+
+  \item[Deterministic latency]  
+  Because the number of tokens—and thus the number of outstanding frames—is bounded, queues are shallow and predictable. Latency is no longer subject to stochastic variation from contention and buffering. Determinism emerges naturally from the enforced pacing and bounded concurrency of the link.
+
+  \item[Energy efficiency]  
+  With no retransmissions, minimal buffering, and no speculative sending, energy is spent only on useful work. Tokens eliminate waste: every bit transmitted corresponds to a committed delivery. Hardware can be lean, buffers can be shallow, and network silicon can focus on forward progress, not recovery.
+
+\end{description}
+
+By grounding transmission in physical promises—tokens that carry both data and acknowledgement—\AE thernet transforms the network from an imposition fabric into a promise fabric. It closes the loop between sender and receiver at the lowest level, eliminating the uncertainty that drives modern congestion pathologies. Every packet delivered is not just seen—it is \emph{agreed upon}, exactly once.
+
+
+
+
+
+
+
+
+\end{document}

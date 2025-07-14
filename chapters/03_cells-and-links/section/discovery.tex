@@ -1,0 +1,25 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{Initial Discovery}
+
+\marginfig{Bipartite-discovery.pdf}[A Link yet to be discovered, or a flakey link that need to be repaired]
+
+\CELLs discover connections $\exists$xist on \emph{each} of their ports. For connections that once existed (which may have been remembered from previously being powered up), we will find it \emph{impossible} to tell whether we are being woken up for the $1$st time, or the $N$th time*. \marginnote{\vspace{20pt}*Sleeping Beauty paradox: Veritasium: \href{https://youtu.be/XeSu9fBJ2sI?si=Nl70HKeFJT1Rlexb}{The Most Controversial Problem in Philosophy}}
+
+\texttt{Alice} and \texttt{Bob} have no knowledge of each other prior to being powered up for the first time. They discover each other by sending and responding to \texttt{BEACON}s on each of their 8 ports $\{n,ne,de,se,ds,sw,dw,nw\}$. \texttt{BEACON}s are questions: ``is anyone there?'' They assume  neighbor \CELLs have SerDes' that can send \& receive @ 25Gb/s (defined by local clocks, in their frame of reference). Photon cavities (copper and fiber) are expected to be in a fixed frame of reference relative to the \texttt{SELF} \CELL.  Mobile entities may need to adjust this expectation based on the range of doppler shifts expected by \CELLs in motion, for example, in moving vehicles, \texttt{cars}, \texttt{planes}, and \texttt{spacecraft}.
+
+
+Alice sends \texttt{BEACON}s with an exponential backoff: every $1\mu s$, $2 \mu s$, $4 \mu s$, 8 $\mu s$, etc. The  policy for a maximum interval  is determined by the environment, e.g. within a datacenter, one might wish to send  \texttt{BEACON}s every second, whether you need to or not.  This  represents a balance between infrastructure liveness and needless energy dissipation.
+
+
+Single Links are subject to \emph{partial} or \emph{total} failure. Although networks use the word  `partition', for example in the CAP Theorem\cite{CAP}, this concept is inappropriate except in the single \LINK case, when there's no communication with the other side; the  \emph{causal %Ref David Deutch
+ universes**\marginnote{\emph{**Quantum Compatible Interpretation}}} are now isolated from each other.
+ 
+ 
+ 
+ 
+
+
+\end{document}

@@ -1,0 +1,53 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+
+\begin{document}
+
+
+\section{Frame Format}
+
+\vspace{6pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Field}             & \textbf{Length (Bytes)} & \textbf{Notes} \\
+\midrule
+Destination MAC           & 6                      & Standard MAC \\
+Source MAC                & 6                      & Standard MAC \\
+Type/PIS Identifier       & 2                      & Ethertype or custom \\
+Path Identifier Sequence  & Variable               & Encoded tag list \\
+Payload                   & Variable               & As usual \\
+FCS                       & 4                      & Standard CRC \\
+\bottomrule
+\end{tabular}
+\vspace{12pt}
+
+\section{Advantages}
+
+\begin{itemize}
+    \item No need for Layer 3 routing tables.
+    \item Supports programmable switching (e.g., in SmartNICs or eBPF).
+    \item Scales to large networks with sparse connectivity.
+    \item Deterministic pathing avoids congestion and loops.
+\end{itemize}
+
+\section{Challenges}
+
+\begin{itemize}
+    \item Path sequence length is limited by MTU.
+    \item Requires coordination to avoid inconsistent tag assignment.
+    \item Topology changes require propagation of new path info.
+\end{itemize}
+
+\section{Applications}
+
+\begin{itemize}
+    \item HPC clusters with low-latency mesh topologies.
+    \item Edge compute zones with fixed link-layer infrastructure.
+    \item Datacenter overlays where IP is inefficient or unavailable.
+\end{itemize}
+
+\section{Conclusion}
+
+By leveraging edge-coloring strategies for deterministic path discovery and forwarding, Scouting at Layer 2 offers a novel approach to MAC-layer routing. Its foundation in recent algorithmic advances such as those by Li et al.~\cite{li2024vizing} provides a robust and efficient scheme, particularly suited to programmable and high-performance environments.
+
+\end{document}
+

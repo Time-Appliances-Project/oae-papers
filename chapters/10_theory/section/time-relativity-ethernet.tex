@@ -1,0 +1,192 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+\section{Time, Relativity, and Ethernet}
+By now many people are realizing that there’s something amiss in our understanding of the nature of time in computer science. We are learning to think more carefully about whether, or how, the theories of Special Relativity (SR) and General Relativity (GR) might be involved. We are no longer willing to just sweep them under the rug with the assumption of an inertial frame, which is invalid a world where our computers reside: on a rotating sphere, orbiting a star, and in a meaningful gravitational field.
+
+Strawman objections to SR assume we can ignore its effects in the low relative velocity of objects in our environment. Even computers in cars, airplanes and rocketships, where .  But this perspective fails to appreciate the deeper implication that clocks cannot be synchronized in principle; and will therefore be problematic in practice.
+
+Strawman objections to QM claim that it applies only at atomic scales. But the 2022 Nobel prize for Quantum Entanglement demonstrated the scientific community’s confidence that Einstein’s spooky action at a distance is real, measurable, and a foundational property of the universe we live in — and it’s effects manifest at macroscopic scales.
+
+I am either fooling myself (which is highly likely given how easy it is for any of us to fool ourselves), or I am among several (perhaps many) seeking both practical and deterministic mechanisms to manage reliable and consistent event ordering in computers.
+
+Our motivation, as engineers, is to solve problems in distributed systems that undermine consistency, reliability, availability, and performance of databases and file synchronization in conventional cloud infrastructures, and show how it does not need to be the case that they inevitably lose or corrupt data.
+
+The outcome we seek is a software infrastructure for distributed systems based on algorithms whose assumptions about causality go beyond Newtonian and Minkowski spacetime.
+
+% --------------------------------------------------------------------------------------------------
+
+\subsection{A New Perspective:}
+Photons arriving at the JWST have traversed the largest “distances” in the known universe, but they have done so in zero time: the proper time from a photon’s perspective is always zero, no matter how far it has come. 
+
+One reason we may be confused about the nature of time is because the concept of velocity takes us down the wrong path:
+\vspace{5px}
+\begin{itemize}
+  \item Distance is not fundamental,
+  \item Time is not fundamental,
+  \item Therefore why should distance divided by time or it’s calculus equivalent  be fundamental?
+\end{itemize}
+Perhaps this is because the speed of light (SOL) is the pivot around which space and time revolve.
+
+
+\subsection{Key problem: Minkowski Error}
+\begin{itemize}
+  \item Photons don’t carry timestamps. There are no “Minkowski manifold coordinates” transmitted (emitted) alongside or with the photon.
+  \item There are no Minkowski manifold coordinates at the observer (absorber, detector).
+  \item All we have is the arrival of “information” containing wavelength (energy) polarization and phase (we will get to this later). 
+  \item We average photons over intervals of time defined by the observer, not the emitter. 
+  \item It’s impossible to calculate intervals on a Minkowski background, because the coordinate system of the emitter and the observer are inaccessible. They exist only in our imagination.
+  \item Attempts to create a background using NTP, PTP, White Rabbit or Sync E are doomed to fail. This style of thinking misleads us about the nature of causality in our algorithms and prevents us from building reliable distributed systems, i.e., those that don’t silently lose or corrupt data structures—at least not without warning us explicitly that the atomicity assumptions in our subtransaction sequences were violated. 
+\end{itemize}
+
+
+\subsection{OWSOL}
+It is impossible to measure the One-Way Speed of light (OWSOL) [Lewis \& Barnes]. Not only does the Einstein convention assume an average (1/2) of the total (roundtrip) time for what an emitter will measure, it also implies an impractical inertial frame, which exists only in an empty frozen universe — or a specifically engineered pair of mirrors in a rigid frame like Ligo.
+
+Even with ‘uniform’ motion between one mirror and its partner in this measuring system, we must do more than relate the proper time of Alice to the proper time of Bob. But this now implies a Doppler shift, which requires some ‘integration time’ to resolve the uncertainty between the energy (wavelength) and whatever units of time the originator chooses to count as their ‘measurement’.
+
+Whenever the “duration” (time interval) between local clock ticks becomes comparable with the “duration” (space interval) between the mirrors, ambiguity will creep in because of a race condition between the arrival of the photon and the next tick of the local clock.
+
+One way to overcome this race condition, that asynchronous circuits in all computer systems suffer from, is to think about clocks differently. Instead of each side having their own clock and attempting to measure the duration (interval) on a timeline independently of the other party, we use photons themselves as clocks, as Einstein implied. We achieve ‘Temporal Intimacy’ by having each arrival event trigger a reaction (sending event) in a circular, self re-generating relationship. We hesitate to call this a sequence because this interaction is completely symmetric, there is no notion of a direction of time.
+
+Did Alice cause Bob or did Bob cause Alice? This ‘alternating causality’ is equivalent, from the perspective of each party, to time alternately going backwards and then forwards and then backwards again …  in perpetuity.
+
+This line of reasoning highlights the problem of trying to synchronize clocks in our datacenters. The OCP TAP project demonstrates considerable sophistication with experts in the engineering community trying to grapple with this problem.
+
+Unfortunately, these attempts are doomed to failure, there are many ways to describe why, using established physics (SR \& GR) that have many subtle and fascinating insights missing from the school-child rendition of overly simplified models of the physics.
+
+There remains, particularly in SR, the thorny inconsistencies of a real universe that contains matter, radiation and dark energy.
+
+\subsection{Alternative Narrative on Anisotropy}
+When a photon leaves one “system” for the first time, velocity is not defined because both distance and time are not definable. Photon time is always zero, no matter how far the photon travels. Until a photon “arrives”, distance does not exist. The first observer (receiver) of that photon is also unable to determine distance between the emitter and itself. 
+
+However, if that first receiver acts as a mirror and reflects the photon back to the original emitter, then it becomes possible (in principle) for the original emitter to determine the distance of two-way traversal, by referencing some local mechanism that can do some counting on its behalf. As with all quantum clocks, you need one clock in order to measure another. 
+
+This “lack of definability” of distance, in the one way traversal of a light ray, and the proper time of the photon being zero, provides an explanation of why we need a round trip to fully specify information transfer, and why one-way traversals are insufficient.
+This also provides an intuition for why we achieve correlations in Bell state measurements, and still require conventional SOL transfers for signaling. This corresponds to the Lewis and Barnes proof of the extreme case of anisotropy, where the SOL is infinite in one direction and c/2 in the other.
+
+
+\subsection{Indefinite, not infinite}
+Instead of a Newtonian (infinite SOL), the inbound photon from the first emitter, can we obtain an equivalent result by recognizing the initial one-way traversal as “indefinite”? By including Lewis and Barnes’ bounds of both zero and infinite \(\inf\) in the extreme anisotropic case:
+
+\[
+C_{\pm} = \frac{1}{1 \mp \kappa}
+\]
+
+where $\kappa = 1$ corresponds to anisotropic , and $\kappa = 0$ corresponds to an isotropic SOL.
+
+This perspective on space time being “indefinite” appears consistent with recent measurements in the laboratory which decisively demonstrated (to almost 7 standard deviations) the indefinite arrival order of a quantum witness in the quantum switch configurations [See: Rubino et al: Experimental verification of an indefinite causal order]. Although this may be more about indefiniteness in the direction of time.
+
+\subsection{Time, Causality and Clocks}
+The ItsAboutTime.club podcasts (and the Mulligan Stew follow-on) are discussions with computer scientists, physicists, mathematicians and practicing engineers on how to transcend our human limited view of a single timeline going from the infinite past to the infinite future. We explore how to replace Newtonian time with a new intellectual vantage point based on “Kausality” (we hesitate to use the word Causality, because we don’t want it to be obfuscated by the many confused definitions in the computer  science literature).
+
+\subsection{Time is change we can count}
+The modern rendition of Aristotle’s definition of time is expressed in Quantum information Theory as mutual information: But wait! Wasn’t mutual information already in Claude Shannon’s Mathematical Theory of Communication?” Well, yes, it was!
+
+\subsection{What have we  forgotten since Shannon?}
+\begin{itemize}
+  \item Information is not binary zeros and ones, in registers, in memory or on disk.
+  \item Although this may be closer, information is also not bits on the wire, launched by Ethernet transmitters, to get lost and never be seen again.
+  \item Information is surprisal — something we didn’t expect. As Niel Gershenfeld taught us in his book - if I tell you the Sun is going to rise tomorrow morning, that would not be information. If I told you the Sun was not going to rise tomorrow morning, that would be information.
+Information is the answer to a yes/no question. This is why bits (0’s and 1’s) are an appropriate representation of this unexpectedness. Shannons, the unit of Information, represent a 50% probability that we will get a zero (or a one) when we observe what we have received on our Ethernet register after the SerDes has converted the incoming bitstream into something we can latch and pass through some logic so we can interpret what we are seeing.
+  \item What we need most from the logic in our Ethernet links is the resolution of uncertainty. Did the transaction commit or abort? And more importantly, did it get stuck in some state of limbo, where data structures on one side or the other (or both) are inconsistent, and should not be exposed to the host processor on the other side of the CXL bus.
+\end{itemize}
+
+\subsection{Clock Synchronization}
+We have come a long way from our original discussion about photons and the nature of time. We’ve learned that Minkowski Manifolds don’t exist, except in our imagination, and that a ‘background’ timeline of timestamps, in NTP, PTP, White Rabbit or whatever, are also a figment of our imagination. Now let’s put two and two together and see what that comes up to when we think about causality:
+
+\begin{itemize}
+  \item One entity is destined to be alone in perpetuity. Without ‘interactions' with others it will spend eternity being alone without ever comprehending the concept of loneliness.
+  \item It takes two to Tango. Two entities are the minimum necessary to form an interaction, for “mutual” information to have any meaning. But although entanglement is monogamous, it also cannot display any dynamic behavior. Once each partner has found each other in the universe, they will remain entangled for the rest of eternity, and be only slightly better off than our single lonely entity.
+  \item It takes three to Party. As Carlo Rovelli points out in Relative Quantum Mechanics, it takes a 3rd party (Charlie) to observe dynamical behavior, providing “all of the information possessed by a certain observer is stored in physical variables of that observer and thus is accessible by measurement to other observers”.
+\end{itemize}
+
+\subsection{Context}
+After thinking about the nature of time in the design of computer systems: processors, cache hierarchies, interconnects and networks for most of my career, I have found a repeating pattern: Computer scientists, are trained to think sequentially. We are in love with machines that do one damn thing after another: sequentially, monotonically, irreversibility, and their unfortunate pipe-dream: idempotency. 
+
+Distributed systems developers are accustomed to  those illusions when building and scaling their systems, to be tolerant to all manner of failures as they grow, and exposed to unexpected traffic patterns.
+
+\subsection{Where is this Going?}
+Networks do exactly the wrong thing. They take a half duplex notion of “broadcasting” information blindly without “knowing” if the information is being received (and remembered) in receivers (observers).  Before we get into the also confused concept of knowledge and common knowledge let’s see what we get without interactions (the two-way exchange of Shannons).
+
+\begin{itemize}
+  \item Nothing. Fire and forget is pointless, it can never be transactional. It takes two to tango and three to party.
+  \item Half-duplex also breaks when we expect the other party to respond within our current context (the question we are asking) with a yes/no answer. 
+  \item Human interactions over two-way walkie-talkies, exhibit the same behavior. If the other party has gone to lunch or is taking a vacation, they may not even be listening. 
+  \item Their radio may not un-squelch because the transmit signal was too weak, or the receiver experienced  “noise” which violated the signal to noise ratio that the receiver depends upon. 
+  \item The batteries may have run out. The receiver had lost “Temporal Intimacy” with the transmitter (emitter). 
+  \item This loss of “Temporal Intimacy” is also a deliberately engineered manifestation of optimizing  for the wrong metric in system design, such as CPU cycles or network bandwidth.
+\end{itemize}
+
+What Pat Helland refers to as Rip Van Winkle.
+
+\subsection{Examples Include:}
+\begin{itemize}
+  \item Garbage collectors going AWOL
+  \item Virtual machines being suspended
+  \item Containers’ involuntary smash \& restart when Kubernetes agents miss a heartbeat or gets confused about what question they were asking
+  \item Processes being involuntarily pre-empted by the scheduler in the kernel
+  \item Cache misses
+  \item Page faults
+\end{itemize}
+
+The list goes on. We have difficulty calculating an “Interval” of time because even local notions of time on a single system rely on (what Edward Lee refers to as) “different timelines” and clocks within their architecture.
+
+We now have processors with over 1,000 cores (Ampere ARM). Why do we insist on interrupting all of them to make them ‘context switch’ to optimize processor utilization? It’s time our OS architecture moved on and recognize that causality and latency are the scarce resources, not CPU cycles or network bandwidth.
+
+\subsection{Where Else is this Going?}
+
+The biggest culprit in this tragedy of loss of Temporal Intimacy is not the processor, cache hierarchy or OS in a single node, it's the Network.
+IP (and TCP) try their best to cope with what they can get on top of lossy Ethernet in a conventional Clos network.
+
+The End to End (E2E) principle works only for a simple packet sequence over an unreliable network. It was invented when the primary use case was file transfer (a finite stream of bytes sent to a printer).
+
+It works abysmally poorly for transactions that require an unbroken sequence of atomic interactions to deterministically transfer Shannon Information from one node to another.
+
+Note that we chose the word “transfer” here, not “copy”. Our premise is that we cannot achieve exactly-once semantics without some mechanism to ensure conserved quantities and we cannot conserve quantities when we copy information willy-nilly, because that would make it impossible to keep track of Shannons, and account for them.
+
+\subsection{Ethernet Spacetime}
+Now that we’ve separately described Shannon information on an Ethernet link as surprisal, and photon traversals in spacetime as indeterminate in measurements of the one way speed of light (OWSOL), we now put the two together in Ethernet Spacetime.
+
+The Alternating Causality (AC) protocol is already a staple of the networking industry, implemented originally as the Alternating Bit Protocol (ABP) or “Stop and Wait” (SAW) protocol, which preceded credit based flow control, commonplace in Infiniband, and now Ethernet.
+
+Credit-based flow control has the semantics of conserved quantities (CQ), and one might consider building on this to try and achieve exactly-once semantics (EOS), but alas, current versions of Ethernet and Infiniband still rely on timeouts and retries to recover when liveness (Temporal Intimacy) is lost.
+
+This happens because designers of switches and routers focus on delivering bandwidth. 
+Researchers tried to overcome the imposition-style behavior of protocols at the IP layer with promise-style behaviors in transport protocols like Homa.  While this may improve the emergent behaviors of unexpected congestion events in the network, it is far from perfect and illuminates why congestion  control needs to be addressed in L2 and not L3.
+
+The Ultra Ethernet Consortium (UEC) plan to address the problem of congestion and dropped packets by more aggressively sending packets through the switched network via multiple paths. The extreme case being sending packets on all ports and hoping the receiver can sort out the mess at the other end using some form of reordering buffer. They also promote optimizations to more selectively fill holes in the reordering buffer instead of the go-back-N approach of TCP and Infiniband.
+
+\subsection{Bang Bang Bang Networking is inconsistent with the needs of distributed systems}
+
+Unfortunately the bang bang bang style of networking, resting ultimately on timeouts and retries, results in cascade failures — which manifest as Limpware, Metastable failures, and Grey failure.
+
+This is in addition to, and exacerbates, the silent loss and corruption of data that we see everywhere in open-source databases and consensus tools to coordinate distributed systems. 
+
+Gossip protocols are the ultimate hammer in bang bang bang networking. Statistically maintaining liveness by having each node transitively connect its heartbeats to a graph of flat network partners to probabilistically improve temporal awareness, without ultimately achieving temporal intimacy. Gossip protocols are employed extensively at Amazon and in software like Hashicorp’s Consul and Terraform.
+Unfortunately, gossip protocols also impose a nondeterministic amplification of bandwidth by sending redundant packets through the network.  This further exacerbates the congestion, packet loss, which leads to more silent data loss and corruption.
+
+\subsection{Possible Solution?}
+
+In contradistinction to the industry efforts to manage congestion and packet loss, the Daedaelus team has conceived, designed and tested an actual Temporal Intimacy Protocol on Ethernet.
+
+The breakthrough is eliminating timeouts and retries; by using an event-driven protocol where events are accounted for using the principle of Conserved Quantities (CQ) in each link. Accounting for token insertion and retirement is easy, when the application controls the spanning trees, instead of waiting for innovation to occur in the switches and routers, under the control of network operators.
+
+Our solution is targeted on the Edge.
+
+We see the potential for a much needed paradigm shift as we enter the Chiplet Revolution and learn to rethink our notions of time and event order in distributed systems must be deterministic on demand.
+
+\subsection{Temporal Intimacy is not Simultaneity}
+We know that the Conventionality of Simultaneity must be replaced by something not dependent on Newtonian time, or Minkowski Spacetime. According to John Norton:
+\begin{quote}
+“The conventionality of simultaneity pertains to judgments of simultaneity of distant events in just one inertial frame. In asserts that there is no single, correct judgment of simultaneity. Rather, in each inertial frame, we have broad freedom in assigning simultaneity to pairs of events. In the same frame of reference, one person may assign relations of simultaneity one way; another person may do it differently. Within some limits, neither is factually wrong, according to the conventionality thesis, for there is no unique fact of simultaneity in the world”.
+\end{quote}
+
+Temporal Intimacy requires two-way interactions, not one way (fire and forget) broadcasts. Otherwise, how does the emitter know if the absorber received the information?
+
+\subsection{Tentative Conclusions}
+Monotonicity is in the eye of the observer.
+Clock Synchronization Error is indistinguishable from Latency.
+A femto second interval is an eternity on the real line.
+
+\end{document}

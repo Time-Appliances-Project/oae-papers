@@ -1,0 +1,63 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{Atomic Ethernet Frame Format: Æ-Link CQ Interactions}
+
+% Fixed version with proper spacing and formatting
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Field} & \textbf{Size (bits)} & \textbf{Context} \\
+\hline
+Slice 1 & 8 & OPCODE (Protocol Specifier) \\
+Slice 1 & 8 & Liveness (TIKTIKTIK) \\
+Slice 1 & 8 & State (State Machine Specifier) \\
+Slice 1 & 8 & Transition (State Machine Transition) \\
+Slice 1 & 32 & Operand (One-shot CQ Interactions) \\
+\hline
+Slice 2--8 & 512 & Operand (One-Shot CQ Interactions) \\
+\hline
+\end{tabular}
+\caption{\AE{} Minimalist CQ Protocol. See: Slice Engine Frame Format Spec.}
+\label{tab:cq-protocol}
+\end{table}
+\vspace{20pt}
+
+\section{Slice 1 -- Byte 1 Protocol}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Field} & \textbf{Size (bits)} & \textbf{OPCODE} \\
+\hline
+Slice 1 & 8 & Context (Protocol Specifier) \\
+\hline
+\end{tabular}
+\caption{Protocol Specifier.}
+\label{tab:protocol-spec}
+\end{table}
+\vspace{20pt}
+
+\subsection{Slice 1 -- Byte 2 Liveness}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|l|}
+\hline
+\textbf{Field} & \textbf{Size (bits)} & \textbf{LIVENESS} \\
+\hline
+Slice 1 & 8 & TIKTIKTIK (Liveness Specifier) \\
+\hline
+\end{tabular}
+\caption{Liveness Specifier.}
+\label{tab:liveness-spec}
+\end{table}
+
+
+
+
+\end{document}
