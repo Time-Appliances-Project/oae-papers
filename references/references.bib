@@ -72,6 +72,84 @@
 	year = {2000},
 	bdsk-url-1 = {https://doi.org/10.1145/343477.343502}}
 
+@misc{Borrill2022,
+	author = {Borrill, Paul},
+	date-added = {2022-12-21 13:07:03 -0800},
+	date-modified = {2022-12-22 16:25:17 -0800},
+	journal = {Wolfram Community},
+	title = {Quantum Ethernet},
+	url = {community.wolfram.com},
+	year = {2022},
+	bdsk-url-1 = {community.wolfram.com}}
+
+@inproceedings{li2024vizing,
+	author = {Bernstein, Aaron and Bhattacharya, Sayan and Kiss, Peter and Saranurak, Thatchaphol},
+	booktitle = {Proceedings of the 57th Annual ACM Symposium on Theory of Computing},
+	pages = {132--143},
+	title = {Deterministic Dynamic Maximal Matching in Sublinear Update Time},
+	year = {2025}}
+
+@inproceedings{BSW,
+	author = {Davies, Donald W and Bartlett, Keith A and Scantlebury, Roger A and Wilkinson, Peter T},
+	booktitle = {Proceedings of the first ACM symposium on Operating System Principles},
+	pages = {2--1},
+	title = {A digital communication network for computers giving rapid response at remote terminals},
+	year = {1967}}
+
+@misc{CAP,
+	abstract = {In distributed applications, Brewer's CAP theorem tells us that when networks become partitioned, there is a tradeoff between consistency and availability. Consistency is agreement on the values of shared variables across a system, and availability is the ability to respond to reads and writes accessing those shared variables. We quantify these concepts, giving numerical values to inconsistency and unavailability. Recognizing that network partitioning is not an all-or-nothing proposition, we replace the P in CAP with L, a numerical measure of apparent latency, and derive the CAL theorem, an algebraic relation between inconsistency, unavailability, and apparent latency. This relation shows that if latency becomes unbounded (e.g., the network becomes partitioned), then one of inconsistency and unavailability must also become unbounded, and hence the CAP theorem is a special case of the CAL theorem. We describe two distributed coordination mechanisms, which we have implemented as an extension of the Lingua Franca coordination language, that support arbitrary tradeoffs between consistency and availability as apparent latency varies. With centralized coordination, inconsistency remains bounded by a chosen numerical value at the cost that unavailability becomes unbounded under network partitioning. With decentralized coordination, unavailability remains bounded by a chosen numerical quantity at the cost that inconsistency becomes unbounded under network partitioning. Our centralized coordination mechanism is an extension of techniques that have historically been used for distributed simulation, an application where consistency is paramount. Our decentralized coordination mechanism is an extension of techniques that have been used in distributed databases when availability is paramount.},
+	author = {Lee, Edward A. and Bateni, Soroush and Lin, Shaokai and Lohstroh, Marten and Menard, Christian},
+	date-added = {2023-05-28 14:49:02 -0700},
+	date-modified = {2025-07-08 17:31:44 -0700},
+	doi = {10.48550/arXiv.2109.07771},
+	file = {arXiv Fulltext PDF:files/211/Lee et al. - 2021 - Quantifying and Generalizing the CAP Theorem.pdf:application/pdf;arXiv.org Snapshot:files/212/2109.html:text/html},
+	keywords = {Computer Science - Distributed, Parallel, and Cluster Computing},
+	month = sep,
+	note = {arXiv:2109.07771 [cs]},
+	publisher = {arXiv},
+	title = {Quantifying and Generalizing the CAP Theorem},
+	url = {http://arxiv.org/abs/2109.07771},
+	urldate = {2023-01-29},
+	year = {2021},
+	bdsk-url-1 = {http://arxiv.org/abs/2109.07771},
+	bdsk-url-2 = {https://doi.org/10.48550/arXiv.2109.07771}}
+
+@article{AmazonDynamo2007,
+	author = {DeCandia, Giuseppe and Hastorun, Deniz and Jampani, Madan and Kakulapati, Gunavardhan and Lakshman, Avinash and Pilchin, Alex and Sivasubramanian, Swaminathan and Vosshall, Peter and Vogels, Werner},
+	date-modified = {2025-07-08 17:55:57 -0700},
+	journal = {ACM SIGOPS operating systems review},
+	number = {6},
+	pages = {205--220},
+	publisher = {ACM New York, NY, USA},
+	title = {Dynamo: Amazon's highly available key-value store},
+	volume = {41},
+	year = {2007}}
+
+@misc{Gray2004,
+	abstract = {The distributed transaction commit problem requires reaching agreement on whether a transaction is committed or aborted. The classic Two-Phase Commit protocol blocks if the coordinator fails. Fault-tolerant consensus algorithms also reach agreement, but do not block whenever any majority of the processes are working. Running a Paxos consensus algorithm on the commit/abort decision of each participant yields a transaction commit protocol that uses 2F +1 coordinators and makes progress if at least F +1 of them are working. In the fault-free case, this algorithm requires one extra message delay but has the same stable-storage write delay as Two-Phase Commit. The classic Two-Phase Commit algorithm is obtained as the special F = 0 case of the general Paxos Commit algorithm.},
+	author = {Gray, Jim and Lamport, Leslie},
+	doi = {10.48550/arXiv.cs/0408036},
+	file = {Preprint PDF:/Users/susan.a.angelo/Zotero/storage/CPVG8GFE/Gray and Lamport - 2004 - Consensus on Transaction Commit.pdf:application/pdf;Snapshot:/Users/susan.a.angelo/Zotero/storage/3G3XPASK/0408036.html:text/html},
+	month = aug,
+	note = {arXiv:cs/0408036},
+	publisher = {arXiv},
+	title = {Consensus on Transaction Commit},
+	url = {http://arxiv.org/abs/cs/0408036},
+	urldate = {2025-04-12},
+	year = {2004},
+	bdsk-url-1 = {http://arxiv.org/abs/cs/0408036},
+	bdsk-url-2 = {https://doi.org/10.48550/arXiv.cs/0408036}}
+
+@inproceedings{GoogleSpanner2012,
+	author = {Corbett, James C. and Dean, Jeffrey and Epstein, Michael and Fikes, Andrew and Frost, Christopher and Furman, J. J. and Ghemawat, Sanjay and Gubarev, Andrey and Heiser, Christopher and Hochschild, Peter and Hsieh, Wilson and Kanthak, Sebastian and Kogan, Eugene and Li, Hongyi and Lloyd, Alexander and Melnik, Sergey and Mwaura, David and Nagle, David and Quinlan, Sean and Rao, Rajesh and Rolig, Lindsay and Woodford, Dale and Saito, Yasushi and Taylor, Christopher and Szymaniak, Michal and Wang, Ruth},
+	booktitle = {{OSDI}},
+	date-added = {2023-01-18 11:19:49 -0800},
+	date-modified = {2025-07-08 17:29:33 -0700},
+	file = {Full Text PDF:files/724/Corbett et al. - 2012 - Spanner Google's Globally-Distributed Database.pdf:application/pdf},
+	shorttitle = {Spanner},
+	title = {Spanner: {Google}'s {Globally}-{Distributed} Database},
+	year = {2012}}
+
 @misc{threevaluedlogic2025,
 	abstract = {In logic, a three-valued logic (also trinary logic, trivalent, ternary, or trilean, sometimes abbreviated 3VL) is any of several many-valued logic systems in which there are three truth values indicating true, false, and some third value. This is contrasted with the more commonly known bivalent logics (such as classical sentential or Boolean logic) which provide only for true and false.
 Emil Leon Post is credited with first introducing additional logical truth degrees in his 1921 theory of elementary propositions. The conceptual form and basic ideas of three-valued logic were initially published by Jan {\L}ukasiewicz and Clarence Irving Lewis. These were then re-formulated by Grigore Constantin Moisil in an axiomatic algebraic form, and also extended to n-valued logics in 1945.},

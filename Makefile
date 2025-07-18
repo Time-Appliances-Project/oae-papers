@@ -2,7 +2,7 @@
 # Integrates all workflow scripts for a complete LaTeX development environment
 
 # Configuration
-MAIN_TEX = main.tex
+MAIN_TEX = OAE-SPEC-MAIN.tex
 MAIN_PDF = $(MAIN_TEX:.tex=.pdf)
 PYTHON = python3
 SCRIPTS_DIR = scripts
@@ -39,13 +39,17 @@ help:
 	@echo "  format       - Format LaTeX code"
 	@echo "  pack         - Create distribution archive"
 	@echo ""
-	@echo "$(YELLOW)Development:$(NC)"
-	@echo "  watch        - Auto-rebuild on file changes"
+	@echo "$(YELLOW)Chapter Targets:$(NC)"
+	@echo "  build-chapter CHAPTER=name    - Build specific chapter"
+	@echo "  setup-chapter CHAPTER=name    - Setup specific chapter"
+	@echo "  clean-chapter CHAPTER=name    - Clean specific chapter"
+	@echo "  build-all-chapters            - Build all chapters"
+	@echo "  list-chapters                 - List available chapters"
+	@echo ""
 	@echo "  count        - Count words in document"
 	@echo "  check        - Check for issues (refs, citations, etc.)"
-	@echo "  spell        - Run spell checker"
 	@echo ""
-	@echo "$(YELLOW)Maintenance:$(NC)"
+	@echo "$(YELLOW)Development:$(NC)"
 	@echo "  clean-all    - Deep clean (including PDFs)"
 	@echo "  backup       - Create timestamped backup"
 	@echo "  figures      - Pull figures only"
@@ -275,10 +279,131 @@ install-deps:
 	@command -v aspell >/dev/null 2>&1 && echo "$(GREEN)✓ aspell found$(NC)" || echo "$(YELLOW)○ aspell not found (for spell target)$(NC)"
 	@command -v detex >/dev/null 2>&1 && echo "$(GREEN)✓ detex found$(NC)" || echo "$(YELLOW)○ detex not found (for count target)$(NC)"
 
+# List available chapters
+.PHONY: list-chapters
+list-chapters:
+	@echo "$(BLUE)Available chapters:$(NC)"
+	@for chapter_dir in chapters/*/; do \
+		if [ -d "$chapter_dir" ]; then \
+			chapter_name=$(basename "$chapter_dir"); \
+			tex_file=$(find "$chapter_dir" -name "*.tex" -maxdepth 1 | head -1); \
+			if [ -n "$tex_file" ]; then \
+				pdf_file="${tex_file%.tex}.pdf"; \
+				if [ -f "$pdf_file" ]; then \
+					echo "  ✓ $chapter_name (built)"; \
+				else \
+					echo "  ○ $chapter_name (not built)"; \
+				fi; \
+			else \
+				echo "  ? $chapter_name (no .tex file)"; \
+			fi; \
+		fi; \
+	done
+
+# Build specific chapter (FIXED)
+.PHONY: build-chapter
+build-chapter:
+	@if [ -z "$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Specify chapter with CHAPTER=chapter-name$(NC)"; \
+		echo "Available chapters:"; \
+		$(MAKE) list-chapters; \
+		exit 1; \
+	fi
+	@if [ ! -d "chapters/$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Chapter directory not found: chapters/$(CHAPTER)$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)▶ Building chapter: $(CHAPTER)$(NC)"
+	@cd "chapters/$(CHAPTER)" && \
+	CHAPTER_TEX=$(find . -name "*.tex" -maxdepth 1 | head -1) && \
+	if [ -n "$CHAPTER_TEX" ]; then \
+		echo "Found: $CHAPTER_TEX"; \
+		if [ -f "../../scripts/build.sh" ]; then \
+			../../scripts/build.sh "$CHAPTER_TEX"; \
+		else \
+			echo "$(RED)Error: build.sh not found$(NC)"; \
+			exit 1; \
+		fi; \
+	else \
+		echo "$(RED)Error: No .tex file found in chapters/$(CHAPTER)$(NC)"; \
+		exit 1; \
+	fi
+
+# Setup for specific chapter (FIXED)
+.PHONY: setup-chapter
+setup-chapter:
+	@if [ -z "$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Specify chapter with CHAPTER=chapter-name$(NC)"; \
+		$(MAKE) list-chapters; \
+		exit 1; \
+	fi
+	@if [ ! -d "chapters/$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Chapter directory not found: chapters/$(CHAPTER)$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)▶ Setting up chapter: $(CHAPTER)$(NC)"
+	@cd "chapters/$(CHAPTER)" && \
+	echo "Working in: $(pwd)" && \
+	if [ -f "../../scripts/pull-figures.sh" ]; then \
+		echo "Pulling figures..."; \
+		../../scripts/pull-figures.sh; \
+	else \
+		echo "$(YELLOW)Warning: pull-figures.sh not found$(NC)"; \
+	fi && \
+	if [ -f "../../scripts/pull-references.py" ]; then \
+		echo "Pulling references..."; \
+		python3 ../../scripts/pull-references.py; \
+	else \
+		echo "$(YELLOW)Warning: pull-references.py not found$(NC)"; \
+	fi
+
+# Clean specific chapter
+.PHONY: clean-chapter
+clean-chapter:
+	@if [ -z "$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Specify chapter with CHAPTER=chapter-name$(NC)"; \
+		$(MAKE) list-chapters; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)▶ Cleaning chapter: $(CHAPTER)$(NC)"
+	@cd "chapters/$(CHAPTER)" && \
+	if [ -f "../../scripts/cleanup.sh" ]; then \
+		../../scripts/cleanup.sh; \
+	else \
+		echo "$(YELLOW)Using fallback cleanup$(NC)"; \
+		rm -f *.aux *.log *.bbl *.blg *.out *.toc *.synctex.gz *.fls *.fdb_latexmk; \
+	fi
+
+# Build all chapters
+.PHONY: build-all-chapters
+build-all-chapters:
+	@echo "$(BLUE)▶ Building all chapters...$(NC)"
+	@for chapter_dir in chapters/*/; do \
+		if [ -d "$chapter_dir" ]; then \
+			chapter_name=$(basename "$chapter_dir"); \
+			echo "$(YELLOW)Building chapter: $chapter_name$(NC)"; \
+			$(MAKE) CHAPTER="$chapter_name" build-chapter || exit 1; \
+		fi; \
+	done
+
+# Setup for specific chapter
+.PHONY: setup-chapter
+setup-chapter:
+	@if [ -z "$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Specify chapter with CHAPTER=01_principles-of-operation$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)▶ Setting up chapter: $(CHAPTER)$(NC)"
+	@cd "chapters/$(CHAPTER)" && \
+	if [ -f "../../scripts/pull-figures.sh" ]; then \
+		../../scripts/pull-figures.sh; \
+	fi && \
+	if [ -f "../../scripts/pull-references.py" ]; then \
+		python3 ../../scripts/pull-references.py; \
+	fi
 # Show project status
 .PHONY: status
 status:
-	@echo "$(BLUE)LaTeX Project Status$(NC)"
 	@echo "===================="
 	@echo "Main file: $(MAIN_TEX)"
 	@echo "PDF exists: $$([ -f '$(MAIN_PDF)' ] && echo 'Yes' || echo 'No')"

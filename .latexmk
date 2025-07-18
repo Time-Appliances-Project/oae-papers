@@ -1,0 +1,52 @@
+# latexmk configuration for OAE project with custom scripts
+
+# Use pdflatex
+$pdf_mode = 1;
+$postscript_mode = 0;
+$dvi_mode = 0;
+
+# Main document
+@default_files = ('OAE-SPEC-MAIN.tex');
+
+# Shell escape for packages that need it
+$pdflatex = 'pdflatex -interaction=nonstopmode -shell-escape %O %S';
+
+# Ensure bibtex runs when needed
+$bibtex_use = 2;
+
+# Custom dependency and build rules
+add_cus_dep('figlist', 'figlist', 0, 'pull_figures');
+add_cus_dep('biblist', 'biblist', 0, 'pull_references');
+
+# Custom subroutines
+sub pull_figures {
+    if (-f "scripts/pull-figures.sh") {
+        system("chmod +x scripts/pull-figures.sh && ./scripts/pull-figures.sh");
+    }
+    return 0;
+}
+
+sub pull_references {
+    if (-f "scripts/pull-references.py") {
+        system("python3 scripts/pull-references.py");
+    }
+    return 0;
+}
+
+# Run setup before first compilation
+if ($first_time) {
+    print "Running initial setup...\n";
+    if (-f "scripts/pull-figures.sh") {
+        system("chmod +x scripts/pull-figures.sh && ./scripts/pull-figures.sh");
+    }
+    if (-f "scripts/pull-references.py") {
+        system("python3 scripts/pull-references.py");
+    }
+}
+
+# Additional file extensions to clean
+$clean_ext = 'bbl nav snm vrb figlist makefile fls log_latexmk rel out brf nlo nls ilg ind idx synctex.gz blg biblist';
+
+# Continuous preview mode settings
+$preview_continuous_mode = 1;
+$pdf_previewer = 'open -a Preview';  # macOS
