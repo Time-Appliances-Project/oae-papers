@@ -27,43 +27,102 @@ all: setup build
 # Help target
 .PHONY: help
 help:
-	@echo "$(BLUE)LaTeX Project Makefile$(NC)"
-	@echo "======================="
 	@echo ""
-	@echo "$(YELLOW)Main Targets:$(NC)"
-	@echo "  all          - Setup and build (default)"
-	@echo "  build        - Build PDF from LaTeX sources"
-	@echo "  quick        - Quick build (single pdflatex pass)"
-	@echo "  clean        - Remove auxiliary files"
-	@echo "  setup        - Pull figures and references"
-	@echo "  format       - Format LaTeX code"
-	@echo "  pack         - Create distribution archive"
+	@echo "$(BLUE)╔══════════════════════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║                           LaTeX Project Makefile                            ║$(NC)"
+	@echo "$(BLUE)╚══════════════════════════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
-	@echo "$(YELLOW)Chapter Targets:$(NC)"
-	@echo "  build-chapter CHAPTER=name    - Build specific chapter"
-	@echo "  setup-chapter CHAPTER=name    - Setup specific chapter"
-	@echo "  clean-chapter CHAPTER=name    - Clean specific chapter"
-	@echo "  build-all-chapters            - Build all chapters"
-	@echo "  list-chapters                 - List available chapters"
+	@echo "$(GREEN)📋 QUICK START$(NC)"
+	@echo "  make                     Build the entire project (setup + build)"
+	@echo "  make help                Show this help menu"
+	@echo "  make status              Show project status and configuration"
 	@echo ""
-	@echo "  count        - Count words in document"
-	@echo "  check        - Check for issues (refs, citations, etc.)"
+	@echo "$(YELLOW)🔨 BUILD TARGETS$(NC)"
+	@echo "  build                    Full build with setup (figures + references + PDF)"
+	@echo "  quick                    Quick build (single pdflatex pass, no setup)"
+	@echo "  fallback-build           Build without using build scripts"
 	@echo ""
-	@echo "$(YELLOW)Development:$(NC)"
-	@echo "  clean-all    - Deep clean (including PDFs)"
-	@echo "  backup       - Create timestamped backup"
-	@echo "  figures      - Pull figures only"
-	@echo "  references   - Extract references only"
+	@echo "$(YELLOW)⚙️  SETUP TARGETS$(NC)"
+	@echo "  setup                    Pull figures and extract references"
+	@echo "  figures                  Pull figures from central repository only"
+	@echo "  references               Extract references from master bibliography only"
 	@echo ""
-	@echo "$(YELLOW)Configuration:$(NC)"
-	@echo "  MAIN_TEX     - Main LaTeX file (default: main.tex)"
-	@echo "  VERBOSE      - Show detailed output (make VERBOSE=1)"
+	@echo "$(YELLOW)📚 CHAPTER MANAGEMENT$(NC)"
+	@echo "  list-chapters            List all available chapters with build status"
+	@echo "  build-chapter CHAPTER=<name>       Build specific chapter"
+	@echo "  setup-chapter CHAPTER=<name>       Setup specific chapter (figures + refs)"
+	@echo "  clean-chapter CHAPTER=<name>       Clean specific chapter auxiliary files"
+	@echo "  chapter CHAPTER=<name>             Setup and build specific chapter"
+	@echo "  build-all-chapters                 Build all chapters sequentially"
 	@echo ""
-	@echo "$(YELLOW)Examples:$(NC)"
-	@echo "  make                    # Build everything"
-	@echo "  make MAIN_TEX=thesis.tex # Use different main file"
-	@echo "  make watch              # Auto-rebuild on changes"
-	@echo "  make clean build        # Clean and rebuild"
+	@echo "$(YELLOW)🧹 CLEANUP TARGETS$(NC)"
+	@echo "  clean                    Remove auxiliary files (.aux, .log, .bbl, etc.)"
+	@echo "  clean-all                Deep clean (auxiliary files + PDFs)"
+	@echo "  fallback-clean           Clean using built-in rules (no cleanup script)"
+	@echo ""
+	@echo "$(YELLOW)📦 PACKAGING & DISTRIBUTION$(NC)"
+	@echo "  bundle                   Create distribution archive (excludes aux files)"
+	@echo "  pack                     Alias for bundle"
+	@echo "  backup                   Create timestamped backup of entire project"
+	@echo ""
+	@echo "$(YELLOW)🔍 DEVELOPMENT & QUALITY$(NC)"
+	@echo "  watch                    Auto-rebuild on .tex file changes (requires fswatch/inotifywait)"
+	@echo "  format                   Format LaTeX code using format script"
+	@echo "  count                    Count words in all .tex files"
+	@echo "  check                    Check for undefined references and missing figures"
+	@echo "  spell                    Run spell checker on .tex files (requires aspell)"
+	@echo ""
+	@echo "$(YELLOW)🛠️  SYSTEM & UTILITIES$(NC)"
+	@echo "  install-deps             Check for required dependencies"
+	@echo "  open                     Open generated PDF (macOS only)"
+	@echo ""
+	@echo "$(GREEN)📖 USAGE EXAMPLES$(NC)"
+	@echo "  $(BLUE)Basic workflow:$(NC)"
+	@echo "    make                                    # Build everything"
+	@echo "    make clean build                       # Clean and rebuild"
+	@echo ""
+	@echo "  $(BLUE)Chapter workflow:$(NC)"
+	@echo "    make list-chapters                     # See available chapters"
+	@echo "    make chapter CHAPTER=01_introduction  # Setup and build chapter"
+	@echo "    make build-all-chapters               # Build all chapters"
+	@echo ""
+	@echo "  $(BLUE)Development workflow:$(NC)"
+	@echo "    make watch                             # Auto-rebuild on changes"
+	@echo "    make check                             # Check for issues"
+	@echo "    make spell                             # Spell check"
+	@echo "    make format                            # Format code"
+	@echo ""
+	@echo "  $(BLUE)Custom main file:$(NC)"
+	@echo "    make MAIN_TEX=thesis.tex              # Use different main file"
+	@echo "    make MAIN_TEX=report.tex build        # Build specific file"
+	@echo ""
+	@echo "  $(BLUE)Verbose output:$(NC)"
+	@echo "    make VERBOSE=1 build                  # Show detailed build output"
+	@echo ""
+	@echo "$(GREEN)⚙️  CONFIGURATION$(NC)"
+	@echo "  MAIN_TEX=$(MAIN_TEX)"
+	@echo "  PYTHON=$(PYTHON)"
+	@echo "  Current PDF: $(MAIN_PDF)"
+	@echo ""
+	@echo "$(GREEN)📁 PROJECT STRUCTURE$(NC)"
+	@echo "  Main LaTeX file:    $(MAIN_TEX)"
+	@echo "  Scripts directory:  $(SCRIPTS_DIR)/"
+	@echo "  Figures directory:  figures/"
+	@echo "  References:         references/"
+	@echo "  Chapters:           chapters/*/"
+	@echo ""
+	@echo "$(GREEN)🔗 DEPENDENCIES$(NC)"
+	@echo "  Required: pdflatex, bibtex, python3"
+	@echo "  Optional: fswatch/inotifywait (watch), aspell (spell), detex (count)"
+	@echo "  Run 'make install-deps' to check what's installed"
+	@echo ""
+	@echo "$(BLUE)💡 TIPS$(NC)"
+	@echo "  • Use 'make status' to see current project state"
+	@echo "  • Use 'make quick' for fast iteration during editing" 
+	@echo "  • Use 'make watch' for automatic rebuilds while writing"
+	@echo "  • Chapter names must match directory names exactly"
+	@echo "  • Run 'make clean' before 'make bundle' for clean archives"
+	@echo ""
 
 # Setup: Pull figures and references
 .PHONY: setup
@@ -283,57 +342,72 @@ install-deps:
 .PHONY: list-chapters
 list-chapters:
 	@echo "$(BLUE)Available chapters:$(NC)"
-	@for chapter_dir in chapters/*/; do \
-		if [ -d "$chapter_dir" ]; then \
-			chapter_name=$(basename "$chapter_dir"); \
-			tex_file=$(find "$chapter_dir" -name "*.tex" -maxdepth 1 | head -1); \
-			if [ -n "$tex_file" ]; then \
-				pdf_file="${tex_file%.tex}.pdf"; \
-				if [ -f "$pdf_file" ]; then \
-					echo "  ✓ $chapter_name (built)"; \
+	@if [ -d "chapters" ]; then \
+		for chapter_dir in chapters/*/; do \
+			if [ -d "$$chapter_dir" ]; then \
+				chapter_name=$$(basename "$$chapter_dir"); \
+				tex_file=$$(find "$$chapter_dir" -name "*.tex" -maxdepth 1 | head -1); \
+				if [ -n "$$tex_file" ]; then \
+					pdf_file="$${tex_file%.tex}.pdf"; \
+					if [ -f "$$pdf_file" ]; then \
+						echo "  ✓ $$chapter_name (built)"; \
+					else \
+						echo "  ○ $$chapter_name (not built)"; \
+					fi; \
 				else \
-					echo "  ○ $chapter_name (not built)"; \
+					echo "  ? $$chapter_name (no .tex file)"; \
 				fi; \
-			else \
-				echo "  ? $chapter_name (no .tex file)"; \
 			fi; \
-		fi; \
-	done
+		done; \
+	else \
+		echo "  No chapters directory found"; \
+	fi
 
-# Build specific chapter (FIXED)
+
 .PHONY: build-chapter
 build-chapter:
 	@if [ -z "$(CHAPTER)" ]; then \
 		echo "$(RED)Error: Specify chapter with CHAPTER=chapter-name$(NC)"; \
-		echo "Available chapters:"; \
+		echo "Example: make build-chapter CHAPTER=01_principles-of-operation"; \
+		echo ""; \
 		$(MAKE) list-chapters; \
 		exit 1; \
 	fi
 	@if [ ! -d "chapters/$(CHAPTER)" ]; then \
 		echo "$(RED)Error: Chapter directory not found: chapters/$(CHAPTER)$(NC)"; \
+		echo "Available chapters:"; \
+		$(MAKE) list-chapters; \
 		exit 1; \
 	fi
 	@echo "$(BLUE)▶ Building chapter: $(CHAPTER)$(NC)"
-	@cd "chapters/$(CHAPTER)" && \
-	CHAPTER_TEX=$(find . -name "*.tex" -maxdepth 1 | head -1) && \
-	if [ -n "$CHAPTER_TEX" ]; then \
-		echo "Found: $CHAPTER_TEX"; \
-		if [ -f "../../scripts/build.sh" ]; then \
-			../../scripts/build.sh "$CHAPTER_TEX"; \
-		else \
-			echo "$(RED)Error: build.sh not found$(NC)"; \
-			exit 1; \
-		fi; \
-	else \
-		echo "$(RED)Error: No .tex file found in chapters/$(CHAPTER)$(NC)"; \
+	@CHAPTER_DIR="chapters/$(CHAPTER)"; \
+	CHAPTER_TEX=$$(find "$$CHAPTER_DIR" -name "*.tex" -maxdepth 1 | head -1); \
+	if [ -z "$$CHAPTER_TEX" ]; then \
+		echo "$(RED)Error: No .tex file found in $$CHAPTER_DIR$(NC)"; \
 		exit 1; \
+	fi; \
+	CHAPTER_TEX_NAME=$$(basename "$$CHAPTER_TEX"); \
+	echo "Found LaTeX file: $$CHAPTER_TEX_NAME"; \
+	cd "$$CHAPTER_DIR" && \
+	if [ -f "../../scripts/build.sh" ]; then \
+		echo "Using build script..."; \
+		chmod +x "../../scripts/build.sh"; \
+		../../scripts/build.sh "$$CHAPTER_TEX_NAME"; \
+	else \
+		echo "$(YELLOW)Build script not found, using fallback...$(NC)"; \
+		pdflatex -interaction=nonstopmode "$$CHAPTER_TEX_NAME"; \
+		if grep -q "\\bibdata" "$${CHAPTER_TEX_NAME%.tex}.aux" 2>/dev/null; then \
+			bibtex "$${CHAPTER_TEX_NAME%.tex}"; \
+			pdflatex -interaction=nonstopmode "$$CHAPTER_TEX_NAME"; \
+		fi; \
+		pdflatex -interaction=nonstopmode "$$CHAPTER_TEX_NAME"; \
 	fi
 
-# Setup for specific chapter (FIXED)
 .PHONY: setup-chapter
 setup-chapter:
 	@if [ -z "$(CHAPTER)" ]; then \
 		echo "$(RED)Error: Specify chapter with CHAPTER=chapter-name$(NC)"; \
+		echo "Example: make setup-chapter CHAPTER=01_principles-of-operation"; \
 		$(MAKE) list-chapters; \
 		exit 1; \
 	fi
@@ -342,14 +416,16 @@ setup-chapter:
 		exit 1; \
 	fi
 	@echo "$(BLUE)▶ Setting up chapter: $(CHAPTER)$(NC)"
-	@cd "chapters/$(CHAPTER)" && \
-	echo "Working in: $(pwd)" && \
+	@CHAPTER_DIR="chapters/$(CHAPTER)"; \
+	cd "$$CHAPTER_DIR" && \
+	echo "Working in: $$(pwd)"; \
 	if [ -f "../../scripts/pull-figures.sh" ]; then \
 		echo "Pulling figures..."; \
+		chmod +x "../../scripts/pull-figures.sh"; \
 		../../scripts/pull-figures.sh; \
 	else \
 		echo "$(YELLOW)Warning: pull-figures.sh not found$(NC)"; \
-	fi && \
+	fi; \
 	if [ -f "../../scripts/pull-references.py" ]; then \
 		echo "Pulling references..."; \
 		python3 ../../scripts/pull-references.py; \
@@ -365,42 +441,44 @@ clean-chapter:
 		$(MAKE) list-chapters; \
 		exit 1; \
 	fi
+	@if [ ! -d "chapters/$(CHAPTER)" ]; then \
+		echo "$(RED)Error: Chapter directory not found: chapters/$(CHAPTER)$(NC)"; \
+		exit 1; \
+	fi
 	@echo "$(BLUE)▶ Cleaning chapter: $(CHAPTER)$(NC)"
-	@cd "chapters/$(CHAPTER)" && \
+	@CHAPTER_DIR="chapters/$(CHAPTER)"; \
+	cd "$$CHAPTER_DIR" && \
 	if [ -f "../../scripts/cleanup.sh" ]; then \
+		chmod +x "../../scripts/cleanup.sh"; \
 		../../scripts/cleanup.sh; \
 	else \
 		echo "$(YELLOW)Using fallback cleanup$(NC)"; \
 		rm -f *.aux *.log *.bbl *.blg *.out *.toc *.synctex.gz *.fls *.fdb_latexmk; \
-	fi
+	fi; \
+	echo "$(GREEN)✓ Chapter $(CHAPTER) cleaned$(NC)"
+
 
 # Build all chapters
 .PHONY: build-all-chapters
 build-all-chapters:
 	@echo "$(BLUE)▶ Building all chapters...$(NC)"
-	@for chapter_dir in chapters/*/; do \
-		if [ -d "$chapter_dir" ]; then \
-			chapter_name=$(basename "$chapter_dir"); \
-			echo "$(YELLOW)Building chapter: $chapter_name$(NC)"; \
-			$(MAKE) CHAPTER="$chapter_name" build-chapter || exit 1; \
-		fi; \
-	done
-
+	@if [ -d "chapters" ]; then \
+		for chapter_dir in chapters/*/; do \
+			if [ -d "$$chapter_dir" ]; then \
+				chapter_name=$$(basename "$$chapter_dir"); \
+				echo "$(YELLOW)Building chapter: $$chapter_name$(NC)"; \
+				$(MAKE) CHAPTER="$$chapter_name" build-chapter || exit 1; \
+			fi; \
+		done; \
+		echo "$(GREEN)✓ All chapters built$(NC)"; \
+	else \
+		echo "$(RED)Error: No chapters directory found$(NC)"; \
+	fi
 # Setup for specific chapter
-.PHONY: setup-chapter
-setup-chapter:
-	@if [ -z "$(CHAPTER)" ]; then \
-		echo "$(RED)Error: Specify chapter with CHAPTER=01_principles-of-operation$(NC)"; \
-		exit 1; \
-	fi
-	@echo "$(BLUE)▶ Setting up chapter: $(CHAPTER)$(NC)"
-	@cd "chapters/$(CHAPTER)" && \
-	if [ -f "../../scripts/pull-figures.sh" ]; then \
-		../../scripts/pull-figures.sh; \
-	fi && \
-	if [ -f "../../scripts/pull-references.py" ]; then \
-		python3 ../../scripts/pull-references.py; \
-	fi
+.PHONY: chapter
+chapter: setup-chapter build-chapter
+	@echo "$(GREEN)✓ Chapter $(CHAPTER) setup and built$(NC)"
+
 # Show project status
 .PHONY: status
 status:
