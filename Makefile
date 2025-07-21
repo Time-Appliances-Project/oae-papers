@@ -1,5 +1,5 @@
 # LaTeX Project Makefile
-# Integrates all workflow scripts for a complete LaTeX development environment
+# Modified for environments without iCloud access
 
 # Configuration
 MAIN_TEX = OAE-SPEC-MAIN.tex
@@ -13,6 +13,11 @@ FORMAT_SCRIPT = $(SCRIPTS_DIR)/format-latex.sh
 CLEANUP_SCRIPT = $(SCRIPTS_DIR)/cleanup.sh
 BUNDLE_SCRIPT = $(SCRIPTS_DIR)/bundle.sh
 
+# Local directories for figures and references
+LOCAL_FIGURES_DIR = figures
+LOCAL_REFERENCES_DIR = references
+LOCAL_REFS_FILE = $(LOCAL_REFERENCES_DIR)/references.bib
+
 # Colors for output
 BLUE = \033[0;34m
 GREEN = \033[0;32m
@@ -20,16 +25,19 @@ YELLOW = \033[1;33m
 RED = \033[0;31m
 NC = \033[0m # No Color
 
+# Check if we're in an environment without iCloud
+ICLOUD_AVAILABLE := $(shell [ -d "$$HOME/Library/Mobile Documents" ] && echo "yes" || echo "no")
+
 # Default target
 .PHONY: all
 all: setup build
 
-# Help target
+# Help target (enhanced with iCloud alternatives)
 .PHONY: help
 help:
 	@echo ""
 	@echo "$(BLUE)╔══════════════════════════════════════════════════════════════════════════════╗$(NC)"
-	@echo "$(BLUE)║                           LaTeX Project Makefile                            ║$(NC)"
+	@echo "$(BLUE)║                     LaTeX Project Makefile (iCloud Optional)                ║$(NC)"
 	@echo "$(BLUE)╚══════════════════════════════════════════════════════════════════════════════╝$(NC)"
 	@echo ""
 	@echo "$(GREEN)📋 QUICK START$(NC)"
@@ -39,13 +47,18 @@ help:
 	@echo ""
 	@echo "$(YELLOW)🔨 BUILD TARGETS$(NC)"
 	@echo "  build                    Full build with setup (figures + references + PDF)"
+	@echo "  build-local              Build using only local assets (no iCloud sync)"
 	@echo "  quick                    Quick build (single pdflatex pass, no setup)"
 	@echo "  fallback-build           Build without using build scripts"
 	@echo ""
 	@echo "$(YELLOW)⚙️  SETUP TARGETS$(NC)"
-	@echo "  setup                    Pull figures and extract references"
-	@echo "  figures                  Pull figures from central repository only"
-	@echo "  references               Extract references from master bibliography only"
+	@echo "  setup                    Pull figures and extract references (with fallbacks)"
+	@echo "  setup-local              Setup using only local assets"
+	@echo "  figures                  Pull figures from repository (or use local)"
+	@echo "  figures-local            Use local figures only"
+	@echo "  references               Extract references (or use local)"
+	@echo "  references-local         Use local references only"
+	@echo "  init-local-assets        Create local asset directories and templates"
 	@echo ""
 	@echo "$(YELLOW)📚 CHAPTER MANAGEMENT$(NC)"
 	@echo "  list-chapters            List all available chapters with build status"
@@ -66,92 +79,163 @@ help:
 	@echo "  backup                   Create timestamped backup of entire project"
 	@echo ""
 	@echo "$(YELLOW)🔍 DEVELOPMENT & QUALITY$(NC)"
-	@echo "  watch                    Auto-rebuild on .tex file changes (requires fswatch/inotifywait)"
+	@echo "  watch                    Auto-rebuild on .tex file changes"
 	@echo "  format                   Format LaTeX code using format script"
 	@echo "  count                    Count words in all .tex files"
 	@echo "  check                    Check for undefined references and missing figures"
-	@echo "  spell                    Run spell checker on .tex files (requires aspell)"
+	@echo "  spell                    Run spell checker on .tex files"
 	@echo ""
 	@echo "$(YELLOW)🛠️  SYSTEM & UTILITIES$(NC)"
 	@echo "  install-deps             Check for required dependencies"
-	@echo "  open                     Open generated PDF (macOS only)"
+	@echo "  open                     Open generated PDF"
+	@echo "  check-icloud             Check iCloud availability"
 	@echo ""
-	@echo "$(GREEN)📖 USAGE EXAMPLES$(NC)"
-	@echo "  $(BLUE)Basic workflow:$(NC)"
-	@echo "    make                                    # Build everything"
-	@echo "    make clean build                       # Clean and rebuild"
-	@echo ""
-	@echo "  $(BLUE)Chapter workflow:$(NC)"
-	@echo "    make list-chapters                     # See available chapters"
-	@echo "    make chapter CHAPTER=01_introduction  # Setup and build chapter"
-	@echo "    make build-all-chapters               # Build all chapters"
-	@echo ""
-	@echo "  $(BLUE)Development workflow:$(NC)"
-	@echo "    make watch                             # Auto-rebuild on changes"
-	@echo "    make check                             # Check for issues"
-	@echo "    make spell                             # Spell check"
-	@echo "    make format                            # Format code"
-	@echo ""
-	@echo "  $(BLUE)Custom main file:$(NC)"
-	@echo "    make MAIN_TEX=thesis.tex              # Use different main file"
-	@echo "    make MAIN_TEX=report.tex build        # Build specific file"
-	@echo ""
-	@echo "  $(BLUE)Verbose output:$(NC)"
-	@echo "    make VERBOSE=1 build                  # Show detailed build output"
-	@echo ""
-	@echo "$(GREEN)⚙️  CONFIGURATION$(NC)"
-	@echo "  MAIN_TEX=$(MAIN_TEX)"
-	@echo "  PYTHON=$(PYTHON)"
-	@echo "  Current PDF: $(MAIN_PDF)"
-	@echo ""
-	@echo "$(GREEN)📁 PROJECT STRUCTURE$(NC)"
-	@echo "  Main LaTeX file:    $(MAIN_TEX)"
-	@echo "  Scripts directory:  $(SCRIPTS_DIR)/"
-	@echo "  Figures directory:  figures/"
-	@echo "  References:         references/"
-	@echo "  Chapters:           chapters/*/"
-	@echo ""
-	@echo "$(GREEN)🔗 DEPENDENCIES$(NC)"
-	@echo "  Required: pdflatex, bibtex, python3"
-	@echo "  Optional: fswatch/inotifywait (watch), aspell (spell), detex (count)"
-	@echo "  Run 'make install-deps' to check what's installed"
-	@echo ""
-	@echo "$(BLUE)💡 TIPS$(NC)"
-	@echo "  • Use 'make status' to see current project state"
-	@echo "  • Use 'make quick' for fast iteration during editing" 
-	@echo "  • Use 'make watch' for automatic rebuilds while writing"
-	@echo "  • Chapter names must match directory names exactly"
-	@echo "  • Run 'make clean' before 'make bundle' for clean archives"
-	@echo ""
+	
 
-# Setup: Pull figures and references
+# Check iCloud availability
+.PHONY: check-icloud
+check-icloud:
+	@echo "$(BLUE)▶ Checking iCloud availability...$(NC)"
+	@if [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
+		echo "$(GREEN)✓ iCloud appears to be available$(NC)"; \
+		echo "  Mobile Documents directory found"; \
+	else \
+		echo "$(YELLOW)⚠ iCloud not available$(NC)"; \
+		echo "  Will use local fallbacks for figures and references"; \
+	fi
+
+# Initialize local asset directories
+.PHONY: init-local-assets
+init-local-assets:
+	@echo "$(BLUE)▶ Initializing local asset directories...$(NC)"
+	@mkdir -p $(LOCAL_FIGURES_DIR)
+	@mkdir -p $(LOCAL_REFERENCES_DIR)
+	@if [ ! -f "$(LOCAL_REFS_FILE)" ]; then \
+		echo "% Local references file" > "$(LOCAL_REFS_FILE)"; \
+		echo "% Add your bibliography entries here" >> "$(LOCAL_REFS_FILE)"; \
+		echo "" >> "$(LOCAL_REFS_FILE)"; \
+		echo "@article{example2024," >> "$(LOCAL_REFS_FILE)"; \
+		echo "  title={Example Article}," >> "$(LOCAL_REFS_FILE)"; \
+		echo "  author={Author, Example}," >> "$(LOCAL_REFS_FILE)"; \
+		echo "  journal={Example Journal}," >> "$(LOCAL_REFS_FILE)"; \
+		echo "  year={2024}" >> "$(LOCAL_REFS_FILE)"; \
+		echo "}" >> "$(LOCAL_REFS_FILE)"; \
+		echo "$(GREEN)✓ Created template references file$(NC)"; \
+	fi
+	@if [ ! -f "$(LOCAL_FIGURES_DIR)/README.md" ]; then \
+		echo "# Local Figures Directory" > "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "Place your figure files (PNG, PDF, EPS, etc.) in this directory." >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "The LaTeX build process will find them automatically." >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "Supported formats:" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "- PNG (for photos/screenshots)" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "- PDF (for vector graphics)" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "- EPS (for legacy vector graphics)" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "- SVG (will need conversion to PDF)" >> "$(LOCAL_FIGURES_DIR)/README.md"; \
+		echo "$(GREEN)✓ Created figures directory with README$(NC)"; \
+	fi
+	@echo "$(GREEN)✓ Local asset directories initialized$(NC)"
+
+# Setup with iCloud fallbacks
 .PHONY: setup
-setup: figures references
+setup:
+	@echo "$(BLUE)▶ Setting up project (with iCloud fallbacks)...$(NC)"
+	@$(MAKE) check-icloud
+	@if [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
+		$(MAKE) figures references; \
+	else \
+		echo "$(YELLOW)Using local setup (no iCloud)$(NC)"; \
+		$(MAKE) setup-local; \
+	fi
 	@echo "$(GREEN)✓ Setup completed$(NC)"
 
-# Pull figures from central repository
+# Local-only setup
+.PHONY: setup-local
+setup-local:
+	@echo "$(BLUE)▶ Setting up using local assets only...$(NC)"
+	@$(MAKE) init-local-assets
+	@$(MAKE) figures-local
+	@$(MAKE) references-local
+	@echo "$(GREEN)✓ Local setup completed$(NC)"
+
+# Pull figures with fallback to local
 .PHONY: figures
 figures:
 	@echo "$(BLUE)▶ Pulling figures...$(NC)"
-	@if [ -f "$(FIGURES_SCRIPT)" ]; then \
-		chmod +x "$(FIGURES_SCRIPT)" && "./$(FIGURES_SCRIPT)"; \
+	@if [ -f "$(FIGURES_SCRIPT)" ] && [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
+		chmod +x "$(FIGURES_SCRIPT)" && "./$(FIGURES_SCRIPT)" || { \
+			echo "$(YELLOW)⚠ Figure script failed, using local figures$(NC)"; \
+			$(MAKE) figures-local; \
+		}; \
 	else \
-		echo "$(YELLOW)⚠ Figure script not found: $(FIGURES_SCRIPT)$(NC)"; \
+		echo "$(YELLOW)⚠ Figure script not found or iCloud unavailable, using local figures$(NC)"; \
+		$(MAKE) figures-local; \
 	fi
 
-# Extract references from master bibliography
+# Use local figures only
+.PHONY: figures-local
+figures-local:
+	@echo "$(BLUE)▶ Using local figures...$(NC)"
+	@if [ ! -d "$(LOCAL_FIGURES_DIR)" ]; then \
+		$(MAKE) init-local-assets; \
+	fi
+	@figure_count=$$(find $(LOCAL_FIGURES_DIR) -type f \( -name "*.png" -o -name "*.pdf" -o -name "*.eps" -o -name "*.jpg" -o -name "*.jpeg" \) 2>/dev/null | wc -l | xargs); \
+	echo "Found $$figure_count figure(s) in $(LOCAL_FIGURES_DIR)"; \
+	if [ "$$figure_count" -eq 0 ]; then \
+		echo "$(YELLOW)⚠ No figures found. Add your images to $(LOCAL_FIGURES_DIR)/$(NC)"; \
+	fi
+
+# Extract references with fallback to local
 .PHONY: references
 references:
 	@echo "$(BLUE)▶ Extracting references...$(NC)"
-	@if [ -f "$(REFERENCES_SCRIPT)" ]; then \
-		chmod +x "$(REFERENCES_SCRIPT)" && $(PYTHON) "$(REFERENCES_SCRIPT)"; \
+	@if [ -f "$(REFERENCES_SCRIPT)" ] && [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
+		chmod +x "$(REFERENCES_SCRIPT)" && $(PYTHON) "$(REFERENCES_SCRIPT)" || { \
+			echo "$(YELLOW)⚠ References script failed, using local references$(NC)"; \
+			$(MAKE) references-local; \
+		}; \
 	else \
-		echo "$(YELLOW)⚠ References script not found: $(REFERENCES_SCRIPT)$(NC)"; \
+		echo "$(YELLOW)⚠ References script not found or iCloud unavailable, using local references$(NC)"; \
+		$(MAKE) references-local; \
 	fi
 
-# Build PDF using the build script
+# Use local references only
+.PHONY: references-local
+references-local:
+	@echo "$(BLUE)▶ Using local references...$(NC)"
+	@if [ ! -f "$(LOCAL_REFS_FILE)" ]; then \
+		$(MAKE) init-local-assets; \
+	fi
+	@if [ -f "$(LOCAL_REFS_FILE)" ]; then \
+		ref_count=$$(grep -c "^@" "$(LOCAL_REFS_FILE)" 2>/dev/null || echo "0"); \
+		echo "Found $$ref_count reference(s) in $(LOCAL_REFS_FILE)"; \
+		if [ "$$ref_count" -eq 0 ]; then \
+			echo "$(YELLOW)⚠ No references found. Add entries to $(LOCAL_REFS_FILE)$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)✗ Local references file not found$(NC)"; \
+	fi
+
+# Build with local assets only
+.PHONY: build-local
+build-local: setup-local
+	@echo "$(BLUE)▶ Building PDF with local assets...$(NC)"
+	@if [ -f "$(BUILD_SCRIPT)" ]; then \
+		chmod +x "$(BUILD_SCRIPT)" && "./$(BUILD_SCRIPT)" $(MAIN_TEX); \
+	else \
+		echo "$(YELLOW)⚠ Build script not found, using fallback$(NC)"; \
+		$(MAKE) fallback-build; \
+	fi
+
+# Enhanced build with iCloud fallbacks
 .PHONY: build
-build: setup
+build:
+	@if [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
+		$(MAKE) setup; \
+	else \
+		$(MAKE) setup-local; \
+	fi
 	@echo "$(BLUE)▶ Building PDF...$(NC)"
 	@if [ -f "$(BUILD_SCRIPT)" ]; then \
 		chmod +x "$(BUILD_SCRIPT)" && "./$(BUILD_SCRIPT)" $(MAIN_TEX); \
@@ -272,7 +356,7 @@ count:
 	done
 	@echo "$(GREEN)✓ Word count completed$(NC)"
 
-# Check for common issues
+# Enhanced check with local asset verification
 .PHONY: check
 check:
 	@echo "$(BLUE)▶ Checking for issues...$(NC)"
@@ -281,12 +365,27 @@ check:
 		grep -n "undefined" "$(MAIN_TEX:.tex=.log)" || echo "  No undefined references"; \
 	fi
 	@echo "Checking for missing figures..."
-	@grep -n "includegraphics" *.tex | while read line; do \
-		file=$$(echo "$$line" | cut -d: -f3 | sed 's/.*{\([^}]*\)}.*/\1/'); \
-		if [ ! -f "figures/$$file" ] && [ ! -f "$$file" ]; then \
+	@missing_figs=0; \
+	grep -n "includegraphics" *.tex 2>/dev/null | while read line; do \
+		file=$$(echo "$$line" | sed 's/.*{\([^}]*\)}.*/\1/'); \
+		if [ ! -f "$(LOCAL_FIGURES_DIR)/$$file" ] && [ ! -f "$$file" ]; then \
 			echo "  Missing: $$file"; \
+			missing_figs=$$((missing_figs + 1)); \
 		fi; \
 	done || echo "  All figures found"
+	@echo "Checking local assets..."
+	@if [ -d "$(LOCAL_FIGURES_DIR)" ]; then \
+		fig_count=$$(find $(LOCAL_FIGURES_DIR) -type f \( -name "*.png" -o -name "*.pdf" -o -name "*.eps" -o -name "*.jpg" \) 2>/dev/null | wc -l | xargs); \
+		echo "  Local figures: $$fig_count"; \
+	else \
+		echo "  $(YELLOW)No local figures directory$(NC)"; \
+	fi
+	@if [ -f "$(LOCAL_REFS_FILE)" ]; then \
+		ref_count=$$(grep -c "^@" "$(LOCAL_REFS_FILE)" 2>/dev/null || echo "0"); \
+		echo "  Local references: $$ref_count"; \
+	else \
+		echo "  $(YELLOW)No local references file$(NC)"; \
+	fi
 	@echo "$(GREEN)✓ Check completed$(NC)"
 
 # Spell check
@@ -314,12 +413,18 @@ backup:
 	tar -czf "../$$BACKUP_NAME" .; \
 	echo "$(GREEN)✓ Backup created: ../$$BACKUP_NAME$(NC)"
 
-# Open PDF (macOS only)
+# Open PDF
 .PHONY: open
 open:
 	@if [ -f "$(MAIN_PDF)" ]; then \
 		echo "$(BLUE)▶ Opening PDF...$(NC)"; \
-		open "$(MAIN_PDF)"; \
+		if command -v open >/dev/null 2>&1; then \
+			open "$(MAIN_PDF)"; \
+		elif command -v xdg-open >/dev/null 2>&1; then \
+			xdg-open "$(MAIN_PDF)"; \
+		else \
+			echo "$(YELLOW)⚠ No PDF viewer command found$(NC)"; \
+		fi; \
 	else \
 		echo "$(RED)✗ PDF not found: $(MAIN_PDF)$(NC)"; \
 		echo "Run 'make build' first"; \
@@ -328,15 +433,17 @@ open:
 # Install dependencies
 .PHONY: install-deps
 install-deps:
-	@echo "$(BLUE)▶ Installing dependencies...$(NC)"
-	@echo "Checking for required tools..."
-	@command -v pdflatex >/dev/null 2>&1 || echo "$(RED)✗ pdflatex not found$(NC)"
-	@command -v bibtex >/dev/null 2>&1 || echo "$(RED)✗ bibtex not found$(NC)"
-	@command -v $(PYTHON) >/dev/null 2>&1 || echo "$(RED)✗ $(PYTHON) not found$(NC)"
-	@echo "$(YELLOW)Optional tools:$(NC)"
+	@echo "$(BLUE)▶ Checking dependencies...$(NC)"
+	@echo "Required tools:"
+	@command -v pdflatex >/dev/null 2>&1 && echo "$(GREEN)✓ pdflatex found$(NC)" || echo "$(RED)✗ pdflatex not found$(NC)"
+	@command -v bibtex >/dev/null 2>&1 && echo "$(GREEN)✓ bibtex found$(NC)" || echo "$(RED)✗ bibtex not found$(NC)"
+	@command -v $(PYTHON) >/dev/null 2>&1 && echo "$(GREEN)✓ $(PYTHON) found$(NC)" || echo "$(RED)✗ $(PYTHON) not found$(NC)"
+	@echo "Optional tools:"
 	@command -v fswatch >/dev/null 2>&1 && echo "$(GREEN)✓ fswatch found$(NC)" || echo "$(YELLOW)○ fswatch not found (for watch target)$(NC)"
 	@command -v aspell >/dev/null 2>&1 && echo "$(GREEN)✓ aspell found$(NC)" || echo "$(YELLOW)○ aspell not found (for spell target)$(NC)"
 	@command -v detex >/dev/null 2>&1 && echo "$(GREEN)✓ detex found$(NC)" || echo "$(YELLOW)○ detex not found (for count target)$(NC)"
+	@echo "Environment:"
+	@echo "  iCloud available: $(ICLOUD_AVAILABLE)"
 
 # List available chapters
 .PHONY: list-chapters
@@ -363,7 +470,7 @@ list-chapters:
 		echo "  No chapters directory found"; \
 	fi
 
-
+# Build specific chapter with local fallbacks
 .PHONY: build-chapter
 build-chapter:
 	@if [ -z "$(CHAPTER)" ]; then \
@@ -403,6 +510,7 @@ build-chapter:
 		pdflatex -interaction=nonstopmode "$$CHAPTER_TEX_NAME"; \
 	fi
 
+# Setup specific chapter with local fallbacks
 .PHONY: setup-chapter
 setup-chapter:
 	@if [ -z "$(CHAPTER)" ]; then \
@@ -419,18 +527,18 @@ setup-chapter:
 	@CHAPTER_DIR="chapters/$(CHAPTER)"; \
 	cd "$$CHAPTER_DIR" && \
 	echo "Working in: $$(pwd)"; \
-	if [ -f "../../scripts/pull-figures.sh" ]; then \
+	if [ -f "../../scripts/pull-figures.sh" ] && [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
 		echo "Pulling figures..."; \
 		chmod +x "../../scripts/pull-figures.sh"; \
-		../../scripts/pull-figures.sh; \
+		../../scripts/pull-figures.sh || echo "$(YELLOW)Figure script failed, continuing...$(NC)"; \
 	else \
-		echo "$(YELLOW)Warning: pull-figures.sh not found$(NC)"; \
+		echo "$(YELLOW)Using local figures (iCloud unavailable or script missing)$(NC)"; \
 	fi; \
-	if [ -f "../../scripts/pull-references.py" ]; then \
+	if [ -f "../../scripts/pull-references.py" ] && [ "$(ICLOUD_AVAILABLE)" = "yes" ]; then \
 		echo "Pulling references..."; \
-		python3 ../../scripts/pull-references.py; \
+		python3 ../../scripts/pull-references.py || echo "$(YELLOW)References script failed, continuing...$(NC)"; \
 	else \
-		echo "$(YELLOW)Warning: pull-references.py not found$(NC)"; \
+		echo "$(YELLOW)Using local references (iCloud unavailable or script missing)$(NC)"; \
 	fi
 
 # Clean specific chapter
@@ -457,7 +565,6 @@ clean-chapter:
 	fi; \
 	echo "$(GREEN)✓ Chapter $(CHAPTER) cleaned$(NC)"
 
-
 # Build all chapters
 .PHONY: build-all-chapters
 build-all-chapters:
@@ -474,21 +581,36 @@ build-all-chapters:
 	else \
 		echo "$(RED)Error: No chapters directory found$(NC)"; \
 	fi
-# Setup for specific chapter
+
+# Setup and build specific chapter
 .PHONY: chapter
 chapter: setup-chapter build-chapter
 	@echo "$(GREEN)✓ Chapter $(CHAPTER) setup and built$(NC)"
 
-# Show project status
+# Enhanced status with iCloud info
 .PHONY: status
 status:
-	@echo "===================="
+	@echo "$(BLUE)================== PROJECT STATUS ==================$(NC)"
 	@echo "Main file: $(MAIN_TEX)"
 	@echo "PDF exists: $$([ -f '$(MAIN_PDF)' ] && echo 'Yes' || echo 'No')"
 	@echo "Last build: $$([ -f '$(MAIN_PDF)' ] && stat -f '%Sm' -t '%Y-%m-%d %H:%M:%S' '$(MAIN_PDF)' 2>/dev/null || echo 'Never')"
 	@echo "TeX files: $$(ls *.tex 2>/dev/null | wc -l | xargs)"
-	@echo "Figures: $$([ -d figures ] && ls figures/ 2>/dev/null | wc -l | xargs || echo '0')"
-	@echo "References: $$([ -f references/references.bib ] && echo 'Yes' || echo 'No')"
+	@echo ""
+	@echo "$(BLUE)================== ASSETS STATUS ==================$(NC)"
+	@echo "iCloud available: $(ICLOUD_AVAILABLE)"
+	@if [ -d "$(LOCAL_FIGURES_DIR)" ]; then \
+		fig_count=$$(find $(LOCAL_FIGURES_DIR) -type f \( -name "*.png" -o -name "*.pdf" -o -name "*.eps" -o -name "*.jpg" \) 2>/dev/null | wc -l | xargs); \
+		echo "Local figures: $$fig_count"; \
+	else \
+		echo "Local figures: Directory not found"; \
+	fi
+	@if [ -f "$(LOCAL_REFS_FILE)" ]; then \
+		ref_count=$$(grep -c "^@" "$(LOCAL_REFS_FILE)" 2>/dev/null || echo "0"); \
+		echo "Local references: $$ref_count"; \
+	else \
+		echo "Local references: File not found"; \
+	fi
+	@echo "$(BLUE)====================================================$(NC)"
 
 # Verbose mode
 ifdef VERBOSE
