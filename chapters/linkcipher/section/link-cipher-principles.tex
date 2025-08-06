@@ -1,0 +1,135 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{Link Cipher Principles of Operation}
+\marginnote{Informative Text}
+
+\marginfig[width=\linewidth]{./figures/shfstf.pdf}[SHF and STF bracketing two frames][fig:shfstf]
+
+Wired ethernet provides a MAC (Medium Access Controller) independent security protocol defined in 802.1ae, called MACSEC. This is optional to deploy since the security threats to a physical depend very much on the environment in which it is deployed.
+ 
+In comparison, wireless ethernet for example 802.11 and 802.16 provide security protocols at the MAC layer that are tuned to the specific MAC protocol and are fairly universally deployed, given the ease of accessing an open wireless system without authorization, reading the plaintext traffic and replaying plaintext traffic with or without modification.
+
+\AE thernet provides a link cipher protocol that is optional to deploy, since the threats mirror those of wired ethernet. The link cipher provides crypgraphic protections for data integrity, data privacy and data replay. The \AE thernet frame structure differs from the ethernet frame structure, specifically in the address fields, such that the MACSEC protocol cannot be directly reused.
+
+The link cipher relies on a shared key existing between two communicating endpoints. The pairwise key is used by the link cipher algorithms. Key establishment and authentication is addressed in the following chapter. This chapter addresses the layer 2 link cipher.
+
+The smallest unit of information transfer in \AE thernet is 8 bytes (one slice), while the smallest unit of physical transmission is 64 bytes (8 slices). A typical link cipher adds 8 to 16 bytes of nonce and 16-32 bytes of integrity check value. Adding 48 bytes to either an 8 byte slice or a 64 byte transmission unit is an excessive increase in packet size and reduction in effective throughput.
+
+In comparison, 802.3, 802.11 and 802.16 have variable size packets where the security overhead in bits remain constants as the packet size varies. The link cipher header and tail comprise an increasing percentage of the packet as the packet size gets smaller. 
+
+The \AE thernet link cipher decouples the application of security data headers and tails from the packet size. Instead of modifying the packet format to accomodate security headers and tails, two security packets are defined, the security header frame (SHF) and security tail fame (STF). Figure \ref{fig:shfstf} shows an example with two frames encrypted and authenticated, bracketed by the SHF and STF.
+
+\marginnote{Is this true?}
+In order that the shared keys can be used in both directions, the nonce space is split, with one party setting the upper bit of the nonce and the other clearing it. Thus a nonce collision cannot occur, which would undermine the security of the protocol. Traditionally in 802 networks, the MAC address has been used to decide which party gets which half of the nonce space. This does not work in the context of \AE thernet where a single node may have 8 links and 8 MAC addresses, which trafic may use more than one of during link failure routing adjustments.
+
+In the case of \AE thernet, each node has a secure identity against which CRPs (Challenge Response Pairs) can be gathered. A pre-defined challenge is used and the endpoint with the lower response to the same challenge gets the lower half of the nonce space (with the cleared upper bit). The identity could be implemented with a PUF (Physically Unclonable Function), or a hardcoded unique key with a KDF (Key Derivation Function) performing the challenge response processing.
+
+\subsection{Efficiency of Frame Packing}
+\label{subsection:gcm_packing_efficiency}
+It a matter of network administration policy how many data frames are protected between a SHF and STF. Also there are opportunities for cross layer optimizations where large data units fragmented into frames can be protected with a single SHF STF pair, lowering the overhead cost of transporting security nonces and ICVs where appropriate.
+
+Figure \ref{fig:gctr_packed_blocks} shows four 64 byte frames with the plaintext four byte operator fields and sixteen 128 bit blocks which show where the AES encryption is applied. The 16 byte blocks boundaries would align with the 64 byte frame boundaries, however the 4 byte operator field offsets the ciphertext boundaries so they do not align. It can be seen that over 4 frames, the 4 byte offsets add up to 16 bytes and so the alignment is restored on each fourth frame. 
+
+\begin{fullwidth}
+  \begin{figure}
+    \title{GCTR Block Packing}
+    \includegraphics[width=1.3\linewidth]{./figures/gctr_packed_blocks.pdf}
+    \label{fig:gctr_packed_blocks}
+  \end{figure}
+\end{fullwidth}
+
+If the boundaries do not align at the end of the final frame, the final plaintext block will be padded before being passed into the AES encryption algorithm consistent with GCM padding rules. This represents an amount of inefficiency encrypting bits that are not sent.
+
+In a more complicated series of frames with slices of differing sizes, this predictable alignment is broken. The implementer has the choice to terminate an encrypted sequence of frames on an aligned boundary opportunistically, or to accept the cost of padding by terminating an encrypted sequence of frames at a point on on the boundary of a 16 byte block.
+
+\subsection{Online Encipherment}
+\label{subsection:online_encipherment}
+In order to allow the number of frames between SHF and STF to be decided after the SHF has been sent, the cryptographic mode must be "online". An online mode takes an arbitary number of bits in and finalises the encryption and integrity operations one the length of the input data is known.
+
+Putting security fields within their own frames allows the protocol to be generous with nonce and ICV sizes. Key lifetimes tend to shrink with increasing bitrate as a result of nonce expiring more quickly with increasing bitrate. Larger nonces extend the possible key lifetimes. Larger ICVs can be sized to address the potential cryptographic threats from quantum computers.
+
+For this reason, the length field is in the STF at the tail of the encrypted frames. The length modulo the frame maximum payload gives the number of bytes of plaintext in the final frame. 
+
+This link cipher is based on the a derivative of GCM (Galois Counter Mode) as specified in SP800-38D. GCM supports high speed operation through the parallel structure of the integrity check mechanism. GCM is and AEAD mode (Authenticated Encryption with Additional Authenticated Data) which allows for the integrity checking of fields that remain unencrypted. In particular the first 4 bytes of a slice are left unencrypted to allow for fast processing of tokens and credits in the link state machines. 
+
+At the time of writing [July 2025], the NIST certifiable block ciphers all process 128 bit (16 byte) blocks. In person conversations with NIST staff in April 2025 have indicated an intention to permit the 256 bit block size variants of the Rejindahl cipher within the AES standard. With 128 bit block, there are 4 block cipher invocations per 64 bit frame. These block cipher invocations can be performed in parallel to enable higher speed operation. If and when 256 bit blocks become permitted, it would be possible to process a 64 byte frame with two invocations of the the block cipher. However SP800-38D requires a 128 bit block size cipher also. To make use of a 256 bit block size cipher, SP800-38D would also need to be updated which will not be timely for this standard.
+
+A security procotcol major version of 1 is used to indicate this link cipher with GCM as defined here.
+
+\subsection{IV Reuse and Reversible Protocols}
+The IV (Initialization Vector) must never be reused with the same key or the security guarantees of the MPGCM algorithm will not hold.
+
+The IV is a counter that increments once for each ESOF (Enciphered Sequence of Frames). When the key is refreshed, the IV can restart, for example at the number 1. When continuing with the same key, the IV must only increment to ensure the same IV is never used twice or more with the same key.
+
+In a fully reversible protocol, the sending node may send a sequence ESOFs, incrementing the IV with each ESOF. However if one of the ESOFs is interupted with a link failure, the transaction will be reversed to return both sender and receiver to the same state as it was at the start of the ESOF that was interrupted. This would include the IV if the protocol was 100\% reversible.
+
+If the sending node then proceeded to send different data using the same key and the rolled back IV, then there would be Key-IV reuse and the security of the system would be undermined.
+
+The IV must only increment. The IV is included in each ESOF and in the event of a reversal back to an earlier state, the IV must not reverse and should increment monotonically forwards. A skip in the IV sequence is not a problem. The IV is encoded in the SHF and it is the responsibility of the sender to ensure the numbers more forward in the state sequence monotonically while it is not a requirement that they remain contiguous.
+
+\subsection{IV Efficiency}
+The SP800-38D specification allows the counter to be either a numerical counter or an LFSR with maximal cycle length. The latter is more efficient for large counters since there is no carry operation to perform with an LFSR. For a 128 counter, the LFSR approach is a significantly more efficient in hardware than a numerical counter with carry lookahead logic. 
+
+An LFSR is maximal length when the number of taps are even and the tap indexes are coprime. With the standard taps at 0 and 1 and the maximum tap at 127 any other tap will work for a maximal length LFSR because 127 is prime and so it coprime with every other tap position greater and 1 and less than 127.
+
+For example a binary encoding of maximal length taps for a 128 bit LFSR is 0x80000000000000000000000000200003.
+
+\subsection{MPGCM}
+\label{MPGCM}
+
+\marginnote{Informative}
+
+The link cipher MPGCM (Multi Packet GCM) is derived from GCM. GCM was designed to encrypt and authenticate single packets. Figure {fig:gcm} shows it's intended use to encrypt an ethernet style packet. GCM was designed for high bit rate 802.3 ethernet. To allow for higher bit rates than for eaxmple CCM (CBC-MAC with Counter Mode) used in 802.11 which has a serial dependence between blocks and so prevents parallel processing of the blocks, GCM enables the blocks to be processed in parallel.
+
+\begin{fullwidth}
+  \begin{figure}
+    \title{GCM Packet Encapsulation}
+    \includegraphics[width=1.3\linewidth]{./figures/gcm.pdf}
+    \label{fig:gcm}
+  \end{figure}
+\end{fullwidth}
+
+GCM is an AEAD mode and the integrity check function takes in the AAD (Additional Authenticated Data)  data and the ciphertext data with padding to compute the ICV (Integrity Check Value).
+
+Section 7.2 Algorithm 5, step 6 in SP800-38D gives the contruction for the input data to GHASH.
+
+$$
+	S = GHASH_h(A || 0^v || C || 0^u || [len(A)]_64 || [len(C)]_64)
+$$
+
+The $A$ value is the AAD data. This presents a problem for processing multiple packets within \AE thernet. The assumption in the GCM design is that there is a single AAD block of data, containing bits from the header of the packet to be encrypted. In \AE thernet, the AAD data is present in the operator fields of the first 4 bytes of each slice. The consequence is that while the blocks can be encrypted in parallel, the sender would need to receive all the blocks before it could begin computing $GHASH()$, since every block will have AAD data and this must be presented at the start of the string of bytes that are input to $GHASH()$. 
+
+The single difference between GCM and MPGCM is in the $GHASH()$ input construction.
+
+The input to GHASH is the sequence of plaintext operators and encrypted operands, split into 128 bit blocks and padded out to a 128 bit boundary.
+
+The fixed sizes of slices in \AE thernet limits the blocks to multiples of 8 bytes. 
+
+\begin{align}
+	S_{mpgcm} &= GHASH_h(AC || 0^u || [len(A)]_64 || [len(C)]_64 ) \\
+	where: \\
+	u &= 128 \times \bigg \lceil \frac{len(AC)}{128} \bigg \rceil - len(AC)\\
+	and\\
+	\textnormal{For each slice } s_i &= operator_i || operand_i\\
+	AC_i &= operator_i || C_i\\
+	C_i &= GCTR(inc_{32}(J_0), P)
+\end{align}
+
+The full 64 byte frames of data are passed into GHASH to compute the authentication tag. The 64 byte frame size is a multiple of 128 bits. The GHASH 128 bit block multiply function will be invoked 4 times for each 64 byte frames of data as shown in figure \ref{fig:ghash_packed_blocks}.
+
+
+\begin{fullwidth}
+  \begin{figure}
+    \title{GHASH Block Packing}
+    \includegraphics[width=1.3\linewidth]{./figures/ghash_packed_blocks.pdf}
+    \label{fig:ghash_packed_blocks}
+  \end{figure}
+\end{fullwidth}
+
+For high bitrate computing of GHASH, parallel methods can be employed. The revised GCM submission paper \url{https://csrc.nist.rip/groups/ST/toolkit/BCM/documents/proposedmodes/gcm/gcm-revised-spec.pdf} describes an algorithm for a 2-multiplier implementation for GHASH in section 4.2.
+
+\end{document}
+
+

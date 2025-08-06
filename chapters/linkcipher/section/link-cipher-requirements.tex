@@ -1,0 +1,99 @@
+\documentclass[../../../OAE-SPEC-MAIN.tex]{subfiles}
+\begin{document}
+
+
+\section{MPGCM Normative Parameters}
+
+\marginnote{Normative Text}
+
+The link cipher shall be MPGCM as specified in SP800-38D with AES256 as specified in FIPS192 as the underlying block cipher and the variant MPGCM GHASH construction specified here.
+
+The MPGCM based link cipher will be identified with the security version number 1.
+
+The size of the IV (Initialization Vector) shall be 128 bits
+
+The GCM AAD length $len(A)$ shall be TBD bits (probably 4 bytes * the number of frames, from the headers of the blocks).
+
+The GCM input plaintext length is P bits. The limit for the maximum bit length of P shall be $len(P) \leq 2^(39)-256$ as specified in SP800-38D section 5.2.1.1. 
+
+The MPGCM authentication tag $t$ shall be 128 bits. 
+
+\section{SHF Format}
+
+The SHF (Security Header Frame) shall be a 64 byte frame containing a single 60 byte slice.
+
+Bytes 0 through 3 of the SHF frame shall contain the 4 byte operator field.
+
+Bytes 4 through 7 shall contain the SHF identifier 0x5f534846 (_SHF in ASCII).
+
+Bytes 8 through 16 shall contain the 64 bit KId (Key Identifier) for the shared symmetric key established with the key establishment protocol. If a new key establishment protocol is in process, the prior key phase will remain valid until the completion of the new key establishment at all nodes in the network, whereupon the new key and it's KId shall be used by all transmitters.
+
+Bytes 16 through 31 shall contain the 128 bit GCM IV.
+
+Bytes 32 through 63 shall contain only zeroes. 
+
+\begin{table}[H]
+\caption{SHF Fields}
+\label{tbl:shf_fields}
+%    \begin{tcolorbox}[
+%        enhanced, % Enables advanced features like shadows
+%        drop shadow={
+%            shadow xshift=3mm, % Horizontal offset of the shadow
+%            shadow yshift=-3mm, % Vertical offset of the shadow (negative for downward shadow)
+%            shadow blur radius=2mm, % Blur radius of the shadow
+%            shadow opacity=0.5, % Opacity of the shadow
+%            shadow color=gray % Color of the shadow
+%        },
+%        boxsep=0mm, % No padding between the box and the content
+%        arc=0mm, % No rounded corners for the box
+%        boxrule=0.4pt, % Border thickness of the box
+%        %colframe=black % Color of the box border
+%    ]
+\begin{shadowtable}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Byte Index} & \textbf{Size} & \textbf{Field Name} & \textbf{Function} \\ \hline
+0                   & 4             & Operator            & \begin{tabular}[c]{@{}l@{}}The mandatory slice\\ header for \AE thernet\end{tabular}                                 \\ \hline
+4                   & 4             & STF Id              & \begin{tabular}[c]{@{}l@{}}Enable a receiver to\\ identify the SHF Frame\end{tabular}                                \\ \hline
+8                   & 8             & KId                 & \begin{tabular}[c]{@{}l@{}}Enable the destination\\ node to know which key\\ to use near a key handover\end{tabular} \\ \hline
+	16                  & 16            & IV                  & \begin{tabular}[c]{@{}l@{}}Initialization Value\\ for the MPGCM Cipher\end{tabular} \\ \hline
+32                  & 32            & Reserved            &                                            \\ \hline
+\end{tabular}
+\end{shadowtable}
+\end{table}
+
+\section{STF Format}
+The STF (Security Tail Frame) shall be a 64 byte frame containing a single 60 byte slice.
+
+Bytes 0 through 3 of the STF frame shall contain the 4 byte operator field.
+
+Bytes 4 through 7 shall contain the STF identifier 0x5f535446 (_STF in ASCII).
+
+Bytes 8 through 15 shall contain the 64 bit KId (Key Identifier) for the shared symmetric key established with the key establishment protocol. If a new key establishment protocol is in process, the prior key phase will remain valid until the completion of the new key establishment at all nodes in the network, whereupon the new key and it's KId shall be used by all transmitters. The KId in these bytes shall match the KId in the SHF.
+
+Bytes 16 through 23 shall contain a 64 bit length of the authenticated data in bits. This will be a multiple of 512 since 64 bytes is 512 bits.
+
+Bytes 24 through 31 shall contain a 64 bit length of the ciphertext data in bits. This will be a multiple of 32 since 4 bytes is 32 bits.
+
+Bytes 32 through 64 shall contain the 256 bit MPGCM ICV.
+
+\begin{table}[H]
+\centering
+\begin{shadowtable}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Byte Index} & \textbf{Size} & \textbf{Field Name} & \textbf{Function} \\ \hline
+0                   & 4             & Operator            & \begin{tabular}[c]{@{}l@{}}The mandatory slice\\ header for \AE thernet\end{tabular}                                 \\ \hline
+4                   & 4             & STF Id              & \begin{tabular}[c]{@{}l@{}}Enable a receiver to\\ identify the STF Frame\end{tabular}                                \\ \hline
+8                   & 8             & KId                 & \begin{tabular}[c]{@{}l@{}}Enable the destination\\ node to know which key\\ to use near a key handover\end{tabular} \\ \hline
+16                  & 8             & ACLen               & Len(AC) in bits                                                                                                      \\ \hline
+24                  & 8             & CLen                & Len(C) in bits                                                                                                       \\ \hline
+32                  & 32            & ICV                 & \begin{tabular}[c]{@{}l@{}}MPGCM Integrity\\ Check Value\end{tabular}                                                \\ \hline
+\end{tabular}
+\end{shadowtable}
+\caption{STF Fields}
+\label{tbl:stf_fields}
+\end{table}
+\end{document}
+
+

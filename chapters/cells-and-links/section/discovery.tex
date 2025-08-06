@@ -6,10 +6,13 @@
 
 \marginfig{Bipartite-discovery.pdf}[A Link yet to be discovered, or a flakey link that need to be repaired]
 
-\CELLs discover connections $\exists$xist on \emph{each} of their ports. For connections that once existed (which may have been remembered from previously being powered up), we will find it \emph{impossible} to tell whether we are being woken up for the $1$st time, or the $N$th time*. \marginnote{\vspace{20pt}*Sleeping Beauty paradox: Veritasium: \href{https://youtu.be/XeSu9fBJ2sI?si=Nl70HKeFJT1Rlexb}{The Most Controversial Problem in Philosophy}}
+\CELLs discover connections exist on \emph{each} of their ports. For connections that once existed (which may have been remembered from previously being powered up), we will find it \emph{impossible} to tell whether we are being woken up for the $1$st time, or the $N$th time*. \marginnote{\vspace{20pt}*Sleeping Beauty paradox: Veritasium: \href{https://youtu.be/XeSu9fBJ2sI?si=Nl70HKeFJT1Rlexb}{The Most Controversial Problem in Philosophy}}
+
+\marginnote{DJ - This seems to be obviously untrue. The node may have stored state, or monotonic counters or any other means of remembering prior discoveries of the link. The protocol may not express any means of remembering, and may demand re-discovery, which is fine, but stating an impossibility where there is none, is not helping the spec.}
 
 \texttt{Alice} and \texttt{Bob} have no knowledge of each other prior to being powered up for the first time. They discover each other by sending and responding to \texttt{BEACON}s on each of their 8 ports $\{n,ne,de,se,ds,sw,dw,nw\}$. \texttt{BEACON}s are questions: ``is anyone there?'' They assume  neighbor \CELLs have SerDes' that can send \& receive @ 25Gb/s (defined by local clocks, in their frame of reference). Photon cavities (copper and fiber) are expected to be in a fixed frame of reference relative to the \texttt{SELF} \CELL.  Mobile entities may need to adjust this expectation based on the range of doppler shifts expected by \CELLs in motion, for example, in moving vehicles, \texttt{cars}, \texttt{planes}, and \texttt{spacecraft}.
 
+\marginnote{DJ - Invoking a 25Gb/s default is not good enough. 25Gb/s on which medium? That might look silly in a few years. Link rate negotiation is a mechanism in the phy of 802.3 and of course has specific cases for different media - fiber types, copper types etc. You either reference an existing spec that defines link negotiation or you don't and you let the PHY work it out. It's not the job of this layer unless it does all the heavy lifting for the complete story.}
 
 Alice sends \texttt{BEACON}s with an exponential backoff: every $1\mu s$, $2 \mu s$, $4 \mu s$, 8 $\mu s$, etc. The  policy for a maximum interval  is determined by the environment, e.g. within a datacenter, one might wish to send  \texttt{BEACON}s every second, whether you need to or not.  This  represents a balance between infrastructure liveness and needless energy dissipation.
 
